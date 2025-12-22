@@ -1,1 +1,12 @@
-const express = require("express"); const app = express(); const PORT = 3000; app.use(express.json()); app.get("/",(req,res)=; app.listen(PORT,()= running on port ${PORT}`));
+const express = require("express");
+const app = express();
+const khoanThuRoutes = require("./routes/khoanthuRoutes");
+const khoanThuHoKhauRoutes = require("./routes/khoanThuHoKhauRoutes");
+const hoaDonRoutes = require("./routes/hoaDonRoutes");
+
+app.use(express.json());
+app.use("/api", khoanThuRoutes);
+app.use("/api", khoanThuHoKhauRoutes);
+app.use("/api", hoaDonRoutes);
+
+app.listen(3000, () => console.log("Server running on port 3000"));
