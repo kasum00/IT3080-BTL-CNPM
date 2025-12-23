@@ -1,0 +1,240 @@
+/* ======================================
+   RESET + BASE
+   ====================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: #ffffff;
+    overflow: hidden; /* QUAN TRỌNG: không cho body scroll */
+}
+
+/* ======================================
+   LAYOUT 2 : 8 (FIX CỨNG)
+   ====================================== */
+.dashboard {
+    display: grid;
+    grid-template-columns: 240px 1fr; /* sidebar cố định */
+    height: 100vh;
+}
+
+/* ======================================
+   SIDEBAR
+   ====================================== */
+.sidebar {
+    background: #dbe9ff;
+    padding: 26px 18px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow-x: hidden;
+    overflow-y: auto; /* sidebar tự scroll nếu dài */
+}
+
+/* TITLE */
+.sidebar h2 {
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.sidebar .role {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2f55a4;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ======================================
+   PROFILE
+   ====================================== */
+.profile {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+/* LOGO */
+.profile img {
+    width: 72px;
+    height: auto;
+    display: block;
+    margin-bottom: 16px;
+}
+
+/* TÊN QUẢN LÝ */
+.profile .admin-name {
+    display: inline-block;
+    padding: 7px 18px;
+    background: #3f5fa9;
+    color: #ffffff;
+    border-radius: 20px;
+
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* ======================================
+   MENU
+   ====================================== */
+.sidebar nav {
+    margin-top: 10px;
+}
+
+/* LINK CHA */
+.sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    height: 40px;
+    padding: 0 8px;
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    text-decoration: none;
+    color: #000;
+
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* ICON SIDEBAR */
+.sidebar nav a::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+/* ICONS */
+.nav-home::before {
+    background-image: url("../assets/icons/sidebar-home.svg");
+}
+
+.nav-family::before {
+    background-image: url("../assets/icons/sidebar-family.svg");
+}
+
+.nav-resident::before {
+    background-image: url("../assets/icons/sidebar-resident.svg");
+}
+
+.nav-money::before {
+    background-image: url("../assets/icons/sidebar-money.svg");
+}
+
+/* ===== MENU CÓ MŨI TÊN ===== */
+.sidebar nav a.has-arrow {
+    position: relative;
+    padding-right: 32px;
+}
+
+/* MŨI TÊN ▾ */
+.sidebar nav a.has-arrow::after {
+    content: "▾";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #333;
+}
+
+/* XOAY MŨI TÊN */
+.sidebar nav a.has-arrow.open::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* HOVER */
+.sidebar nav a:hover {
+    background: rgba(47, 85, 164, 0.08);
+}
+
+/* ACTIVE */
+.sidebar nav a.active {
+    color: #2f55a4;
+    font-weight: 600;
+}
+
+/* ======================================
+   SUBMENU
+   ====================================== */
+.submenu {
+    display: none;
+    flex-direction: column;
+    padding-left: 34px;
+    margin-bottom: 10px;
+}
+
+.submenu.show {
+    display: flex;
+}
+
+.submenu a {
+    height: 34px;
+    font-size: 13px;
+    color: #2f55a4;
+    margin-bottom: 4px;
+}
+
+.submenu a.active {
+    font-weight: 600;
+}
+
+/* ======================================
+   SIDEBAR FOOTER
+   ====================================== */
+.sidebar-footer {
+    margin-top: auto; /* đẩy xuống đáy */
+    text-align: center;
+    padding-top: 20px;
+}
+
+/* NÚT ĐĂNG XUẤT */
+.logout-btn {
+    width: 100%;
+    padding: 10px 0;
+    background: #3f5fa9;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    opacity: 0.9;
+}
+
+/* PHIÊN BẢN */
+.version {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #2f55a4;
+}
+
+/* ======================================
+   CONTENT (BÊN PHẢI)
+   ====================================== */
+.content {
+    padding: 40px 50px;
+    overflow-y: auto; /* CHỈ content được cuộn */
+    background: #ffffff;
+}
