@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Danh sách căn hộ</title>
+    <title>Danh sách hộ khẩu</title>
     <link rel="stylesheet" href="../css/base.css">
-    <link rel="stylesheet" href="../css/apartment.css">
+    <link rel="stylesheet" href="../css/household.css">
 </head>
 
 <body>
@@ -26,8 +26,9 @@
 
                 <a href="#" class="nav-family has-arrow open">Quản lý hộ gia đình</a>
                 <div class="submenu show">
-                    <a class="active" href="apartment.html">Căn hộ</a>
-                    <a href="household.html">Hộ khẩu</a>
+                    <a href="apartment.html">Căn hộ</a>
+                    <a class="active" href="household.html">Hộ khẩu</a>
+
                 </div>
 
                 <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
@@ -52,42 +53,41 @@
 
         <!-- CONTENT -->
         <main class="content">
-            <div class="apartment-header">
-                <h1>Danh sách căn hộ</h1>
+            <div class="household-header">
+                <h1>Danh sách hộ khẩu</h1>
                 <div class="actions">
-                    <button class="btn-add">Thêm căn hộ</button>
+                    <button class="btn-add">Thêm hộ khẩu</button>
                     <input placeholder="Tìm kiếm">
                 </div>
             </div>
 
             <div class="table-wrapper">
                 <div class="table-scroll">
-                    <table class="apartment-table">
+                    <table class="household-table">
                         <thead>
                             <tr>
-                                <th>Mã căn hộ</th>
-                                <th>Tên căn hộ</th>
-                                <th>Tầng</th>
-                                <th>Diện tích</th>
-                                <th>Trạng thái</th>
+                                <th>Mã hộ khẩu</th>
+                                <th>Căn hộ</th>
+                                <th>Chủ hộ</th>
+                                <th>Địa chỉ nơi cấp</th>
+                                <th>Ngày cấp</th>
                                 <th>Chi tiết</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
+                                <td>HK001</td>
                                 <td>A1-01</td>
-                                <td>Căn hộ A1-01</td>
-                                <td>1</td>
-                                <td>75</td>
-                                <td>chu_o</td>
-
+                                <td>Nguyễn Văn A</td>
+                                <td>Chung cư BlueMoon</td>
+                                <td>01/01/2024</td>
                                 <td class="action">
-                                    <span class="btn-detail" data-name="Căn hộ A1-12" data-floor="12" data-area="80"
-                                        data-status="Đang cho thuê" data-owner="Nguyễn Văn A" data-start="2024-01-01"
-                                        data-end="2024-12-31">
+                                    <span class="btn-detail" data-ma="HK001" data-can-ho="A1-01"
+                                        data-chu-ho="Nguyễn Văn A" data-dia-chi="Chung cư BlueMoon"
+                                        data-noi-cap="Hà Nội" data-ngay-cap="2024-01-01">
                                     </span>
+                                    <span class="btn-remove"></span>
                                 </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -96,57 +96,53 @@
 
     </div>
     <!-- ===============================
-     MODAL CHI TIẾT CĂN HỘ
+     MODAL CHI TIẾT HỘ KHẨU
 ================================ -->
-    <div id="apartment-modal" class="modal-overlay">
+    <div id="household-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h3>Chi tiết căn hộ</h3>
+                <h3>Chi tiết hộ khẩu</h3>
                 <button class="modal-close" id="close-modal">x</button>
             </div>
 
             <div class="modal-body">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Tên căn hộ</label>
-                        <input type="text" id="modal-name" readonly>
+                        <label>Mã hộ khẩu</label>
+                        <input type="text" id="modal-ma" readonly>
                     </div>
 
                     <div class="form-group">
-                        <label>Tầng</label>
-                        <input type="text" id="modal-floor" readonly>
+                        <label>Căn hộ</label>
+                        <input type="text" id="modal-canHo" readonly>
                     </div>
 
                     <div class="form-group full">
-                        <label>Mô tả</label>
-                        <input type="text" id="modal-desc" readonly>
+                        <label>Chủ hộ</label>
+                        <input type="text" id="modal-chuHo" readonly>
                     </div>
 
                     <div class="form-group">
-                        <label>Diện tích</label>
-                        <input type="text" id="modal-area" readonly>
+                        <label>Địa chỉ thường trú</label>
+                        <input type="text" id="modal-diaChi" readonly>
                     </div>
 
                     <div class="form-group">
-                        <label>Chủ căn hộ</label>
-                        <input type="text" id="modal-owner" readonly>
+                        <label>Nơi cấp</label>
+                        <input type="text" id="modal-noiCap" readonly>
                     </div>
 
                     <div class="form-group">
-                        <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="modal-start" readonly>
+                        <label>Ngày cấp</label>
+                        <input type="date" id="modal-ngayCap" readonly>
                     </div>
 
-                    <div class="form-group">
-                        <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="modal-end" readonly>
-                    </div>
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button class="btn-danger" id="btn-close-detail">Đóng</button>
-                <button class="btn-primary" id="btn-open-edit">
+                <button type="button" class="btn-primary" id="btn-open-edit">
                     Chỉnh sửa
                 </button>
             </div>
@@ -154,51 +150,47 @@
     </div>
 
     <!-- ===============================
-     MODAL CHỈNH SỬA CĂN HỘ
+     MODAL CHỈNH SỬA HỘ KHẨU
 ================================ -->
     <div id="editModal" class="modal-overlay">
         <div class="edit-modal">
             <div class="edit-header">
-                <h3>Chỉnh sửa căn hộ</h3>
+                <h3>Chỉnh sửa hộ khẩu</h3>
                 <button class="modal-close" id="close-edit">x</button>
             </div>
 
             <div class="edit-body">
                 <div class="edit-grid">
                     <div class="form-item">
-                        <label>Tên căn hộ</label>
-                        <input id="edit-name">
+                        <label>Mã hộ khẩu</label>
+                        <input id="edit-ma">
                     </div>
 
                     <div class="form-item">
-                        <label>Tầng</label>
-                        <input id="edit-floor">
+                        <label>Căn hộ</label>
+                        <input id="edit-canHo">
                     </div>
 
                     <div class="form-item full">
-                        <label>Mô tả</label>
-                        <input id="edit-desc">
+                        <label>Chủ hộ</label>
+                        <input id="edit-chuHo">
                     </div>
 
                     <div class="form-item">
-                        <label>Diện tích</label>
-                        <input id="edit-area">
+                        <label>Địa chỉ thường trú</label>
+                        <input id="edit-diaChi">
                     </div>
 
                     <div class="form-item">
-                        <label>Chủ căn hộ</label>
-                        <input id="edit-owner">
+                        <label>Nơi cấp<picture></picture></label>
+                        <input id="edit-noiCap">
                     </div>
 
                     <div class="form-item">
-                        <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="edit-start">
+                        <label>Ngày cấp<picture></picture></label>
+                        <input id="edit-ngayCap">
                     </div>
 
-                    <div class="form-item">
-                        <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="edit-end">
-                    </div>
                 </div>
             </div>
 
@@ -230,56 +222,45 @@
     </div>
 
     <!-- ===============================
-     MODAL THÊM CĂN HỘ
+     MODAL THÊM HỘ KHẨU
 ================================ -->
     <div id="addModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h3>Thông tin căn hộ</h3>
+                <h3>Thông tin hộ khẩu</h3>
                 <button class="modal-close" id="close-add">x</button>
             </div>
-
 
             <div class="modal-body">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Mã căn hộ</label>
+                        <label>Mã hộ khẩu</label>
                         <input id="add-ma">
                     </div>
 
                     <div class="form-group">
-                        <label>Tên căn hộ</label>
-                        <input id="add-name">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Tầng</label>
-                        <input id="add-floor">
+                        <label>Căn hộ</label>
+                        <input id="add-canHo">
                     </div>
 
                     <div class="form-group full">
-                        <label>Mô tả</label>
-                        <input id="add-desc">
+                        <label>Chủ hộ</label>
+                        <input id="add-chuHo">
                     </div>
 
                     <div class="form-group">
-                        <label>Diện tích</label>
-                        <input id="add-area">
+                        <label>Địa chỉ thường trú</label>
+                        <input id="add-diaChi">
                     </div>
 
                     <div class="form-group">
-                        <label>Chủ căn hộ (nếu có)</label>
-                        <input id="add-owner">
+                        <label>Nơi cấp</label>
+                        <input id="add-noiCap">
                     </div>
 
                     <div class="form-group">
-                        <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="add-start">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="add-end">
+                        <label>Ngày cấp</label>
+                        <input type="date" id="add-ngayCap">
                     </div>
                 </div>
             </div>
@@ -291,12 +272,29 @@
         </div>
     </div>
 
+    <!-- ===============================
+     MODAL XÁC NHẬN XÓA HỘ KHẨU
+================================ -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="modal-close" id="close-delete">x</button>
+            </div>
 
+            <div class="modal-body notify-body">
+                <h2>Bạn có chắc chắn muốn xóa hộ khẩu không?</h2>
+            </div>
 
-
+            <div class="modal-footer">
+                <button class="btn-danger" id="confirm-delete">OK</button>
+                <button class="btn-primary" id="cancel-delete">Hủy</button>
+            </div>
+        </div>
+    </div>
 
     <script src="../js/sidebar.js"></script>
-    <script src="../js/apartment.js"></script>
+    <script src="../js/household.js"></script>
 </body>
 
 </html>

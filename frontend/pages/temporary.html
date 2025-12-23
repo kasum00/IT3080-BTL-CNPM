@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Danh sách căn hộ</title>
     <link rel="stylesheet" href="../css/base.css">
-    <link rel="stylesheet" href="../css/apartment.css">
+    <link rel="stylesheet" href="../css/temporary.css">
 </head>
 
 <body>
@@ -26,21 +26,21 @@
 
                 <a href="#" class="nav-family has-arrow open">Quản lý hộ gia đình</a>
                 <div class="submenu show">
-                    <a class="active" href="apartment.html">Căn hộ</a>
+                    <a href="apartment.html">Căn hộ</a>
                     <a href="household.html">Hộ khẩu</a>
                 </div>
 
                 <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
                 <div class="submenu">
-                    <a href="resident.html">Quản lý nhân khẩu</a>
-                    <a href="temporary.html">Quản lý tạm trú</a>
+                    <a  href="resident.html">Quản lý nhân khẩu</a>
+                    <a class="active"href="temporary.html">Quản lý tạm trú</a>
                     <a href="absence.html">Quản lý tạm vắng</a>
                 </div>
 
                 <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
                 <div class="submenu">
                     <a href="fee-list.html">Danh sách khoản thu</a>
-                    <a href="fee-manage.html">Khoản thu theo hộ</a>
+                    <a href="fee-manage.html">Quản lý khoản thu</a>
                 </div>
             </nav>
 
@@ -52,40 +52,40 @@
 
         <!-- CONTENT -->
         <main class="content">
-            <div class="apartment-header">
-                <h1>Danh sách căn hộ</h1>
+            <div class="temporary-header">
+                <h1>Danh sách tạm trú</h1>
                 <div class="actions">
-                    <button class="btn-add">Thêm căn hộ</button>
+                    <button class="btn-add">Đăng ký tạm trú</button>
                     <input placeholder="Tìm kiếm">
                 </div>
             </div>
 
             <div class="table-wrapper">
                 <div class="table-scroll">
-                    <table class="apartment-table">
+                    <table class="temporary-table">
                         <thead>
                             <tr>
-                                <th>Mã căn hộ</th>
-                                <th>Tên căn hộ</th>
-                                <th>Tầng</th>
-                                <th>Diện tích</th>
-                                <th>Trạng thái</th>
-                                <th>Chi tiết</th>
+                                <th>CCCD</th>
+                                <th>Họ tên</th>
+                                <th>Địa chỉ tạm trú</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>A1-01</td>
-                                <td>Căn hộ A1-01</td>
-                                <td>1</td>
-                                <td>75</td>
-                                <td>chu_o</td>
-
+                                <td>012345678901</td>
+                                <td>Nguyễn Văn A</td>
+                                <td>Phòng 302 Chung cư BlueMoon</td>
+                                <td>2024-01-01</td>
+                                <td>2024-12-31</td>
                                 <td class="action">
-                                    <span class="btn-detail" data-name="Căn hộ A1-12" data-floor="12" data-area="80"
-                                        data-status="Đang cho thuê" data-owner="Nguyễn Văn A" data-start="2024-01-01"
-                                        data-end="2024-12-31">
+                                    <span class="btn-detail" data-id="1" data-ho-ten="Nguyễn Văn A"
+                                        data-cccd="012345678901" data-dia-chi="Phòng 302  Chung cư BlueMoon"
+                                        data-ngay-bat-dau="2024-01-01" data-ngay-ket-thuc="2024-12-31">
                                     </span>
+                                    <span class="btn-remove"></span>
                                 </td>
                             </tr>
                         </tbody>
@@ -96,50 +96,40 @@
 
     </div>
     <!-- ===============================
-     MODAL CHI TIẾT CĂN HỘ
+     MODAL CHI TIẾT TẠM TRÚ
 ================================ -->
-    <div id="apartment-modal" class="modal-overlay">
+    <div id="temporary-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h3>Chi tiết căn hộ</h3>
+                <h3>Chi tiết tạm trú</h3>
                 <button class="modal-close" id="close-modal">x</button>
             </div>
 
             <div class="modal-body">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Tên căn hộ</label>
-                        <input type="text" id="modal-name" readonly>
+                        <label>Họ tên</label>
+                        <input id="modal-hoTen" readonly>
                     </div>
 
                     <div class="form-group">
-                        <label>Tầng</label>
-                        <input type="text" id="modal-floor" readonly>
+                        <label>CCCD</label>
+                        <input id="modal-cccd" readonly>
                     </div>
 
                     <div class="form-group full">
-                        <label>Mô tả</label>
-                        <input type="text" id="modal-desc" readonly>
+                        <label>Địa chỉ tạm trú</label>
+                        <input id="modal-diaChi" readonly>
                     </div>
 
                     <div class="form-group">
-                        <label>Diện tích</label>
-                        <input type="text" id="modal-area" readonly>
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="modal-ngayBatDau" readonly>
                     </div>
 
                     <div class="form-group">
-                        <label>Chủ căn hộ</label>
-                        <input type="text" id="modal-owner" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="modal-start" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="modal-end" readonly>
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="modal-ngayKetThuc" readonly>
                     </div>
                 </div>
             </div>
@@ -154,50 +144,40 @@
     </div>
 
     <!-- ===============================
-     MODAL CHỈNH SỬA CĂN HỘ
+     MODAL CHỈNH SỬA TẠM TRÚ
 ================================ -->
     <div id="editModal" class="modal-overlay">
         <div class="edit-modal">
             <div class="edit-header">
-                <h3>Chỉnh sửa căn hộ</h3>
+                <h3>Chỉnh sửa tạm trú</h3>
                 <button class="modal-close" id="close-edit">x</button>
             </div>
 
             <div class="edit-body">
                 <div class="edit-grid">
                     <div class="form-item">
-                        <label>Tên căn hộ</label>
-                        <input id="edit-name">
+                        <label>CCCD</label>
+                        <input id="edit-cccd">
                     </div>
 
                     <div class="form-item">
-                        <label>Tầng</label>
-                        <input id="edit-floor">
+                        <label>Họ tên</label>
+                        <input id="edit-hoTen">
                     </div>
 
                     <div class="form-item full">
-                        <label>Mô tả</label>
-                        <input id="edit-desc">
+                        <label>Địa chỉ tạm trú</label>
+                        <input id="edit-diaChi">
                     </div>
 
                     <div class="form-item">
-                        <label>Diện tích</label>
-                        <input id="edit-area">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="edit-ngayBatDau">
                     </div>
 
                     <div class="form-item">
-                        <label>Chủ căn hộ</label>
-                        <input id="edit-owner">
-                    </div>
-
-                    <div class="form-item">
-                        <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="edit-start">
-                    </div>
-
-                    <div class="form-item">
-                        <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="edit-end">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="edit-ngayKetThuc">
                     </div>
                 </div>
             </div>
@@ -230,57 +210,45 @@
     </div>
 
     <!-- ===============================
-     MODAL THÊM CĂN HỘ
+     MODAL ĐĂNG KÝ TẠM TRÚ
 ================================ -->
     <div id="addModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h3>Thông tin căn hộ</h3>
+                <h3>Đăng ký tạm trú</h3>
                 <button class="modal-close" id="close-add">x</button>
             </div>
 
 
             <div class="modal-body">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Mã căn hộ</label>
-                        <input id="add-ma">
+                    <div class="form-group full">
+                        <label>Nhân khẩu</label>
+                        <select id="add-nhanKhau">
+                            <!-- load từ API nhân khẩu -->
+                        </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Tên căn hộ</label>
-                        <input id="add-name">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Tầng</label>
-                        <input id="add-floor">
+                        <label>CCCD</label>
+                        <input id="add-cccd" readonly>
                     </div>
 
                     <div class="form-group full">
-                        <label>Mô tả</label>
-                        <input id="add-desc">
+                        <label>Địa chỉ tạm trú</label>
+                        <input id="add-diaChi">
                     </div>
 
                     <div class="form-group">
-                        <label>Diện tích</label>
-                        <input id="add-area">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="add-ngayBatDau">
                     </div>
 
                     <div class="form-group">
-                        <label>Chủ căn hộ (nếu có)</label>
-                        <input id="add-owner">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="add-ngayKetThuc">
                     </div>
 
-                    <div class="form-group">
-                        <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="add-start">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="add-end">
-                    </div>
                 </div>
             </div>
 
@@ -290,13 +258,28 @@
             </div>
         </div>
     </div>
+    <!-- ===============================
+ MODAL XÁC NHẬN XÓA NHÂN KHẨU
+================================ -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="modal-close" id="close-delete">x</button>
+            </div>
 
+            <div class="modal-body notify-body">
+                <h2>Bạn có chắc chắn muốn xóa tạm trú này không?</h2>
+            </div>
 
-
-
-
+            <div class="modal-footer">
+                <button class="btn-danger" id="confirm-delete">OK</button>
+                <button class="btn-primary" id="cancel-delete">Hủy</button>
+            </div>
+        </div>
+    </div>
     <script src="../js/sidebar.js"></script>
-    <script src="../js/apartment.js"></script>
+    <script src="../js/temporary.js"></script>
 </body>
 
 </html>

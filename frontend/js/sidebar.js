@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
        =============================== */
     document.querySelectorAll("[data-page]").forEach(item => {
         item.addEventListener("click", () => {
+            e.preventDefault();
             const page = item.dataset.page;
             if (page) {
                 window.location.href = page;

@@ -100,9 +100,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const area = document.getElementById("edit-area").value;
 
         // Cập nhật lại bảng
-        currentRow.children[1].innerText = name;
-        currentRow.children[2].innerText = floor;
-        currentRow.children[3].innerText = area;
+        currentRow.children[0].innerText = name;
+        currentRow.children[1].innerText = floor;
+        currentRow.children[2].innerText = area;
 
         // Cập nhật lại dataset cho icon bút
         const btnDetail = currentRow.querySelector(".btn-detail");
@@ -116,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Đóng modal edit
         editModal.classList.remove("show");
+
     };
 
     /* ===============================
@@ -169,9 +170,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const floor = document.getElementById("edit-floor").value;
         const area = document.getElementById("edit-area").value;
 
-        currentRow.children[1].innerText = name;
-        currentRow.children[2].innerText = floor;
-        currentRow.children[3].innerText = area;
+        currentRow.children[0].innerText = name;
+        currentRow.children[1].innerText = floor;
+        currentRow.children[2].innerText = area;
 
         const btnDetail = currentRow.querySelector(".btn-detail");
         btnDetail.dataset.name = name;
@@ -210,6 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     saveAddBtn.addEventListener("click", () => {
 
+        const ma = document.getElementById("add-ma").value;
+
         const name = document.getElementById("add-name").value;
         const floor = document.getElementById("add-floor").value;
         const area = document.getElementById("add-area").value;
@@ -222,13 +225,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-        <td>${name.split(" ")[2] || "A?"}</td>
+        <td>${ma}</td>
         <td>${name}</td>
         <td>${floor}</td>
         <td>${area}</td>
         <td>${desc || "trống"}</td>
         <td class="action">
             <span class="btn-detail"
+                data-ma ="${ma}"
                 data-name="${name}"
                 data-floor="${floor}"
                 data-area="${area}"
