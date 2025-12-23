@@ -145,6 +145,7 @@ CREATE TABLE hoa_don (
 
     so_tien_da_nop INT,
     ngay_nop DATE,
+    da_nop TINYINT(1) DEFAULT 0,
 
     FOREIGN KEY (id_khoan_thu_ho_khau) REFERENCES khoan_thu_ho_khau(id)
         ON UPDATE CASCADE ON DELETE CASCADE

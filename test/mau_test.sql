@@ -1,4 +1,7 @@
 use bluemoon;
+SET NAMES utf8mb4; -- utf-8
+
+
 
 INSERT INTO can_ho 
 (ma_can_ho, ten_can_ho, tang, dien_tich, trang_thai, ngay_bat_dau_thue, ngay_ket_thuc_thue, mo_ta)
@@ -17,6 +20,21 @@ VALUES
 ('HK003', 3, NULL, 'A1-12', 'Hà Nội', '2022-05-20'),
 ('HK004', 4, NULL, 'B2-05', 'Hà Nội', '2023-01-15'),
 ('HK005', 5, NULL, 'C3-10', 'HCM', '2024-03-01');
+
+
+INSERT INTO loai_xe (ma_loai_xe, ten_loai_xe)
+VALUES
+('LX01', 'Xe máy'),
+('LX02', 'Ô tô'),
+('LX03', 'Xe đạp');
+
+INSERT INTO xe (id_ho_khau, id_loai_xe, ten_xe, bien_kiem_soat)
+VALUES
+(1, 1, 'Honda AirBlade', '29A1-12345'),
+(1, 2, 'Toyota Vios', '30G-56789'),
+(2, 1, 'Vision', '29B1-88888'),
+(3, 3, 'Xe đạp Martin 107', 'N/A'),
+(4, 2, 'Mazda CX5', '30F-22222');
 
 INSERT INTO nhan_khau 
 (id_ho_khau, ma_ho_khau, ho_ten, can_cuoc_cong_dan, ngay_sinh, noi_sinh, dan_toc, nghe_nghiep, quan_he, ghi_chu)
@@ -38,43 +56,37 @@ UPDATE ho_khau SET id_chu_ho = 3 WHERE id = 2;
 UPDATE ho_khau SET id_chu_ho = 5 WHERE id = 3;
 UPDATE ho_khau SET id_chu_ho = 7 WHERE id = 4;
 
-INSERT INTO loai_xe (ma_loai_xe, ten_loai_xe)
+INSERT INTO khoan_thu (ma_khoan_thu, ten_khoan_thu, loai_khoan_thu, chi_tiet, ghi_chu, thoi_gian_bat_dau, thoi_gian_ket_thuc)
 VALUES
-('LX01', 'Xe máy'),
-('LX02', 'Ô tô'),
-('LX03', 'Xe đạp');
+('KT01', 'Phí vệ sinh', 'dinh_ky', 'Thu hàng tháng', '', '2024-01-01', NULL),
+('KT02', 'Phí gửi xe', 'dinh_ky', 'Thu theo số lượng xe', '', '2024-01-01', NULL),
+('KT03', 'Phí dịch vụ', 'dinh_ky', 'Thu hàng tháng', '', '2024-01-01', NULL),
+('KT04', 'Phí bảo trì', 'mot_lan', 'Thu một lần/năm', '', '2024-01-01', '2024-12-31'),
+('KT05', 'Phí nước', 'dinh_ky', 'Thu theo đồng hồ nước', '', '2024-01-01', NULL);
 
-INSERT INTO xe (id_ho_khau, id_loai_xe, ten_xe, bien_kiem_soat)
-VALUES
-(1, 1, 'Honda AirBlade', '29A1-12345'),
-(1, 2, 'Toyota Vios', '30G-56789'),
-(2, 1, 'Vision', '29B1-88888'),
-(3, 3, 'Xe đạp Martin 107', 'N/A'),
-(4, 2, 'Mazda CX5', '30F-22222');
-
-INSERT INTO khoan_thu 
-(ma_khoan_thu, ten_khoan_thu, loai_khoan_thu, chi_tiet, ghi_chu, thoi_gian_bat_dau, thoi_gian_ket_thuc)
-VALUES
-('KT01', 'Phí quản lý', 'dinh_ky', 'Thu hằng tháng', '', '2024-01-01', '2030-12-31'),
-('KT02', 'Phí gửi xe', 'dinh_ky', 'Tính theo loại xe', '', '2024-01-01', '2030-12-31'),
-('KT03', 'Phí vệ sinh chung cư', 'dinh_ky', 'Tất cả căn hộ phải nộp', '', '2024-01-01', '2030-12-31');
 
 INSERT INTO khoan_thu_ho_khau (id_khoan_thu, id_ho_khau, so_tien)
 VALUES
-(1, 1, 250000),
-(1, 2, 250000),
-(1, 3, 250000),
-(2, 1, 120000),
-(2, 4, 150000);
+(1, 1, 250000),  
+(2, 1, 120000),  
+(1, 2, 250000),  
+(3, 2, 150000),  
+(1, 3, 250000),  
+(4, 3, 500000),  
+(1, 4, 250000),  
+(5, 4, 180000),
+(1, 5, 250000),  
+(2, 5, 120000);  
+
 
 INSERT INTO hoa_don 
 (ma_hoa_don, id_khoan_thu_ho_khau, so_tien_da_nop, ngay_nop)
 VALUES
-('HD2024-001', 1, 250000, '2024-03-01'),
-('HD2024-002', 2, 250000, '2024-03-05'),
-('HD2024-003', 3, 250000, '2024-03-02'),
-('HD2024-004', 4, 120000, '2024-03-03'),
-('HD2024-005', 5, 150000, '2024-03-06');
+('HD2024-001', 1, 250000, '2024-03-01', FALSE),
+('HD2024-002', 2, 250000, '2024-03-05', FALSE),
+('HD2024-003', 3, 250000, '2024-03-02', FALSE),
+('HD2024-004', 4, 120000, '2024-03-03', FALSE),
+('HD2024-005', 5, 150000, '2024-03-06', FALSE);
 
 
 

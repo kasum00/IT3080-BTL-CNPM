@@ -1,0 +1,10 @@
+{
+  "name": "it3080-btl-cnpm",
+  "version": "1.0.0",
+  "description": "IT3080 BTL CNPM Project",
+  "private": true,
+  "scripts": {
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm start"
+  }
+}
