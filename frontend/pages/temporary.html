@@ -32,8 +32,8 @@
 
                 <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
                 <div class="submenu">
-                    <a  href="resident.html">Quản lý nhân khẩu</a>
-                    <a class="active"href="temporary.html">Quản lý tạm trú</a>
+                    <a href="resident.html">Quản lý nhân khẩu</a>
+                    <a class="active" href="temporary.html">Quản lý tạm trú</a>
                     <a href="absence.html">Quản lý tạm vắng</a>
                 </div>
 
@@ -222,12 +222,19 @@
 
             <div class="modal-body">
                 <div class="form-grid">
-                    <div class="form-group full">
+                    <div class="form-group full autocomplete">
                         <label>Nhân khẩu</label>
-                        <select id="add-nhanKhau">
-                            <!-- load từ API nhân khẩu -->
-                        </select>
+
+                        <!-- input người dùng gõ -->
+                        <input type="text" id="nhanKhauInput" placeholder="Nhập tên hoặc CCCD" autocomplete="off">
+
+                        <!-- lưu id nhân khẩu -->
+                        <input type="hidden" id="add-nhanKhau">
+
+                        <!-- dropdown gợi ý -->
+                        <div class="suggest-list" id="nhanKhauSuggest"></div>
                     </div>
+
 
                     <div class="form-group">
                         <label>CCCD</label>
