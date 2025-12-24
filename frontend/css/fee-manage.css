@@ -1,0 +1,422 @@
+.fee-manage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+}
+
+.btn-add {
+    background: #3f5fa9;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.actions input {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: none;
+    background: #eef4ff;
+}
+
+.table-wrapper {
+    background: #bcd6ff;
+    border-radius: 18px;
+    padding: 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 14px;
+    text-align: left;
+}
+
+thead {
+    border-bottom: 1px solid #666;
+}
+
+tbody tr {
+    border-bottom: 1px solid #888;
+}
+
+/* ================================
+   WRAPPER BẢNG (MÀU XANH)
+   ================================ */
+.table-wrapper {
+    background: #bcd6ff;
+    border-radius: 18px;
+    padding: 20px;
+
+    width: 100%;
+    max-width: 1100px; /* bảng rộng ra */
+}
+
+/* ================================
+   SCROLL CHỈ TRONG BẢNG
+   ================================ */
+.table-scroll {
+    max-height: 420px;        /* chiều cao vùng cuộn */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ================================
+   TABLE
+   ================================ */
+.fee-manage-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+/* HEADER */
+.fee-manage-table thead th {
+    text-align: left;
+    font-weight: 600;
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.4);
+
+    position: sticky;
+    top: 0;
+    background: #bcd6ff; /* giữ màu khi sticky */
+    z-index: 2;
+}
+
+/* BODY */
+.fee-manage-table tbody td {
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.35);
+}
+
+/* DÒNG CUỐI KHÔNG VIỀN */
+.fee-manage-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* SCROLLBAR ĐẸP */
+.table-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+    background: rgba(47, 85, 164, 0.5);
+    border-radius: 6px;
+}
+
+/* ===== ACTION ICON ===== */
+.action {
+    display: flex;
+    gap: 16px;
+}
+
+.action span {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
+.btn-detail {
+    background-image: url("../assets/icons/btn-detail.png");
+}
+
+.btn-receipt {
+    background-image: url("../assets/icons/btn-receipt.png");
+}
+
+.action span:hover {
+    opacity: 0.7;
+}
+
+/* ===============================
+   MODAL
+================================ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal {
+    background: #fff;
+    width: 1000px;
+    max-width: 90%;
+    border-radius: 22px;
+    overflow: auto;
+}
+
+.modal-table-wrapper {
+    /* Chỉnh padding trái là 24px để thẳng hàng với Header */
+    padding: 20px 24px; 
+    
+    /* Đảm bảo không có viền hay khoảng cách lạ */
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    
+    /* Giữ chiều cao và cuộn nếu cần */
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.modal-header {
+    background: #cfe0ff;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-sub {
+    background: #fff;
+    padding: 18px 24px;
+    padding-bottom: 5px;
+    gap: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.form-group input {
+    background: #e5e5e5;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+.modal-footer {
+    padding: 18px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 22px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #3f5fa9;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 22px;
+    cursor: pointer;
+}
+
+/* ===============================
+   EDIT MODAL OVERLAY
+=============================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+/* ===============================
+   EDIT MODAL BOX
+=============================== */
+.edit-modal {
+    width: 760px;
+    max-width: 95%;
+    background: #fff;
+    border-radius: 26px;
+    overflow: hidden;
+}
+
+/* ===============================
+   HEADER
+=============================== */
+.edit-header {
+    background: #cfe0ff;
+    padding: 18px 26px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.edit-header button {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* ===============================
+   BODY
+=============================== */
+.edit-body {
+    padding: 26px;
+}
+
+.edit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 22px;
+}
+
+.form-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-item.full {
+    grid-column: 1 / -1;
+}
+
+.form-item label {
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.form-item input {
+    background: #e6e6e6;
+    border: none;
+    border-radius: 16px;
+    padding: 12px 16px;
+    font-size: 14px;
+}
+
+/* ===============================
+   FOOTER
+=============================== */
+.edit-footer {
+    padding: 18px 26px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.btn-delete {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.btn-save {
+    background: #7bed4f;
+    color: #000;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 22px;
+    cursor: pointer;
+}
+
+/* ===============================
+   MODAL THÔNG BÁO – CĂN GIỮA
+   =============================== */
+
+.notify-close {
+    all: unset;                 
+    cursor: pointer;
+
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 400;
+    color: #000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notify-close:hover {
+    opacity: 0.6;
+}
+
+/* Căn giữa nội dung thông báo */
+.notify-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90px;
+    text-align: center;
+}
+
+#notify-text {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+}
