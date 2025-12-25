@@ -304,7 +304,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ===============================
-       ICON DETAIL (DÒNG CŨ)
     =============================== */
     document.querySelectorAll(".btn-detail").forEach(btn => {
         btn.addEventListener("click", function () {
