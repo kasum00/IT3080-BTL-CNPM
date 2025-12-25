@@ -1,59 +1,45 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    let currentRow = null;
-
     /* ===============================
-       MODALS
-    =============================== */
+       MODAL CHI TIẾT
+       =============================== */
     const detailModal = document.getElementById("fee-manage-modal");
+    const receiptModal = document.getElementById("receipt-modal");
+    const closeDetailBtn = document.getElementById("close-modal");
+    const btnCloseDetail = document.getElementById("btn-close-detail");
+
+    /* ===============================
+       MODAL CHỈNH SỬA
+       =============================== */
     const editModal = document.getElementById("editModal");
-    const notifyModal = document.getElementById("notifyModal");
-    const deleteModal = document.getElementById("deleteModal");
+    const btnOpenEdit = document.getElementById("btn-open-edit");
+    const closeEditBtn = document.getElementById("close-edit");
 
-    const notifyText = document.getElementById("notify-text");
-    const notifyOk = document.getElementById("notify-ok");
-    const closeNotify = document.getElementById("close-notify");
+    const btnSaveEdit = document.getElementById("btn-save-edit");
+    let currentRow = null; //lưu dòng đang sử
 
-    function showNotify(msg) {
-        notifyText.innerText = msg;
-        notifyModal.classList.add("show");
-    }
-
-    [notifyOk, closeNotify].forEach(btn =>
-        btn?.addEventListener("click", () =>
-            notifyModal.classList.remove("show")
-        )
-    );
 
     /* ===============================
-       OPEN DETAIL
-    =============================== */
-    function openDetail(btn) {
-        currentRow = btn.closest("tr");
-
-        document.getElementById("modal-household").value = btn.dataset.household || "";
-        document.getElementById("modal-fee").value = btn.dataset.fee || "";
-        document.getElementById("modal-amount").value = btn.dataset.amount || "";
-        document.getElementById("modal-status").value = btn.dataset.status || "";
-        document.getElementById("modal-date").value = btn.dataset.date || "";
-
-        detailModal.classList.add("show");
-    }
-
-    /* ===============================
-       ICON DETAIL (DÒNG CŨ)
-    =============================== */
+       ICON BÚT → MỞ MODAL CHI TIẾT
+       =============================== */
     document.querySelectorAll(".btn-detail").forEach(btn => {
-        btn.addEventListener("click", function () {
-            openDetail(this);
+        btn.addEventListener("click", () => {
+            currentRow = btn.closest("tr");
+
+            document.getElementById("modal-id-apt").innerText = btn.dataset.idApt || "";
+            document.getElementById("modal-id-fee").innerText = btn.dataset.idFee || "";
+            document.getElementById("modal-name").innerText = btn.dataset.name || "";
+            document.getElementById("modal-money").innerText = btn.dataset.money || "";
+            document.getElementById("modal-status").innerText = btn.dataset.status || "";
+            detailModal.classList.add("show");
         });
     });
 
     /* ===============================
-       CLOSE DETAIL
-    =============================== */
-    ["close-modal", "btn-close-detail"].forEach(id => {
-        document.getElementById(id)?.addEventListener("click", () => {
+       ĐÓNG MODAL CHI TIẾT
+       =============================== */
+    [closeDetailBtn, btnCloseDetail].forEach(btn => {
+        btn?.addEventListener("click", () => {
             detailModal.classList.remove("show");
         });
     });
@@ -64,139 +50,95 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+
     /* ===============================
-       DETAIL → EDIT
-    =============================== */
-    document.getElementById("btn-open-edit").addEventListener("click", () => {
-        detailModal.classList.remove("show");
+       ICON HÓA ĐƠN → MỞ MODAL THANH TOÁN
+       =============================== */
+    document.querySelectorAll(".btn-receipt").forEach(btn => {
+        btn.addEventListener("click", () => {
+            currentRow = btn.closest("tr");
 
-        document.getElementById("edit-household").value =
-            document.getElementById("modal-household").value;
-        document.getElementById("edit-fee").value =
-            document.getElementById("modal-fee").value;
-        document.getElementById("edit-amount").value =
-            document.getElementById("modal-amount").value;
-        document.getElementById("edit-status").value =
-            document.getElementById("modal-status").value;
-        document.getElementById("edit-date").value =
-            document.getElementById("modal-date").value;
-
-        editModal.classList.add("show");
+            document.getElementById("modal-id-apt-bill").innerText = btn.dataset.idAptBill || "";
+            document.getElementById("modal-id-fee-bill").innerText = btn.dataset.idFeeBill || "";
+            document.getElementById("modal-name1-bill").innerText = btn.dataset.name1Bill || "";
+            document.getElementById("modal-name2-bill").value = btn.dataset.name2Bill || "";
+            document.getElementById("modal-money-bill").value = btn.dataset.moneyBill || "";
+            document.getElementById("modal-date-bill").value = btn.dataset.dateBill || "";
+            
+            receiptModal.classList.add("show");
+        });
     });
-
     /* ===============================
-       SAVE EDIT (CHỈ 1 LẦN)
-    =============================== */
-    document.getElementById("btn-save-edit").addEventListener("click", () => {
+       LƯU HOÁ ĐƠN → CẬP NHẬT BẢNG
+       =============================== */
+    btnSaveEdit.onclick = () => {
 
         if (!currentRow) return;
 
-        const household = document.getElementById("edit-household").value;
-        const fee = document.getElementById("edit-fee").value;
-        const amount = document.getElementById("edit-amount").value;
-        const status = document.getElementById("edit-status").value;
-        const date = document.getElementById("edit-date").value;
+        const status = "Đã thanh toán";
 
-        currentRow.children[0].innerText = household;
-        currentRow.children[1].innerText = fee;
-        currentRow.children[2].innerText = amount;
-        currentRow.children[3].innerText = status;
-        currentRow.children[4].innerText = date;
+        // CÁCH SỬA: Tìm thẻ span chứa trạng thái bên trong dòng hiện tại
+        // Giả sử cột trạng thái là cột thứ 4 (index 3)
+        const statusCell = currentRow.children[3];
+        const statusSpan = statusCell.querySelector(".status-label") || statusCell.querySelector("span");
 
-        const btn = currentRow.querySelector(".btn-detail");
-        btn.dataset.household = household;
-        btn.dataset.fee = fee;
-        btn.dataset.amount = amount;
-        btn.dataset.status = status;
-        btn.dataset.date = date;
-
-        editModal.classList.remove("show");
-        showNotify("Lưu chỉnh sửa khoản thu theo hộ thành công!");
-    });
-
-    document.getElementById("close-edit").addEventListener("click", () => {
-        editModal.classList.remove("show");
-    });
+        if (statusSpan) {
+            statusSpan.innerText = status; // Chỉ cập nhật chữ bên trong span
+        } else {
+            // Nếu không có span, hãy cập nhật cẩn thận để không ghi đè nút bấm (nếu nút nằm chung cột)
+            statusCell.innerText = status; 
+        }
+        
+        // Đóng modal edit
+        receiptModal.classList.remove("show");
+        
+        showNotify("Thanh toán khoản thu thành công!");
+    
+    };
 
     /* ===============================
-       ADD FEE MANAGE
-    =============================== */
-    document.querySelector(".btn-add").addEventListener("click", () => {
-        document.querySelectorAll("#addModal input, #addModal select")
-            .forEach(i => i.value = "");
-        document.getElementById("addModal").classList.add("show");
+       ĐÓNG MODAL THANH TOÁN
+       =============================== */
+    closeEditBtn.addEventListener("click", () => {
+        closeReceiptModal(true);
     });
 
-    ["close-add", "cancel-add"].forEach(id => {
-        document.getElementById(id)?.addEventListener("click", () => {
-            document.getElementById("addModal").classList.remove("show");
-        });
+    const btnCancelEdit = document.getElementById("btn-close-edit");
+    btnCancelEdit?.addEventListener("click", () => {
+        closeReceiptModal(true);
     });
 
-    document.getElementById("save-add").addEventListener("click", () => {
-
-        const household = document.getElementById("add-household").value;
-        const fee = document.getElementById("add-fee").value;
-        const amount = document.getElementById("add-amount").value;
-        const status = document.getElementById("add-status").value;
-        const date = document.getElementById("add-date").value;
-
-        const tbody = document.querySelector(".fee-manage-table tbody");
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${household}</td>
-            <td>${fee}</td>
-            <td>${amount}</td>
-            <td>${status}</td>
-            <td>${date}</td>
-            <td class="action">
-                <span class="btn-detail"
-                    data-household="${household}"
-                    data-fee="${fee}"
-                    data-amount="${amount}"
-                    data-status="${status}"
-                    data-date="${date}">
-                </span>
-                <span class="btn-remove"></span>
-            </td>
-        `;
-
-        tbody.appendChild(tr);
-        document.getElementById("addModal").classList.remove("show");
-
-        tr.querySelector(".btn-detail").addEventListener("click", function () {
-            openDetail(this);
-        });
-
-        tr.querySelector(".btn-remove").addEventListener("click", () => {
-            currentRow = tr;
-            deleteModal.classList.add("show");
-        });
-
-        showNotify("Thêm khoản thu theo hộ thành công!");
+    receiptModal.addEventListener("click", e => {
+        if (e.target === receiptModal) {
+            closeReceiptModal(true);
+        }
     });
+    
+    function closeReceiptModal(showMessage = false) {
+        receiptModal.classList.remove("show");
+        if (showMessage) {
+            showNotify("Đóng thanh toán khoản thu thành công!");
+        }
+    }
+
 
     /* ===============================
-       DELETE
-    =============================== */
-    document.querySelectorAll(".btn-remove").forEach(btn => {
-        btn.addEventListener("click", () => {
-            currentRow = btn.closest("tr");
-            deleteModal.classList.add("show");
+   MODAL THÔNG BÁO
+   =============================== */
+    const notifyModal = document.getElementById("notifyModal");
+    const notifyText = document.getElementById("notify-text");
+    const notifyOk = document.getElementById("notify-ok");
+    const closeNotify = document.getElementById("close-notify");
+
+    function showNotify(message) {
+        notifyText.innerText = message;
+        notifyModal.classList.add("show");
+    }
+
+    [notifyOk, closeNotify].forEach(btn => {
+        btn?.addEventListener("click", () => {
+            notifyModal.classList.remove("show");
         });
-    });
-
-    ["cancel-delete", "close-delete"].forEach(id =>
-        document.getElementById(id)?.addEventListener("click", () =>
-            deleteModal.classList.remove("show")
-        )
-    );
-
-    document.getElementById("confirm-delete").addEventListener("click", () => {
-        if (currentRow) currentRow.remove();
-        deleteModal.classList.remove("show");
-        showNotify("Xóa khoản thu theo hộ thành công!");
     });
 
 });
