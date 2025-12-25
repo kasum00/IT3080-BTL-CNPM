@@ -81,6 +81,7 @@ create table KhoanThu(
     DonGia INT,
     ChiTiet NVARCHAR(500),
     GhiChu NVARCHAR(200)
+    CONSTRAINT chk_thoigian CHECK (ThoiGianKetThuc > ThoiGianBatDau)
 );
 
 -- Khoản thu theo hộ
@@ -102,9 +103,10 @@ CREATE TABLE KhoanThuTheoHo(
 CREATE TABLE HoaDon (
     MaHoaDon INT AUTO_INCREMENT PRIMARY KEY,
     MaKhoanThuTheoHo INT,
-    TenHoaDon NVARCHAR(100),
-    SoTienDaNop INT,
+    TenHoaDon NVARCHAR(100),    
+    DaNop BOOLEAN,
     NgayNop DATE,
+    NgayXuatHoaDon DATE,
 
     FOREIGN KEY (MaKhoanThuTheoHo) REFERENCES KhoanThuTheoHo(MaKhoanThuTheoHo)
         ON DELETE CASCADE ON UPDATE CASCADE
