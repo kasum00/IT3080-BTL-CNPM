@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách căn hộ</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/temporary.css">
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <!-- SIDEBAR (GIỐNG 100%) -->
+        <aside class="sidebar">
+            <h2>QUẢN LÝ CHUNG CƯ</h2>
+            <div class="role">Ban quản lý</div>
+
+            <div class="profile">
+                <img src="../assets/logo.png">
+                <div class="admin-name">Phú Trần</div>
+            </div>
+
+            <nav>
+                <a class="nav-home" href="dashboard.html">Trang chủ</a>
+
+                <a href="#" class="nav-family has-arrow open">Quản lý hộ gia đình</a>
+                <div class="submenu show">
+                    <a href="apartment.html">Căn hộ</a>
+                    <a href="household.html">Hộ khẩu</a>
+                </div>
+
+                <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
+                <div class="submenu">
+                    <a href="resident.html">Quản lý nhân khẩu</a>
+                    <a class="active" href="temporary.html">Quản lý tạm trú</a>
+                    <a href="absence.html">Quản lý tạm vắng</a>
+                </div>
+
+                <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
+                <div class="submenu">
+                    <a href="fee-list.html">Danh sách khoản thu</a>
+                    <a href="fee-manage.html">Quản lý khoản thu</a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="logout-btn">Đăng xuất</button>
+                <div class="version">phiên bản 1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content">
+            <div class="temporary-header">
+                <h1>Danh sách tạm trú</h1>
+                <div class="actions">
+                    <button class="btn-add">Đăng ký tạm trú</button>
+                    <input placeholder="Tìm kiếm">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <div class="table-scroll">
+                    <table class="temporary-table">
+                        <thead>
+                            <tr>
+                                <th>CCCD</th>
+                                <th>Họ tên</th>
+                                <th>Địa chỉ tạm trú</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>012345678901</td>
+                                <td>Nguyễn Văn A</td>
+                                <td>Phòng 302 Chung cư BlueMoon</td>
+                                <td>2024-01-01</td>
+                                <td>2024-12-31</td>
+                                <td class="action">
+                                    <span class="btn-detail" data-id="1" data-ho-ten="Nguyễn Văn A"
+                                        data-cccd="012345678901" data-dia-chi="Phòng 302  Chung cư BlueMoon"
+                                        data-ngay-bat-dau="2024-01-01" data-ngay-ket-thuc="2024-12-31">
+                                    </span>
+                                    <span class="btn-remove"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+    </div>
+    <!-- ===============================
+     MODAL CHI TIẾT TẠM TRÚ
+================================ -->
+    <div id="temporary-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Chi tiết tạm trú</h3>
+                <button class="modal-close" id="close-modal">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Họ tên</label>
+                        <input id="modal-hoTen" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>CCCD</label>
+                        <input id="modal-cccd" readonly>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Địa chỉ tạm trú</label>
+                        <input id="modal-diaChi" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="modal-ngayBatDau" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="modal-ngayKetThuc" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="btn-close-detail">Đóng</button>
+                <button class="btn-primary" id="btn-open-edit">
+                    Chỉnh sửa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL CHỈNH SỬA TẠM TRÚ
+================================ -->
+    <div id="editModal" class="modal-overlay">
+        <div class="edit-modal">
+            <div class="edit-header">
+                <h3>Chỉnh sửa tạm trú</h3>
+                <button class="modal-close" id="close-edit">x</button>
+            </div>
+
+            <div class="edit-body">
+                <div class="edit-grid">
+                    <div class="form-item">
+                        <label>CCCD</label>
+                        <input id="edit-cccd">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Họ tên</label>
+                        <input id="edit-hoTen">
+                    </div>
+
+                    <div class="form-item full">
+                        <label>Địa chỉ tạm trú</label>
+                        <input id="edit-diaChi">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="edit-ngayBatDau">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="edit-ngayKetThuc">
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-footer">
+                <button class="btn-danger" id="btn-close-edit">Đóng</button>
+                <button class="btn-primary" id="btn-save-edit">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL THỒNG BÁO CHỈNH SỬA CĂN HỘ
+================================ -->
+    <div id="notifyModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="notify-close" id="close-notify">x</button>
+            </div>
+
+            <div class="modal-body notify-body">
+                <h2 id="notify-text"></h2>
+            </div>
+
+            <div class="modal-footer">
+                <button id="notify-ok" class="btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL ĐĂNG KÝ TẠM TRÚ
+================================ -->
+    <div id="addModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Đăng ký tạm trú</h3>
+                <button class="modal-close" id="close-add">x</button>
+            </div>
+
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Mã hộ khẩu</label>
+                        <input type="text" id="add-maHoKhau" placeholder="Nhập mã hộ khẩu (VD: HK001)">
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label>CCCD</label>
+                        <input id="add-cccd" readonly>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Địa chỉ tạm trú</label>
+                        <input id="add-diaChi">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="add-ngayBatDau">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="add-ngayKetThuc">
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="cancel-add">Đóng</button>
+                <button class="btn-primary" id="save-add">Lưu</button>
+            </div>
+        </div>
+    </div>
+    <!-- ===============================
+ MODAL XÁC NHẬN XÓA NHÂN KHẨU
+================================ -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="modal-close" id="close-delete">x</button>
+            </div>
+
+            <div class="modal-body notify-body">
+                <h2>Bạn có chắc chắn muốn xóa tạm trú này không?</h2>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="confirm-delete">OK</button>
+                <button class="btn-primary" id="cancel-delete">Hủy</button>
+            </div>
+        </div>
+    </div>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/temporary.js"></script>
+</body>
+
+</html>
