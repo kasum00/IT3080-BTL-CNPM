@@ -69,7 +69,7 @@
                                 <th>Chủ căn hộ</th>
                                 <th>Tầng</th>
                                 <th>Trạng thái</th>
-                                <th>Chi tiết khoản thu</th>
+                                <th>Chi tiết</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -86,7 +86,14 @@
                                     data-name="Phí quản lý - 01" 
                                     data-money="1000000" 
                                     data-status="Chưa thanh toán">
-                                    </span>Xem chi tiết</td>
+                                    </span>
+                                    <span class="btn-invoice"
+                                    data-id-apt-invoice="A1-01"
+                                    data-id-invoice ="HD-01"
+                                    data-name-invoice="Phí quản lý - Tháng 01/2025" 
+                                    data-money-invoice="1000000" 
+                                    data-date-invoice="2025-01-15">
+                                    </span>
                             </tr>
                                 </td>
                             </tr>
@@ -121,7 +128,7 @@
                         <tr>
                             <th>Mã khoản thu</th>
                             <th>Tên khoản thu</th>
-                            <th>Số tiền cần thu</th>
+                            <th>Số tiền - VND</th>
                             <th>Tình trạng</th>
                             <th>Thanh toán</th>
                         </tr>
@@ -133,19 +140,111 @@
                             <td><span id="modal-money"></span></td>
                             <td><span id="modal-status"></span></td>
                             <td class="action">
-                                <span class="btn-receipt"
+                                <span class="btn-receipt" id="btn-receipt"
                                 data-id-apt-bill ="A1-01"
                                 data-id-fee-bill ="KT-01"
                                 data-name1-bill="Phí quản lý - 01" 
                                 data-name2-bill="Phí quản lý - Tháng 01/2025" 
                                 data-money-bill="1000000" 
                                 data-date-bill="2025-01-15">
-                                </span>Thanh toán</td>
+                                </span>
                         </tr>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+    <!-- ===============================
+     MODAL DANH SÁCH HOA DON CUA HO
+================================ -->
+    <div id="invoice-modal" class="modal-overlay">
+        <div class="modal">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h3>Danh sách hóa đơn của hộ</h3>
+                <button type="button" id="close-modal-invoice" class="modal-close">×</button>
+            </div>
+
+            <!-- SUB TITLE -->
+            <div class="modal-sub">
+                Mã hộ:  <span id="modal-id-apt-invoice"></span>
+            </div>
+
+            <!-- TABLE -->
+            <div class="modal-table-wrapper">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Mã hóa đơn</th>
+                            <th>Tên hóa đơn</th>
+                            <th>Số tiền - VND</th>
+                            <th>Ngày xuất hóa đơn</th>
+                            <th>Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span id="modal-id-invoice"></span></td>
+                            <td><span id="modal-name-invoice"></span></td>
+                            <td><span id="modal-money-invoice"></span></td>
+                            <td><span id="modal-date-invoice"></span></td>
+                            <td class="action">
+                                <span class="btn-receipt" id="btn-invoice-detail"
+                                data-id-apt-invoice-detail ="A1-01"
+                                data-id-fee-invoice-detail ="KT-01"
+                                data-name1-invoice-detail="Phí quản lý - 01" 
+                                data-name2-invoice-detail="Phí quản lý - Tháng 01/2025" 
+                                data-money-invoice-detail="1000000" 
+                                data-date-invoice-detail="2025-01-15">
+                                </span>
+                        </tr>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<!-- ===============================
+     MODAL CHI TIẾT HOA ĐƠN CUA HO
+================================ -->
+    <div id="invoice-detail-modal" class="modal-overlay">
+        <div class="modal">
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h3>Hóa Đơn</h3>
+                <button class="modal-close" id="close-invoice-detail">x</button>
+            </div>
+
+            <!-- SUB TITLE -->
+            <div class="modal-sub">
+                Tên khoản thu: <span id="modal-name1-invoice-detail"></span>
+            </div>
+            <div class="modal-sub">
+                Mã hộ:<span id="modal-id-apt-invoice-detail"></span> - Mã khoản thu: <span id="modal-id-fee-invoice-detail"></span>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên hóa đơn</label>
+                        <input type="text" id="modal-name2-invoice-detail" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số tiền - VND</label>
+                        <input type="text" id="modal-money-invoice-detail" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày xuất hóa đơn</label>
+                        <input type="date" id="modal-date-invoice-detail" readonly> 
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -194,65 +293,8 @@
         </div>
     </div>
 
-
-    <!-- ===============================
-     MODAL CHỈNH SỬA KHOẢN THU
-================================ -->
-    <div id="editModal" class="modal-overlay">
-        <div class="edit-modal">
-            <div class="edit-header">
-                <h3>Chỉnh sửa khoản thu</h3>
-                <button class="modal-close" id="close-edit">x</button>
-            </div>
-
-            <div class="edit-body">
-                <div class="edit-grid">
-                    <div class="form-item">
-                        <label>Tên khoản thu</label>
-                        <input id="edit-name">
-                    </div>
-
-                    <div class="form-item">
-                        <label>Loại khoản thu</label>
-                        <input id="edit-type">
-                    </div>
-
-                    <div class="form-item full">
-                        <label>Mô tả</label>
-                        <input id="edit-desc">
-                    </div>
-
-                    <div class="form-item">
-                        <label>Số tiền cần đóng</label>
-                        <input id="edit-budget">
-                    </div>
-
-                    <div class="form-item">
-                        <label>Đơn vị</label>
-                        <input id="edit-unit">
-                    </div>
-
-                    <div class="form-item">
-                        <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="edit-start">
-                    </div>
-
-                    <div class="form-item">
-                        <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="edit-end">
-                    </div>
-                </div>
-            </div>
-
-            <div class="edit-footer">
-                <button class="btn-danger" id="btn-close-edit">Đóng</button>
-                <button class="btn-primary" id="btn-save-edit">Lưu</button>
-            </div>
-        </div>
-    </div>
-
         <!-- ===============================
-     MODAL THỒNG BÁO CHỈNH SỬA KHOẢN THU
+     MODAL THỒNG BÁO
 ================================ -->
     <div id="notifyModal" class="modal-overlay">
         <div class="modal">
@@ -270,66 +312,6 @@
             </div>
         </div>
     </div>
-
-    <!-- ===============================
-     MODAL THÊM KHOẢN THU
-================================ -->
-<div id="addModal" class="modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h3>Thông tin khoản thu</h3>
-            <button class="modal-close" id="close-add">×</button>
-        </div>
-
-        <div class="modal-body">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Tên khoản thu</label>
-                    <input id="add-name">
-                </div>
-
-                <div class="form-group">
-                    <label>Loại khoản thu</label>
-                    <input id="add-type">
-                </div>
-
-                <div class="form-group full">
-                    <label>Chú thích</label>
-                    <input id="add-desc">
-                </div>
-
-                <div class="form-group">
-                    <label>Số tiền cần đóng</label>
-                    <input id="add-budget">
-                </div>
-
-                <div class="form-group">
-                    <label>Đơn vị</label>
-                    <input id="add-unit">
-                </div>
-
-                <div class="form-group">
-                    <label>Ngày bắt đầu</label>
-                    <input type="date" id="add-start">
-                </div>
-
-                <div class="form-group">
-                    <label>Ngày kết thúc</label>
-                    <input type="date" id="add-end">
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn-danger" id="cancel-add">Đóng</button>
-            <button class="btn-primary" id="save-add">Lưu</button>
-        </div>
-    </div>
-</div>
-
-
-
-
 
     <script src="../js/sidebar.js"></script>
     <script src="../js/fee-manage.js"></script>
