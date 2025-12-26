@@ -83,9 +83,8 @@
 
                                 <td class="action">
                                     <span class="btn-detail" data-name="Phí quản lý - 01" data-type="Phí quản lý"
-                                    data-desc="Đóng theo hộ" 
-                                    data-budget="100000000/120000000" data-unit="100/120"
-                                    data-start="2025-01-01" data-end="2025-12-31">
+                                        data-desc="Đóng theo hộ" data-budget="100000000/120000000" data-unit="100/120"
+                                        data-start="2025-01-01" data-end="2025-12-31">
                                     </span>
                                     <span class="btn-remove"></span>
                                 </td>
@@ -169,22 +168,26 @@
                 <div class="edit-grid">
                     <div class="form-item">
                         <label>Tên khoản thu</label>
-                        <input id="edit-name">
+                        <input type="text" id="edit-name">
                     </div>
 
                     <div class="form-item">
                         <label>Loại khoản thu</label>
-                        <input id="edit-type">
+                        <select id="edit-type" class="select-styled">
+                            <option value="" disabled selected>Chọn loại...</option>
+                            <option value="1">Định kỳ</option>
+                            <option value="2">Một lần</option>
+                        </select>
                     </div>
 
                     <div class="form-item full">
-                        <label>Mô tả</label>
-                        <input id="edit-desc">
+                        <label>Chi tiết</label>
+                        <input type="text" id="edit-desc">
                     </div>
 
                     <div class="form-item">
                         <label>Số tiền cần đóng</label>
-                        <input id="edit-budget">
+                        <input type="number" id="edit-budget">
                     </div>
 
                     <div class="form-item">
@@ -215,7 +218,7 @@
         </div>
     </div>
 
-        <!-- ===============================
+    <!-- ===============================
      MODAL THỒNG BÁO CHỈNH SỬA KHOẢN THU
     ================================ -->
     <div id="notifyModal" class="modal-overlay">
@@ -249,30 +252,34 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Tên khoản thu</label>
-                        <input id="add-name">
+                        <input type="text" id="add-name">
                     </div>
 
                     <div class="form-group">
                         <label>Loại khoản thu</label>
-                        <input id="add-type">
+                        <select id="add-type" class="select-styled">
+                            <option value="" disabled selected>Chọn loại...</option>
+                            <option value="1">Định kỳ</option>
+                            <option value="2">Một lần</option>
+                        </select>
                     </div>
 
                     <div class="form-group full">
-                        <label>Chú thích</label>
-                        <input id="add-desc">
+                        <label>Chi tiết</label>
+                        <input type="text" id="add-desc">
                     </div>
 
                     <div class="form-group">
-                        <label>Số tiền cần đóng</label>
-                        <input id="add-budget">
+                        <label>Đơn giá (VND)</label>
+                        <input type="number" id="add-budget">
                     </div>
 
                     <div class="form-group">
-                        <label>Đơn vị</label>
+                        <label>Đơn vị tính</label>
                         <select id="add-unit" class="select-styled">
                             <option value="" disabled selected>Chọn đơn vị...</option>
-                            <option value="Nhân khẩu">Nhân khẩu</option>
-                            <option value="Hộ khẩu">Hộ khẩu</option>
+                            <option value="nhan_khau">Nhân khẩu</option>
+                            <option value="ho_khau">Hộ khẩu</option>
                         </select>
                     </div>
 
@@ -285,6 +292,7 @@
                         <label>Ngày kết thúc</label>
                         <input type="date" id="add-end">
                     </div>
+
                 </div>
             </div>
 

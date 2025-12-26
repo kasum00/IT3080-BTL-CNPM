@@ -103,8 +103,9 @@ CREATE TABLE HoaDon (
     MaHoaDon INT AUTO_INCREMENT PRIMARY KEY,
     MaKhoanThuTheoHo INT,
     TenHoaDon NVARCHAR(100),
-    SoTienDaNop INT,
+    DaNop BOOLEAN,
     NgayNop DATE,
+    NgayXuatHoaDon DATE,
 
     FOREIGN KEY (MaKhoanThuTheoHo) REFERENCES KhoanThuTheoHo(MaKhoanThuTheoHo)
         ON DELETE CASCADE ON UPDATE CASCADE
