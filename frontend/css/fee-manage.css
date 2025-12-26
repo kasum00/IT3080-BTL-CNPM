@@ -137,6 +137,9 @@ tbody tr {
 .btn-receipt {
     background-image: url("../assets/icons/btn-receipt.png");
 }
+.btn-invoice {
+    background-image: url("../assets/icons/btn-invoice.png");
+}
 
 .action span:hover {
     opacity: 0.7;
