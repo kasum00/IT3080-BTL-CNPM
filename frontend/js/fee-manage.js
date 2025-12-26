@@ -5,22 +5,24 @@ document.addEventListener("DOMContentLoaded", () => {
        =============================== */
     const detailModal = document.getElementById("fee-manage-modal");
     const receiptModal = document.getElementById("receipt-modal");
+    const invoiceModal = document.getElementById("invoice-modal");
+    const invoiceDetailModal = document.getElementById("invoice-detail-modal");
+    const closeInvoiceDetailBtn = document.getElementById("close-invoice-detail");
     const closeDetailBtn = document.getElementById("close-modal");
+    const closeInvoiceBtn = document.getElementById("close-modal-invoice");
     const btnCloseDetail = document.getElementById("btn-close-detail");
 
     /* ===============================
        MODAL CHỈNH SỬA
        =============================== */
-    const editModal = document.getElementById("editModal");
-    const btnOpenEdit = document.getElementById("btn-open-edit");
     const closeEditBtn = document.getElementById("close-edit");
 
     const btnSaveEdit = document.getElementById("btn-save-edit");
-    let currentRow = null; //lưu dòng đang sử
+    let currentRow = null; //lưu dòng đang sửa modal
 
 
     /* ===============================
-       ICON BÚT → MỞ MODAL CHI TIẾT
+       ICON BÚT → MỞ MODAL DANH SACH KHOAN THU CUA HO
        =============================== */
     document.querySelectorAll(".btn-detail").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -36,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* ===============================
-       ĐÓNG MODAL CHI TIẾT
+       ĐÓNG MODAL KHOAN THU CUA HO
        =============================== */
     [closeDetailBtn, btnCloseDetail].forEach(btn => {
         btn?.addEventListener("click", () => {
@@ -52,20 +54,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* ===============================
+       ICON BÚT → MỞ MODAL DANH SACH HOA ĐƠN CUA HO
+       =============================== */
+    document.querySelectorAll(".btn-invoice").forEach(btn => {
+        btn.addEventListener("click", () => {
+            currentRow = btn.closest("tr");
+
+            document.getElementById("modal-id-apt-invoice").innerText = btn.dataset.idAptInvoice || "";
+            document.getElementById("modal-id-invoice").innerText = btn.dataset.idInvoice || "";
+            document.getElementById("modal-name-invoice").innerText = btn.dataset.nameInvoice || "";
+            document.getElementById("modal-money-invoice").innerText = btn.dataset.moneyInvoice || "";
+            document.getElementById("modal-date-invoice").innerText = btn.dataset.dateInvoice || "";
+            invoiceModal.classList.add("show");
+        });
+    });
+
+    /* ===============================
+       ĐÓNG MODAL HOA DON CUA HO
+       =============================== */
+    closeInvoiceBtn.addEventListener("click",() => {
+        invoiceModal.classList.remove("show");
+    });
+
+
+    invoiceModal.addEventListener("click", e => {
+        if (e.target === invoiceModal) {
+            invoiceModal.classList.remove("show");
+        }
+    });
+
+    
+    /* ===============================
+       ICON HÓA ĐƠN → MỞ MODAL HOA DON
+       =============================== */
+    /* ===============================
        ICON HÓA ĐƠN → MỞ MODAL THANH TOÁN
        =============================== */
     document.querySelectorAll(".btn-receipt").forEach(btn => {
         btn.addEventListener("click", () => {
-            currentRow = btn.closest("tr");
 
-            document.getElementById("modal-id-apt-bill").innerText = btn.dataset.idAptBill || "";
-            document.getElementById("modal-id-fee-bill").innerText = btn.dataset.idFeeBill || "";
-            document.getElementById("modal-name1-bill").innerText = btn.dataset.name1Bill || "";
-            document.getElementById("modal-name2-bill").value = btn.dataset.name2Bill || "";
-            document.getElementById("modal-money-bill").value = btn.dataset.moneyBill || "";
-            document.getElementById("modal-date-bill").value = btn.dataset.dateBill || "";
+            if (btn.id == "btn-invoice-detail"){
+                document.getElementById("modal-id-apt-invoice-detail").innerText = btn.dataset.idAptInvoiceDetail || "";
+                document.getElementById("modal-id-fee-invoice-detail").innerText = btn.dataset.idFeeInvoiceDetail || "";
+                document.getElementById("modal-name1-invoice-detail").innerText = btn.dataset.name1InvoiceDetail || "";
+                document.getElementById("modal-name2-invoice-detail").value = btn.dataset.name2InvoiceDetail || "";
+                document.getElementById("modal-money-invoice-detail").value = btn.dataset.moneyInvoiceDetail || "";
+                document.getElementById("modal-date-invoice-detail").value = btn.dataset.dateInvoiceDetail || "";
             
-            receiptModal.classList.add("show");
+                invoiceDetailModal.classList.add("show");
+            }
+            if (btn.id == "btn-receipt"){
+                document.getElementById("modal-id-apt-bill").innerText = btn.dataset.idAptBill || "";
+                document.getElementById("modal-id-fee-bill").innerText = btn.dataset.idFeeBill || "";
+                document.getElementById("modal-name1-bill").innerText = btn.dataset.name1Bill || "";
+                document.getElementById("modal-name2-bill").value = btn.dataset.name2Bill || "";
+                document.getElementById("modal-money-bill").value = btn.dataset.moneyBill || "";
+                document.getElementById("modal-date-bill").value = btn.dataset.dateBill || "";
+                
+                receiptModal.classList.add("show");
+            }
         });
     });
     /* ===============================
@@ -121,6 +168,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /* ===============================
+       ĐÓNG MODAL HÓA Đơn
+       =============================== */
+    closeInvoiceDetailBtn.addEventListener("click", () => {
+        closeInvoiceModal(true);
+    });
+
+    invoiceDetailModal.addEventListener("click", e => {
+        if (e.target === invoiceDetailModal) {
+            closeInvoiceModal(true);
+        }
+    });
+    
+    function closeInvoiceModal(showMessage = false) {
+        invoiceDetailModal.classList.remove("show");
+    }
+
 
     /* ===============================
    MODAL THÔNG BÁO
@@ -140,4 +204,9 @@ document.addEventListener("DOMContentLoaded", () => {
             notifyModal.classList.remove("show");
         });
     });
+<<<<<<< HEAD
 })
+=======
+
+});
+>>>>>>> 51bdf234a72c3d4cf847f52c9d51eaea8b1113e2
