@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const khoanThuRoutes = require("./routes/khoanthuRoutes");
 const khoanThuHoKhauRoutes = require("./routes/khoanThuHoKhauRoutes");
 const hoaDonRoutes = require("./routes/hoaDonRoutes");
+
+app.use(cors()); // cấu hình backend để chấp nhận live server req, có thể bỏ về sau
 
 app.use(express.json());
 app.use("/api", khoanThuRoutes);
