@@ -140,5 +140,4 @@ document.addEventListener("DOMContentLoaded", () => {
             notifyModal.classList.remove("show");
         });
     });
-
-});
+})
