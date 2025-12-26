@@ -204,9 +204,5 @@ document.addEventListener("DOMContentLoaded", () => {
             notifyModal.classList.remove("show");
         });
     });
-<<<<<<< HEAD
-})
-=======
 
 });
->>>>>>> 51bdf234a72c3d4cf847f52c9d51eaea8b1113e2
