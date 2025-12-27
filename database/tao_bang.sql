@@ -90,10 +90,10 @@ CREATE TABLE KhoanThuTheoHo(
     MaHoKhau VARCHAR(10),
     SoLuong int,
     ThanhTien INT,
-
+    TrangThai VARCHAR(10), -- ĐÃ ĐÓNG, CHƯA ĐÓNG
     FOREIGN KEY (MaKhoanThu) REFERENCES KhoanThu(MaKhoanThu)
         ON DELETE CASCADE ON UPDATE CASCADE,
-
+ 
     FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
         ON DELETE CASCADE ON UPDATE CASCADE
 );

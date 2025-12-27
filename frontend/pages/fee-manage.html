@@ -80,15 +80,12 @@
                                 <td>1</td>
                                 <td>Cho thuê</td>
                                 <td class="action">
-                                    <span class="btn-detail"
-                                    data-id-apt="A1-01"
-                                    data-id-fee ="KT-01"
-                                    data-name="Phí quản lý - 01" 
-                                    data-money="1000000" 
-                                    data-status="Chưa thanh toán">
-                                    </span>Xem chi tiết</td>
-                            </tr>
+                                    <span class="btn-detail" data-id-apt="A1-01" data-id-fee="KT-01"
+                                        data-name="Phí quản lý - 01" data-money="1000000" data-status="Chưa thanh toán">
+                                    </span>Xem chi tiết
                                 </td>
+                            </tr>
+                            </td>
                             </tr>
                         </tbody>
                     </table>
@@ -98,10 +95,10 @@
 
     </div>
     <!-- ===============================
-     MODAL DANH SÁCH KHOAN THU CUA HO
+     MODAL CHI TIẾT KHOẢN THU CỦA HỘ
 ================================ -->
     <div id="fee-manage-modal" class="modal-overlay">
-        <div class="modal">
+        <div class="modal" style="max-width: 800px;">
 
             <!-- HEADER -->
             <div class="modal-header">
@@ -111,45 +108,41 @@
 
             <!-- SUB TITLE -->
             <div class="modal-sub">
-                Mã hộ:  <span id="modal-id-apt"></span>
+                Căn hộ: <span id="modal-name"></span> - Chủ hộ: <span id="modal-owner"></span>
+            </div>
+            <div class="modal-sub">
+                Mã hộ khẩu: <span id="modal-hokhau"></span>
             </div>
 
-            <!-- TABLE -->
-            <div class="modal-table-wrapper">
-                <table class="modal-table">
-                    <thead>
-                        <tr>
-                            <th>Mã khoản thu</th>
-                            <th>Tên khoản thu</th>
-                            <th>Số tiền cần thu</th>
-                            <th>Tình trạng</th>
-                            <th>Thanh toán</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span id="modal-id-fee"></span></td>
-                            <td><span id="modal-name"></span></td>
-                            <td><span id="modal-money"></span></td>
-                            <td><span id="modal-status"></span></td>
-                            <td class="action">
-                                <span class="btn-receipt"
-                                data-id-apt-bill ="A1-01"
-                                data-id-fee-bill ="KT-01"
-                                data-name1-bill="Phí quản lý - 01" 
-                                data-name2-bill="Phí quản lý - Tháng 01/2025" 
-                                data-money-bill="1000000" 
-                                data-date-bill="2025-01-15">
-                                </span>Thanh toán</td>
-                        </tr>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- BẢNG KHOẢN THU -->
+            <div class="modal-body">
+                <div class="modal-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                    <table class="modal-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th>Mã KT</th>
+                                <th>Tên khoản thu</th>
+                                <th>Loại</th>
+                                <th>Thành tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-fee-tbody">
+                            <!-- Dữ liệu sẽ được load động -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="modal-loading" style="text-align: center; padding: 20px; display: none;">Đang tải...</div>
+                <div id="modal-empty" style="text-align: center; padding: 20px; display: none;">Không có khoản thu nào
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-primary" id="btn-close-detail">Đóng</button>
             </div>
         </div>
     </div>
-<!-- ===============================
+    <!-- ===============================
      MODAL THANH TOÁN KHOẢN THU
 ================================ -->
     <div id="receipt-modal" class="modal-overlay">
@@ -251,7 +244,7 @@
         </div>
     </div>
 
-        <!-- ===============================
+    <!-- ===============================
      MODAL THỒNG BÁO CHỈNH SỬA KHOẢN THU
 ================================ -->
     <div id="notifyModal" class="modal-overlay">
@@ -274,58 +267,58 @@
     <!-- ===============================
      MODAL THÊM KHOẢN THU
 ================================ -->
-<div id="addModal" class="modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h3>Thông tin khoản thu</h3>
-            <button class="modal-close" id="close-add">×</button>
-        </div>
+    <div id="addModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông tin khoản thu</h3>
+                <button class="modal-close" id="close-add">×</button>
+            </div>
 
-        <div class="modal-body">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Tên khoản thu</label>
-                    <input id="add-name">
-                </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên khoản thu</label>
+                        <input id="add-name">
+                    </div>
 
-                <div class="form-group">
-                    <label>Loại khoản thu</label>
-                    <input id="add-type">
-                </div>
+                    <div class="form-group">
+                        <label>Loại khoản thu</label>
+                        <input id="add-type">
+                    </div>
 
-                <div class="form-group full">
-                    <label>Chú thích</label>
-                    <input id="add-desc">
-                </div>
+                    <div class="form-group full">
+                        <label>Chú thích</label>
+                        <input id="add-desc">
+                    </div>
 
-                <div class="form-group">
-                    <label>Số tiền cần đóng</label>
-                    <input id="add-budget">
-                </div>
+                    <div class="form-group">
+                        <label>Số tiền cần đóng</label>
+                        <input id="add-budget">
+                    </div>
 
-                <div class="form-group">
-                    <label>Đơn vị</label>
-                    <input id="add-unit">
-                </div>
+                    <div class="form-group">
+                        <label>Đơn vị</label>
+                        <input id="add-unit">
+                    </div>
 
-                <div class="form-group">
-                    <label>Ngày bắt đầu</label>
-                    <input type="date" id="add-start">
-                </div>
+                    <div class="form-group">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="add-start">
+                    </div>
 
-                <div class="form-group">
-                    <label>Ngày kết thúc</label>
-                    <input type="date" id="add-end">
+                    <div class="form-group">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="add-end">
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="modal-footer">
-            <button class="btn-danger" id="cancel-add">Đóng</button>
-            <button class="btn-primary" id="save-add">Lưu</button>
+            <div class="modal-footer">
+                <button class="btn-danger" id="cancel-add">Đóng</button>
+                <button class="btn-primary" id="save-add">Lưu</button>
+            </div>
         </div>
     </div>
-</div>
 
 
 

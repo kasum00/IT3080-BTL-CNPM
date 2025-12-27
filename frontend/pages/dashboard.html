@@ -1,69 +1,72 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
+
 <body>
-<div class="dashboard">
+    <div class="dashboard">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <h2>QUẢN LÝ CHUNG CƯ</h2>
-        <div class="role">Ban quản lý</div>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2>QUẢN LÝ CHUNG CƯ</h2>
+            <div class="role">Ban quản lý</div>
 
-        <div class="profile">
-            <img src="../assets/logo.png">
-            <div class="admin-name">Phú Trần</div>
-        </div>
-
-        <nav>
-            <a class="nav-home active" href="dashboard.html">Trang chủ</a>
-
-            <a href="#" class="nav-family has-arrow">Quản lý hộ gia đình</a>
-            <div class="submenu">
-                <a href="apartment.html">Căn hộ</a>
-                <a href="household.html">Hộ khẩu</a>
+            <div class="profile">
+                <img src="../assets/logo.png">
+                <div class="admin-name">Phú Trần</div>
             </div>
 
-            <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
-            <div class="submenu">
-                <a href="resident.html">Quản lý nhân khẩu</a>
-                <a href="#">Quản lý tạm trú</a>
-                <a href="#">Quản lý tạm vắng</a>
+            <nav>
+                <a class="nav-home active" href="dashboard.html">Trang chủ</a>
+
+                <a href="#" class="nav-family has-arrow">Quản lý hộ gia đình</a>
+                <div class="submenu">
+                    <a href="apartment.html">Căn hộ</a>
+                    <a href="household.html">Hộ khẩu</a>
+                </div>
+
+                <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
+                <div class="submenu">
+                    <a href="resident.html">Quản lý nhân khẩu</a>
+                    <a href="#">Quản lý tạm trú</a>
+                    <a href="#">Quản lý tạm vắng</a>
+                </div>
+
+                <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
+                <div class="submenu">
+                    <a href="fee-list.html">Danh sách khoản thu</a>
+                    <a href="fee-manage.html">Khoản thu theo hộ</a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="logout-btn">Đăng xuất</button>
+                <div class="version">phiên bản 1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content">
+            <div class="card card-building">Số tòa<br><b>3 tòa</b></div>
+            <div class="card card-people">Số lượng dân cư<br><b>60 người</b></div>
+            <div class="card card-apartment">Số căn hộ<br><b>60 căn</b></div>
+
+            <div class="card card-location">
+                Vị trí<br>
+                <b>số 1 Đại Cồ Việt, Bạch Mai, Hà Nội</b>
             </div>
 
-            <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
-            <div class="submenu">
-                <a href="#">Danh sách khoản thu</a>
-                <a href="#">Khoản thu theo hộ</a>
-            </div>
-        </nav>
+            <div class="card card-service">Dịch vụ<br><b>10 dịch vụ</b></div>
+            <div class="card card-money">Số lượng khoản thu</div>
+        </main>
 
-        <div class="sidebar-footer">
-            <button id="btn-logout" class="logout-btn">Đăng xuất</button>
-            <div class="version">phiên bản 1.0.0</div>
-        </div>
-    </aside>
-
-    <!-- CONTENT -->
-    <main class="content">
-        <div class="card card-building">Số tòa<br><b>3 tòa</b></div>
-        <div class="card card-people">Số lượng dân cư<br><b>60 người</b></div>
-        <div class="card card-apartment">Số căn hộ<br><b>60 căn</b></div>
-
-        <div class="card card-location">
-            Vị trí<br>
-            <b>số 1 Đại Cồ Việt, Bạch Mai, Hà Nội</b>
-        </div>
-
-        <div class="card card-service">Dịch vụ<br><b>10 dịch vụ</b></div>
-        <div class="card card-money">Số lượng khoản thu</div>
-    </main>
-
-</div>
-<script src="../js/sidebar.js"></script>
+    </div>
+    <script src="../js/sidebar.js"></script>
 </body>
+
 </html>
