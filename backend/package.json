@@ -1,0 +1,22 @@
+{
+  "name": "it3080-btl-cnpm-backend",
+  "version": "1.0.0",
+  "description": "Backend for IT3080-BTL-CNPM project",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.16.0",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "type": "commonjs"
+}
