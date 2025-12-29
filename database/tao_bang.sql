@@ -1,3 +1,4 @@
+
 -- tạo database
 CREATE DATABASE IF NOT EXISTS bluemoon
 CHARACTER SET utf8mb4
@@ -9,19 +10,19 @@ use bluemoon;
 create table CanHo(
 	MaCanHo INT auto_increment primary key,
     MaHoKhau VARCHAR(10) unique null,
-    TenCanHo nvarchar(100),
-    Tang nvarchar(50),
+    TenCanHo varchar(100),
+    Tang varchar(50),
     DienTich float,
-    TrangThai nvarchar(20) default 'trong', -- trong/ chu_o/ cho_thue
-    MoTa NVARCHAR(500)
+    TrangThai varchar(20) default 'trong', -- trong/ chu_o/ cho_thue
+    MoTa VARCHAR(500)
 );
 
 -- hộ khẩu
 create table HoKhau(
 	MaHoKhau varchar(10) primary key, -- hk001, hk002,..
     MaCanHo INT UNIQUE,
-    DiaChiThuongTru nvarchar(200),
-    NoiCap nvarchar(200),
+    DiaChiThuongTru varchar(200),
+    NoiCap varchar(200),
 	NgayCap DATE,
     FOREIGN KEY(MaCanHo) references CanHo(MaCanHo) on delete cascade on update cascade
 );
@@ -31,18 +32,18 @@ ADD CONSTRAINT fk_canho_hokhau
 FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
 ON DELETE SET NULL ON UPDATE CASCADE;
 
--- nhân khẩu--
+-- nhân khẩu
 create table NhanKhau(
 	MaNhanKhau INT auto_increment primary key,
     MaHoKhau varchar(10),
-    HoTen nvarchar(100),
+    HoTen varchar(100),
     CanCuocCongDan varchar(12) UNIQUE,
     NgaySinh DATE,
-    NoiSinh nvarchar(100),
-    DanToc nvarchar(20),
-    NgheNghiep nvarchar(50),
-    QuanHe nvarchar(30), -- chu ho/vo/con/nguoi thue
-    GhiChu nvarchar(200),
+    NoiSinh varchar(100),
+    DanToc varchar(20),
+    NgheNghiep varchar(50),
+    QuanHe varchar(30), -- chu ho/vo/con/nguoi thue
+    GhiChu varchar(200),
     TrangThai INT default 1,
     FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
         ON DELETE CASCADE ON UPDATE CASCADE
@@ -52,8 +53,8 @@ create table NhanKhau(
 create table TamTru(
 	MaTamTru INT auto_increment primary key,
     MaNhanKhau int,
-    DiaChiThuongTru nvarchar(200),
-    DiaChiTamTru nvarchar(200),
+    DiaChiThuongTru varchar(200),
+    DiaChiTamTru varchar(200),
     CanCuocCongDan varchar(20),
     
     FOREIGN KEY (MaNhanKhau) REFERENCES NhanKhau(MaNhanKhau)
@@ -65,7 +66,7 @@ create table TamVang(
 	MaTamVang int auto_increment primary key,
     MaNhanKhau int,
     ThoiHan Date,
-    LyDo nvarchar(200),
+    LyDo varchar(200),
     FOREIGN KEY (MaNhanKhau) REFERENCES NhanKhau(MaNhanKhau)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -73,15 +74,14 @@ create table TamVang(
 -- Khoản thu
 create table KhoanThu(
 	MaKhoanThu int auto_increment primary key,
-    TenKhoanThu nvarchar(100),
+    TenKhoanThu varchar(100),
     LoaiKhoanThu INT, -- 1: định kỳ, 2: một lần
     ThoiGianBatDau DATE,
     ThoiGianKetThuc DATE,
-    DonViTinh nvarchar(50), -- nhan_khau, ho_khau
+    DonViTinh varchar(50), -- nhan_khau, ho_khau
     DonGia INT,
-    ChiTiet NVARCHAR(500),
-    GhiChu NVARCHAR(200)
-    CONSTRAINT chk_thoigian CHECK (ThoiGianKetThuc > ThoiGianBatDau)
+    ChiTiet VARCHAR(500),
+    GhiChu VARCHAR(200)
 );
 
 -- Khoản thu theo hộ
@@ -91,10 +91,10 @@ CREATE TABLE KhoanThuTheoHo(
     MaHoKhau VARCHAR(10),
     SoLuong int,
     ThanhTien INT,
-
+    TrangThai VARCHAR(10), -- ĐÃ ĐÓNG, CHƯA ĐÓNG
     FOREIGN KEY (MaKhoanThu) REFERENCES KhoanThu(MaKhoanThu)
         ON DELETE CASCADE ON UPDATE CASCADE,
-
+ 
     FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -103,7 +103,7 @@ CREATE TABLE KhoanThuTheoHo(
 CREATE TABLE HoaDon (
     MaHoaDon INT AUTO_INCREMENT PRIMARY KEY,
     MaKhoanThuTheoHo INT,
-    TenHoaDon NVARCHAR(100),    
+    TenHoaDon VARCHAR(100),
     DaNop BOOLEAN,
     NgayNop DATE,
     NgayXuatHoaDon DATE,
@@ -118,7 +118,7 @@ CREATE TABLE TaiKhoan (
     MaTaiKhoan INT AUTO_INCREMENT PRIMARY KEY,
     Username VARCHAR(50) UNIQUE NOT NULL,
     Password VARCHAR(255) NOT NULL,   -- bcrypt hash
-    VaiTro NVARCHAR(20) NOT NULL,      -- admin | ban_quan_ly | cu_dan
+    VaiTro VARCHAR(20) NOT NULL,      -- admin | ban_quan_ly | cu_dan
     TrangThai INT DEFAULT 1,           -- 1: active, 0: khóa
     LanDangNhapCuoi DATETIME NULL,
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -144,4 +144,3 @@ WHERE nk.QuanHe = 'chu ho'
   AND tk.VaiTro = 'cu_dan';
 
 SET SQL_SAFE_UPDATES = 1;
-

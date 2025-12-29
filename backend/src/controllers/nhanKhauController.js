@@ -27,7 +27,7 @@ const NhanKhau = sequelize.define(
     DanToc: DataTypes.STRING(20),
     NgheNghiep: DataTypes.STRING(50),
     QuanHe: {
-      type: DataTypes.ENUM("chu_ho", "vo", "con", "nguoi_thue"),
+      type: DataTypes.ENUM("chu ho", "vo", "con", "nguoi thue"),
       allowNull: false,
     },
     GhiChu: DataTypes.STRING(200),
