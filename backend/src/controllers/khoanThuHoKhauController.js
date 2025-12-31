@@ -4,11 +4,6 @@ const sequelize = require("../config/db");
 const KhoanThuHoKhau = sequelize.define(
   "KhoanThuHoKhau",
   {
-    MaKhoanThuTheoHo: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     MaKhoanThu: { type: DataTypes.INTEGER, allowNull: false },
     MaHoKhau: { type: DataTypes.STRING(10), allowNull: false },
     SoLuong: { type: DataTypes.INTEGER },

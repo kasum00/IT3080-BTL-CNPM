@@ -85,7 +85,7 @@ create table KhoanThu(
 
 -- Khoản thu theo hộ
 CREATE TABLE KhoanThuTheoHo(
-    MaKhoanThuTheoHo INT AUTO_INCREMENT PRIMARY KEY,
+    -- Bỏ mã khoản thu theo hộ, dùng mã hộ khẩu
     MaKhoanThu INT,
     MaHoKhau VARCHAR(10),
     SoLuong int,
