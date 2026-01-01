@@ -4,15 +4,22 @@ const sequelize = require("../config/db");
 const HoaDon = sequelize.define(
   "HoaDon",
   {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    ma_hoa_don: { type: DataTypes.STRING(30), allowNull: false, unique: true },
-    id_khoan_thu_ho_khau: { type: DataTypes.INTEGER, allowNull: false },
-    so_tien_da_nop: { type: DataTypes.INTEGER, defaultValue: 0 },
-    ngay_nop: { type: DataTypes.DATEONLY, allowNull: true },
-    da_nop: { type: DataTypes.BOOLEAN, defaultValue: false },
+    MaHoaDon: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    MaHoKhau: { type: DataTypes.STRING(10), allowNull: false },
+    MaKhoanThuTheoHo: { type: DataTypes.INTEGER, allowNull: true },
+    TenHoaDon: { type: DataTypes.STRING(100), allowNull: true },
+    TongSoTien: { type: DataTypes.INTEGER, defaultValue: 0 },
+    SoTienDaNop: { type: DataTypes.INTEGER, defaultValue: 0 },
+    DaNop: { type: DataTypes.BOOLEAN, defaultValue: false },
+    NgayNop: { type: DataTypes.DATEONLY, allowNull: true },
+    NgayXuatHoaDon: { type: DataTypes.DATEONLY, allowNull: true },
   },
   {
-    tableName: "hoa_don",
+    tableName: "HoaDon",
     timestamps: false,
   }
 );
@@ -20,13 +27,33 @@ const HoaDon = sequelize.define(
 const KhoanThuHoKhau = sequelize.define(
   "KhoanThuHoKhau",
   {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    id_khoan_thu: { type: DataTypes.INTEGER },
-    id_ho_khau: { type: DataTypes.INTEGER },
-    so_tien: { type: DataTypes.INTEGER },
+    MaKhoanThuTheoHo: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    MaKhoanThu: { type: DataTypes.INTEGER },
+    MaHoKhau: { type: DataTypes.STRING(10) },
+    SoLuong: { type: DataTypes.INTEGER, defaultValue: 0 },
+    ThanhTien: { type: DataTypes.INTEGER, defaultValue: 0 },
+    TrangThai: { type: DataTypes.STRING(20), defaultValue: "Chưa đóng" },
   },
   {
-    tableName: "khoan_thu_ho_khau",
+    tableName: "KhoanThuTheoHo",
+    timestamps: false,
+  }
+);
+
+const TongTienHoKhau = sequelize.define(
+  "TongTienHoKhau",
+  {
+    MaHoKhau: { type: DataTypes.STRING(10), primaryKey: true },
+    TongTien: { type: DataTypes.INTEGER, defaultValue: 0 },
+    TongDaNop: { type: DataTypes.INTEGER, defaultValue: 0 },
+    TongConThieu: { type: DataTypes.INTEGER, defaultValue: 0 },
+  },
+  {
+    tableName: "TongTienHoKhau",
     timestamps: false,
   }
 );
@@ -34,69 +61,72 @@ const KhoanThuHoKhau = sequelize.define(
 /**
  * POST /api/hoa-don
  * Body: {
- *   ma_hoa_don: "HD001",
- *   id_khoan_thu_ho_khau: 1,
- *   so_tien_da_nop: 0 (optional, default = 0),
- *   ngay_nop: null (optional)
+ *   MaHoKhau: "HK001",
+ *   MaKhoanThuTheoHo: 1 (optional - nếu hóa đơn cho 1 khoản thu cụ thể),
+ *   TenHoaDon: "Hóa đơn tháng 1/2026"
  * }
- *
  */
 const createHoaDon = async (req, res) => {
   try {
-    const { ma_hoa_don, id_khoan_thu_ho_khau, so_tien_da_nop, ngay_nop } =
-      req.body;
+    const { MaHoKhau, MaKhoanThuTheoHo, TenHoaDon } = req.body;
 
-    // Validate input
-    if (!ma_hoa_don || !id_khoan_thu_ho_khau) {
+    if (!MaHoKhau) {
       return res.status(400).json({
-        error:
-          "Thiếu thông tin: ma_hoa_don và id_khoan_thu_ho_khau là bắt buộc",
+        error: "Thiếu thông tin: MaHoKhau là bắt buộc",
       });
     }
 
-    const khoanThuHoKhau = await KhoanThuHoKhau.findByPk(id_khoan_thu_ho_khau);
-    if (!khoanThuHoKhau) {
-      return res.status(404).json({
-        error: "Không tìm thấy khoản thu hộ khẩu",
-      });
-    }
+    let tongSoTien = 0;
 
-    const existing = await HoaDon.findOne({ where: { ma_hoa_don } });
-    if (existing) {
-      return res.status(400).json({
-        error: "Mã hóa đơn đã tồn tại",
-      });
+    // Nếu có MaKhoanThuTheoHo, lấy ThanhTien của khoản thu đó
+    if (MaKhoanThuTheoHo) {
+      const khoanThu = await KhoanThuHoKhau.findByPk(MaKhoanThuTheoHo);
+      if (!khoanThu) {
+        return res.status(404).json({
+          error: "Không tìm thấy khoản thu theo hộ",
+        });
+      }
+      tongSoTien = khoanThu.ThanhTien;
+    } else {
+      // Lấy tổng tiền từ TongTienHoKhau
+      const tongTien = await TongTienHoKhau.findByPk(MaHoKhau);
+      if (tongTien) {
+        tongSoTien = tongTien.TongConThieu;
+      }
     }
 
     const newHoaDon = await HoaDon.create({
-      ma_hoa_don,
-      id_khoan_thu_ho_khau,
-      so_tien_da_nop: so_tien_da_nop || 0,
-      ngay_nop: ngay_nop || null,
+      MaHoKhau,
+      MaKhoanThuTheoHo: MaKhoanThuTheoHo || null,
+      TenHoaDon: TenHoaDon || `Hóa đơn - ${MaHoKhau}`,
+      TongSoTien: tongSoTien,
+      SoTienDaNop: 0,
+      DaNop: false,
+      NgayXuatHoaDon: new Date(),
     });
 
     const result = await sequelize.query(
       `
       SELECT 
-        hd.id,
-        hd.ma_hoa_don,
-        hd.id_khoan_thu_ho_khau,
-        hd.so_tien_da_nop,
-        hd.ngay_nop,
-        hd.da_nop,
-        kthk.so_tien AS so_tien_can_nop,
-        (kthk.so_tien - IFNULL(hd.so_tien_da_nop, 0)) AS con_thieu,
-        kt.ma_khoan_thu,
-        kt.ten_khoan_thu,
-        hk.ma_ho_khau
-      FROM hoa_don hd
-      JOIN khoan_thu_ho_khau kthk ON hd.id_khoan_thu_ho_khau = kthk.id
-      JOIN khoan_thu kt ON kthk.id_khoan_thu = kt.id
-      JOIN ho_khau hk ON kthk.id_ho_khau = hk.id
-      WHERE hd.id = :id
+        hd.MaHoaDon,
+        hd.MaHoKhau,
+        hd.MaKhoanThuTheoHo,
+        hd.TenHoaDon,
+        hd.TongSoTien,
+        hd.SoTienDaNop,
+        (hd.TongSoTien - hd.SoTienDaNop) AS ConThieu,
+        hd.DaNop,
+        hd.NgayNop,
+        hd.NgayXuatHoaDon,
+        tthk.TongTien AS TongTienHoKhau,
+        tthk.TongDaNop AS TongDaNopHoKhau,
+        tthk.TongConThieu AS TongConThieuHoKhau
+      FROM HoaDon hd
+      LEFT JOIN TongTienHoKhau tthk ON hd.MaHoKhau = tthk.MaHoKhau
+      WHERE hd.MaHoaDon = :id
       `,
       {
-        replacements: { id: newHoaDon.id },
+        replacements: { id: newHoaDon.MaHoaDon },
         type: sequelize.QueryTypes.SELECT,
       }
     );
@@ -113,9 +143,9 @@ const createHoaDon = async (req, res) => {
 const thanhToanHoaDon = async (req, res) => {
   try {
     const { id } = req.params;
-    const { so_tien_nop, ngay_nop } = req.body;
+    const { SoTienNop, NgayNop } = req.body;
 
-    if (!so_tien_nop || so_tien_nop <= 0) {
+    if (!SoTienNop || SoTienNop <= 0) {
       return res.status(400).json({
         error: "Số tiền nộp phải lớn hơn 0",
       });
@@ -128,62 +158,71 @@ const thanhToanHoaDon = async (req, res) => {
       });
     }
 
-    const khoanThuHoKhau = await KhoanThuHoKhau.findByPk(
-      hoaDon.id_khoan_thu_ho_khau
-    );
-    const soTienCanNop = khoanThuHoKhau.so_tien;
-    const soTienDaNop = (hoaDon.so_tien_da_nop || 0) + so_tien_nop;
+    const soTienCanNop = hoaDon.TongSoTien;
+    const soTienDaNop = (hoaDon.SoTienDaNop || 0) + SoTienNop;
 
-    // không nộp quá
+    // Không nộp quá
     if (soTienDaNop > soTienCanNop) {
       return res.status(400).json({
         error: `Số tiền nộp vượt quá số tiền cần thanh toán (còn thiếu: ${
-          soTienCanNop - (hoaDon.so_tien_da_nop || 0)
+          soTienCanNop - (hoaDon.SoTienDaNop || 0)
         })`,
-        so_tien_can_nop: soTienCanNop,
-        so_tien_da_nop_truoc: hoaDon.so_tien_da_nop || 0,
-        con_thieu: soTienCanNop - (hoaDon.so_tien_da_nop || 0),
+        TongSoTien: soTienCanNop,
+        SoTienDaNopTruoc: hoaDon.SoTienDaNop || 0,
+        ConThieu: soTienCanNop - (hoaDon.SoTienDaNop || 0),
       });
     }
 
     const daNopDu = soTienDaNop >= soTienCanNop;
 
-    // update da_nop
+    // Update hóa đơn
     await HoaDon.update(
       {
-        so_tien_da_nop: soTienDaNop,
-        ngay_nop: ngay_nop || new Date(),
-        da_nop: daNopDu,
+        SoTienDaNop: soTienDaNop,
+        NgayNop: NgayNop || new Date(),
+        DaNop: daNopDu,
       },
       {
-        where: { id },
+        where: { MaHoaDon: id },
       }
     );
+
+    // Cập nhật TongTienHoKhau
+    await TongTienHoKhau.increment(
+      { TongDaNop: SoTienNop, TongConThieu: -SoTienNop },
+      { where: { MaHoKhau: hoaDon.MaHoKhau } }
+    );
+
+    // Nếu hóa đơn liên kết với khoản thu cụ thể, cập nhật trạng thái
+    if (hoaDon.MaKhoanThuTheoHo && daNopDu) {
+      await KhoanThuHoKhau.update(
+        { TrangThai: "Đã đóng" },
+        { where: { MaKhoanThuTheoHo: hoaDon.MaKhoanThuTheoHo } }
+      );
+    }
 
     const result = await sequelize.query(
       `
       SELECT 
-        hd.id,
-        hd.ma_hoa_don,
-        hd.id_khoan_thu_ho_khau,
-        hd.so_tien_da_nop,
-        hd.ngay_nop,
-        hd.da_nop,
-        kthk.so_tien AS so_tien_can_nop,
-        (kthk.so_tien - hd.so_tien_da_nop) AS con_thieu,
+        hd.MaHoaDon,
+        hd.MaHoKhau,
+        hd.TenHoaDon,
+        hd.TongSoTien,
+        hd.SoTienDaNop,
+        (hd.TongSoTien - hd.SoTienDaNop) AS ConThieu,
+        hd.DaNop,
+        hd.NgayNop,
         CASE 
-          WHEN hd.so_tien_da_nop >= kthk.so_tien THEN 'da_thanh_toan'
-          WHEN hd.so_tien_da_nop > 0 THEN 'thanh_toan_mot_phan'
+          WHEN hd.SoTienDaNop >= hd.TongSoTien THEN 'da_thanh_toan'
+          WHEN hd.SoTienDaNop > 0 THEN 'thanh_toan_mot_phan'
           ELSE 'chua_thanh_toan'
-        END AS trang_thai,
-        kt.ma_khoan_thu,
-        kt.ten_khoan_thu,
-        hk.ma_ho_khau
-      FROM hoa_don hd
-      JOIN khoan_thu_ho_khau kthk ON hd.id_khoan_thu_ho_khau = kthk.id
-      JOIN khoan_thu kt ON kthk.id_khoan_thu = kt.id
-      JOIN ho_khau hk ON kthk.id_ho_khau = hk.id
-      WHERE hd.id = :id
+        END AS TrangThai,
+        tthk.TongTien AS TongTienHoKhau,
+        tthk.TongDaNop AS TongDaNopHoKhau,
+        tthk.TongConThieu AS TongConThieuHoKhau
+      FROM HoaDon hd
+      LEFT JOIN TongTienHoKhau tthk ON hd.MaHoKhau = tthk.MaHoKhau
+      WHERE hd.MaHoaDon = :id
       `,
       {
         replacements: { id },
@@ -207,31 +246,35 @@ const getHoaDon = async (req, res) => {
     const result = await sequelize.query(
       `
       SELECT 
-        hd.id,
-        hd.ma_hoa_don,
-        hd.id_khoan_thu_ho_khau,
-        hd.so_tien_da_nop,
-        hd.ngay_nop,
-        hd.da_nop,
-        kthk.so_tien AS so_tien_can_nop,
-        (kthk.so_tien - IFNULL(hd.so_tien_da_nop, 0)) AS con_thieu,
+        hd.MaHoaDon,
+        hd.MaHoKhau,
+        hd.MaKhoanThuTheoHo,
+        hd.TenHoaDon,
+        hd.TongSoTien,
+        hd.SoTienDaNop,
+        (hd.TongSoTien - IFNULL(hd.SoTienDaNop, 0)) AS ConThieu,
+        hd.DaNop,
+        hd.NgayNop,
+        hd.NgayXuatHoaDon,
         CASE 
-          WHEN hd.so_tien_da_nop >= kthk.so_tien THEN 'da_thanh_toan'
-          WHEN hd.so_tien_da_nop > 0 THEN 'thanh_toan_mot_phan'
+          WHEN hd.SoTienDaNop >= hd.TongSoTien THEN 'da_thanh_toan'
+          WHEN hd.SoTienDaNop > 0 THEN 'thanh_toan_mot_phan'
           ELSE 'chua_thanh_toan'
-        END AS trang_thai,
-        kt.ma_khoan_thu,
-        kt.ten_khoan_thu,
-        kt.loai_khoan_thu,
-        hk.ma_ho_khau,
-        ch.ma_can_ho,
-        ch.ten_can_ho
-      FROM hoa_don hd
-      JOIN khoan_thu_ho_khau kthk ON hd.id_khoan_thu_ho_khau = kthk.id
-      JOIN khoan_thu kt ON kthk.id_khoan_thu = kt.id
-      JOIN ho_khau hk ON kthk.id_ho_khau = hk.id
-      LEFT JOIN can_ho ch ON hk.id_can_ho = ch.id
-      WHERE hd.id = :id
+        END AS TrangThai,
+        kt.TenKhoanThu,
+        kt.LoaiKhoanThu,
+        tthk.TongTien AS TongTienHoKhau,
+        tthk.TongDaNop AS TongDaNopHoKhau,
+        tthk.TongConThieu AS TongConThieuHoKhau,
+        ch.MaCanHo,
+        ch.TenCanHo
+      FROM HoaDon hd
+      LEFT JOIN KhoanThuTheoHo kthh ON hd.MaKhoanThuTheoHo = kthh.MaKhoanThuTheoHo
+      LEFT JOIN KhoanThu kt ON kthh.MaKhoanThu = kt.MaKhoanThu
+      LEFT JOIN TongTienHoKhau tthk ON hd.MaHoKhau = tthk.MaHoKhau
+      LEFT JOIN HoKhau hk ON hd.MaHoKhau = hk.MaHoKhau
+      LEFT JOIN CanHo ch ON hk.MaCanHo = ch.MaCanHo
+      WHERE hd.MaHoaDon = :id
       `,
       {
         replacements: { id },
@@ -265,27 +308,35 @@ const deleteHoaDon = async (req, res) => {
       });
     }
 
-    if (hoaDon.da_nop) {
+    if (hoaDon.DaNop) {
       return res.status(403).json({
         error: "Không thể xóa hóa đơn đã thanh toán đủ",
         data: {
-          ma_hoa_don: hoaDon.ma_hoa_don,
-          da_nop: true,
-          so_tien_da_nop: hoaDon.so_tien_da_nop,
-          ngay_nop: hoaDon.ngay_nop,
+          MaHoaDon: hoaDon.MaHoaDon,
+          DaNop: true,
+          SoTienDaNop: hoaDon.SoTienDaNop,
+          NgayNop: hoaDon.NgayNop,
         },
         ghi_chu:
           "Chỉ có thể xóa hóa đơn chưa thanh toán hoặc thanh toán một phần",
       });
     }
 
-    await HoaDon.destroy({ where: { id } });
+    // Hoàn trả lại số tiền đã nộp vào TongTienHoKhau
+    if (hoaDon.SoTienDaNop > 0) {
+      await TongTienHoKhau.increment(
+        { TongDaNop: -hoaDon.SoTienDaNop, TongConThieu: hoaDon.SoTienDaNop },
+        { where: { MaHoKhau: hoaDon.MaHoKhau } }
+      );
+    }
+
+    await HoaDon.destroy({ where: { MaHoaDon: id } });
 
     res.json({
       message: "Xóa hóa đơn thành công",
       data: {
-        ma_hoa_don: hoaDon.ma_hoa_don,
-        so_tien_da_nop: hoaDon.so_tien_da_nop,
+        MaHoaDon: hoaDon.MaHoaDon,
+        SoTienDaNop: hoaDon.SoTienDaNop,
       },
     });
   } catch (error) {
@@ -295,8 +346,7 @@ const deleteHoaDon = async (req, res) => {
 
 /**
  * PUT /api/hoa-don/:id
- * Body: { ma_hoa_don, so_tien_da_nop, ngay_nop, ... }
- 
+ * Body: { TenHoaDon, ... }
  */
 const updateHoaDon = async (req, res) => {
   try {
@@ -309,19 +359,28 @@ const updateHoaDon = async (req, res) => {
       });
     }
 
-    if (hoaDon.da_nop) {
+    if (hoaDon.DaNop) {
       return res.status(403).json({
         error: "Không thể sửa hóa đơn đã thanh toán đủ",
         data: {
-          ma_hoa_don: hoaDon.ma_hoa_don,
-          da_nop: true,
-          so_tien_da_nop: hoaDon.so_tien_da_nop,
+          MaHoaDon: hoaDon.MaHoaDon,
+          DaNop: true,
+          SoTienDaNop: hoaDon.SoTienDaNop,
         },
       });
     }
 
-    await HoaDon.update(req.body, {
-      where: { id },
+    // Chỉ cho phép cập nhật một số trường
+    const allowedFields = ["TenHoaDon"];
+    const updateData = {};
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    }
+
+    await HoaDon.update(updateData, {
+      where: { MaHoaDon: id },
     });
 
     const updated = await HoaDon.findByPk(id);
@@ -335,10 +394,65 @@ const updateHoaDon = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/hoa-don/ho-khau/:maHoKhau
+ * Lấy tất cả hóa đơn của một hộ khẩu
+ */
+const getHoaDonByHoKhau = async (req, res) => {
+  try {
+    const { maHoKhau } = req.params;
+
+    const result = await sequelize.query(
+      `
+      SELECT 
+        hd.MaHoaDon,
+        hd.MaHoKhau,
+        hd.TenHoaDon,
+        hd.TongSoTien,
+        hd.SoTienDaNop,
+        (hd.TongSoTien - IFNULL(hd.SoTienDaNop, 0)) AS ConThieu,
+        hd.DaNop,
+        hd.NgayNop,
+        hd.NgayXuatHoaDon,
+        CASE 
+          WHEN hd.SoTienDaNop >= hd.TongSoTien THEN 'da_thanh_toan'
+          WHEN hd.SoTienDaNop > 0 THEN 'thanh_toan_mot_phan'
+          ELSE 'chua_thanh_toan'
+        END AS TrangThai
+      FROM HoaDon hd
+      WHERE hd.MaHoKhau = :maHoKhau
+      ORDER BY hd.NgayXuatHoaDon DESC
+      `,
+      {
+        replacements: { maHoKhau },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    // Lấy thông tin tổng tiền hộ khẩu
+    const tongTien = await TongTienHoKhau.findByPk(maHoKhau);
+
+    res.json({
+      message: "Lấy danh sách hóa đơn thành công",
+      data: {
+        hoaDons: result,
+        tongTienHoKhau: tongTien || {
+          TongTien: 0,
+          TongDaNop: 0,
+          TongConThieu: 0,
+        },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createHoaDon,
   thanhToanHoaDon,
   getHoaDon,
   updateHoaDon,
   deleteHoaDon,
+  getHoaDonByHoKhau,
 };

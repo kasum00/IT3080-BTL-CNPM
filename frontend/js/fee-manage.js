@@ -19,11 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const tbody = document.getElementById("modal-fee-tbody");
         const loading = document.getElementById("modal-loading");
         const empty = document.getElementById("modal-empty");
+        const summary = document.getElementById("modal-summary");
 
         // Reset và hiển thị loading
         tbody.innerHTML = "";
         loading.style.display = "block";
         empty.style.display = "none";
+        summary.style.display = "none";
 
         detailModal.classList.add("show");
 
@@ -37,7 +39,18 @@ document.addEventListener("DOMContentLoaded", () => {
             loading.style.display = "none";
 
             if (data.success && data.data && data.data.length > 0) {
+              let tongTien = 0;
+              let daDong = 0;
+
               data.data.forEach((fee) => {
+                const thanhTien = fee.ThanhTien || 0;
+                tongTien += thanhTien;
+
+                // Kiểm tra trạng thái đã đóng
+                if (fee.TrangThai === "Đã đóng" || fee.TrangThai === "da_thu") {
+                  daDong += thanhTien;
+                }
+
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                   <td>${fee.MaKhoanThu}</td>
@@ -46,16 +59,30 @@ document.addEventListener("DOMContentLoaded", () => {
                   <td>${
                     fee.ThanhTien
                       ? fee.ThanhTien.toLocaleString("vi-VN") + " đ"
-                      : ""
+                      : "0 đ"
                   }</td>
                   <td><span class="status-${
-                    fee.TrangThai === "da_thu" ? "paid" : "unpaid"
+                    fee.TrangThai === "Đã đóng" || fee.TrangThai === "da_thu"
+                      ? "paid"
+                      : "unpaid"
                   }">${
-                  fee.TrangThai === "da_thu" ? "Đã thu" : "Chưa thu"
+                  fee.TrangThai === "Đã đóng" || fee.TrangThai === "da_thu"
+                    ? "Đã đóng"
+                    : "Chưa đóng"
                 }</span></td>
                 `;
                 tbody.appendChild(tr);
               });
+
+              // Hiển thị tổng kết
+              const conThieu = tongTien - daDong;
+              document.getElementById("modal-tong-tien").textContent =
+                tongTien.toLocaleString("vi-VN") + " đ";
+              document.getElementById("modal-da-dong").textContent =
+                daDong.toLocaleString("vi-VN") + " đ";
+              document.getElementById("modal-con-thieu").textContent =
+                conThieu.toLocaleString("vi-VN") + " đ";
+              summary.style.display = "block";
             } else {
               empty.style.display = "block";
             }

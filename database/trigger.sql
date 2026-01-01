@@ -1,5 +1,88 @@
 DELIMITER $$
 
+-- ================================================================
+-- TRIGGER TÍNH THÀNH TIỀN KHI THÊM KHOẢN THU THEO HỘ
+-- Nếu DonViTinh = 'nhan_khau' thì ThanhTien = SoNhanKhau * DonGia
+-- Nếu DonViTinh = 'ho_khau' thì ThanhTien = 1 * DonGia
+-- ================================================================
+CREATE TRIGGER trg_tinh_thanh_tien_insert
+BEFORE INSERT ON KhoanThuTheoHo
+FOR EACH ROW
+BEGIN
+    DECLARE v_so_nhan_khau INT DEFAULT 0;
+    DECLARE v_don_gia INT DEFAULT 0;
+    DECLARE v_don_vi_tinh NVARCHAR(50);
+    
+    -- Đếm số nhân khẩu đang hoạt động trong hộ
+    SELECT COUNT(*) INTO v_so_nhan_khau
+    FROM NhanKhau
+    WHERE MaHoKhau = NEW.MaHoKhau AND TrangThai = 1;
+    
+    -- Lấy đơn giá và đơn vị tính từ khoản thu
+    SELECT IFNULL(DonGia, 0), IFNULL(DonViTinh, 'nhan_khau') 
+    INTO v_don_gia, v_don_vi_tinh
+    FROM KhoanThu
+    WHERE MaKhoanThu = NEW.MaKhoanThu;
+    
+    -- Gán giá trị số lượng
+    SET NEW.SoLuong = v_so_nhan_khau;
+    
+    -- Tính thành tiền dựa vào đơn vị tính
+    IF v_don_vi_tinh = 'ho_khau' THEN
+        SET NEW.ThanhTien = v_don_gia;
+    ELSE
+        SET NEW.ThanhTien = v_so_nhan_khau * v_don_gia;
+    END IF;
+END$$
+
+-- ================================================================
+-- TRIGGER CẬP NHẬT TỔNG TIỀN HỘ KHẨU KHI THÊM KHOẢN THU THEO HỘ
+-- ================================================================
+CREATE TRIGGER trg_cap_nhat_tong_tien_insert
+AFTER INSERT ON KhoanThuTheoHo
+FOR EACH ROW
+BEGIN
+    -- Kiểm tra nếu chưa có record thì tạo mới
+    INSERT INTO TongTienHoKhau (MaHoKhau, TongTien, TongDaNop, TongConThieu)
+    VALUES (NEW.MaHoKhau, NEW.ThanhTien, 0, NEW.ThanhTien)
+    ON DUPLICATE KEY UPDATE
+        TongTien = TongTien + NEW.ThanhTien,
+        TongConThieu = TongConThieu + NEW.ThanhTien;
+END$$
+
+-- ================================================================
+-- TRIGGER CẬP NHẬT TỔNG TIỀN KHI XÓA KHOẢN THU THEO HỘ
+-- ================================================================
+CREATE TRIGGER trg_cap_nhat_tong_tien_delete
+AFTER DELETE ON KhoanThuTheoHo
+FOR EACH ROW
+BEGIN
+    UPDATE TongTienHoKhau
+    SET TongTien = TongTien - OLD.ThanhTien,
+        TongConThieu = TongConThieu - OLD.ThanhTien
+    WHERE MaHoKhau = OLD.MaHoKhau;
+END$$
+
+-- ================================================================
+-- TRIGGER CẬP NHẬT TỔNG TIỀN KHI SỬA KHOẢN THU THEO HỘ
+-- ================================================================
+CREATE TRIGGER trg_cap_nhat_tong_tien_update
+AFTER UPDATE ON KhoanThuTheoHo
+FOR EACH ROW
+BEGIN
+    DECLARE v_chenh_lech INT;
+    SET v_chenh_lech = NEW.ThanhTien - OLD.ThanhTien;
+    
+    UPDATE TongTienHoKhau
+    SET TongTien = TongTien + v_chenh_lech,
+        TongConThieu = TongConThieu + v_chenh_lech
+    WHERE MaHoKhau = NEW.MaHoKhau;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
 -- Thêm CHỦ HỘ
 CREATE TRIGGER trg_add_chu_ho
 AFTER INSERT ON NhanKhau

@@ -135,6 +135,26 @@
                 <div id="modal-loading" style="text-align: center; padding: 20px; display: none;">Đang tải...</div>
                 <div id="modal-empty" style="text-align: center; padding: 20px; display: none;">Không có khoản thu nào
                 </div>
+
+                <!-- TỔNG KẾT KHOẢN THU -->
+                <div id="modal-summary"
+                    style="display: none; margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <div style="display: grid; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                            <span style="color: #666;">Tổng tiền các khoản thu:</span>
+                            <strong style="color: #2196F3; font-size: 16px;" id="modal-tong-tien">0 đ</strong>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 5px 0; border-top: 1px solid #ddd;">
+                            <span style="color: #666;">Đã đóng:</span>
+                            <strong style="color: #4CAF50;" id="modal-da-dong">0 đ</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                            <span style="color: #666;">Còn thiếu:</span>
+                            <strong style="color: #FF5722;" id="modal-con-thieu">0 đ</strong>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">

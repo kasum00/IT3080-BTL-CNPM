@@ -85,15 +85,24 @@ create table KhoanThu(
 
 -- Khoản thu theo hộ
 CREATE TABLE KhoanThuTheoHo(
-    -- Bỏ mã khoản thu theo hộ, dùng mã hộ khẩu
+    MaKhoanThuTheoHo INT AUTO_INCREMENT PRIMARY KEY,
     MaKhoanThu INT,
     MaHoKhau VARCHAR(10),
-    SoLuong int,
-    ThanhTien INT,
-    TrangThai VARCHAR(10), -- ĐÃ ĐÓNG, CHƯA ĐÓNG
+    SoLuong INT DEFAULT 0,              -- Số nhân khẩu trong hộ
+    ThanhTien INT DEFAULT 0,            -- = SoLuong * DonGia (tính qua trigger)
+    TrangThai VARCHAR(20) DEFAULT 'Chưa đóng', -- 'Đã đóng', 'Chưa đóng'
     FOREIGN KEY (MaKhoanThu) REFERENCES KhoanThu(MaKhoanThu)
         ON DELETE CASCADE ON UPDATE CASCADE,
- 
+    FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Bảng tổng hợp tổng tiền theo hộ khẩu
+CREATE TABLE TongTienHoKhau(
+    MaHoKhau VARCHAR(10) PRIMARY KEY,
+    TongTien INT DEFAULT 0,             -- Tổng tiền tất cả khoản thu của hộ
+    TongDaNop INT DEFAULT 0,            -- Tổng tiền đã nộp
+    TongConThieu INT DEFAULT 0,         -- Tổng tiền còn thiếu
     FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -101,14 +110,18 @@ CREATE TABLE KhoanThuTheoHo(
 -- Hóa đơn
 CREATE TABLE HoaDon (
     MaHoaDon INT AUTO_INCREMENT PRIMARY KEY,
-    MaKhoanThuTheoHo INT,
+    MaHoKhau VARCHAR(10),  
+    MaKhoanThuTheoHo INT NULL, 
     TenHoaDon NVARCHAR(100),
-    DaNop BOOLEAN,
-    NgayNop DATE,
-    NgayXuatHoaDon DATE,
+    TongSoTien INT DEFAULT 0,           -- Tổng số tiền cần thanh toán
+    DaNop BOOLEAN DEFAULT FALSE,
+    NgayNop DATE NULL,
+    NgayXuatHoaDon DATE DEFAULT (CURRENT_DATE),
 
+    FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
+        ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (MaKhoanThuTheoHo) REFERENCES KhoanThuTheoHo(MaKhoanThuTheoHo)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- tài khoản
