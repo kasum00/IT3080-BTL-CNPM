@@ -15,4 +15,10 @@ router.get(
   khoanThuHoKhauController.getKhoanThuByHoKhau
 );
 
+// cập nhật trạng thái thanh toán
+router.put(
+  "/khoan-thu-ho-khau/:maHoKhau/:maKhoanThu",
+  khoanThuHoKhauController.updateTrangThaiKhoanThu
+);
+
 module.exports = router;

@@ -113,7 +113,7 @@ CREATE TABLE HoaDon (
     MaHoKhau VARCHAR(10),  
     MaKhoanThuTheoHo INT NULL, 
     TenHoaDon NVARCHAR(100),
-    TongSoTien INT DEFAULT 0,           -- Tổng số tiền cần thanh toán
+    TongSoTien INT DEFAULT 0,  
     DaNop BOOLEAN DEFAULT FALSE,
     NgayNop DATE NULL,
     NgayXuatHoaDon DATE DEFAULT (CURRENT_DATE),

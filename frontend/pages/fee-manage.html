@@ -6,6 +6,8 @@
     <title>Khoản thu theo hộ</title>
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/fee-manage.css">
+    <!-- html2pdf Library - Hỗ trợ tiếng Việt -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
@@ -69,7 +71,7 @@
                                 <th>Chủ căn hộ</th>
                                 <th>Tầng</th>
                                 <th>Trạng thái</th>
-                                <th>Chi tiết khoản thu</th>
+                                <th>Chi tiết khoản thu theo hộ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -82,7 +84,8 @@
                                 <td class="action">
                                     <span class="btn-detail" data-id-apt="A1-01" data-id-fee="KT-01"
                                         data-name="Phí quản lý - 01" data-money="1000000" data-status="Chưa thanh toán">
-                                    </span>Xem chi tiết
+                                    </span>
+                                    <span class="btn-invoice-list" title="Xem danh sách hóa đơn"></span>
                                 </td>
                             </tr>
                             </td>
@@ -94,6 +97,57 @@
         </main>
 
     </div>
+    <!-- ===============================
+     MODAL DANH SÁCH HÓA ĐƠN
+================================ -->
+    <div id="invoice-list-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 900px;">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h3>Danh sách khoản thu của hộ</h3>
+                <button type="button" class="modal-close" id="close-invoice-modal">×</button>
+            </div>
+
+            <!-- SUB TITLE -->
+            <div class="modal-sub">
+                Căn hộ: <span id="invoice-modal-name"></span> - Chủ hộ: <span id="invoice-modal-owner"></span>
+            </div>
+            <div class="modal-sub">
+                Mã hộ khẩu: <span id="invoice-modal-hokhau"></span>
+            </div>
+
+            <!-- BẢNG KHOẢN THU -->
+            <div class="modal-body">
+                <div class="modal-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                    <table class="modal-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th>Mã KT</th>
+                                <th>Tên khoản thu</th>
+                                <th>Loại</th>
+                                <th>Thành tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Xuất hóa đơn</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-modal-tbody">
+                            <!-- Dữ liệu sẽ được load động -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="invoice-modal-loading" style="text-align: center; padding: 20px; display: none;">Đang tải...
+                </div>
+                <div id="invoice-modal-empty" style="text-align: center; padding: 20px; display: none;">Không có khoản
+                    thu nào</div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-primary" id="btn-close-invoice">Đóng</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===============================
      MODAL CHI TIẾT KHOẢN THU CỦA HỘ
 ================================ -->
@@ -125,6 +179,7 @@
                                 <th>Loại</th>
                                 <th>Thành tiền</th>
                                 <th>Trạng thái</th>
+                                <th>Thanh toán</th>
                             </tr>
                         </thead>
                         <tbody id="modal-fee-tbody">
@@ -202,7 +257,7 @@
 
             <div class="edit-footer">
                 <button class="btn-danger" id="btn-close-edit">Đóng</button>
-                <button class="btn-primary" id="btn-save-edit">Lưu</button>
+                <button class="btn-primary" id="btn-export-pdf">Xuất hóa đơn PDF</button>
             </div>
         </div>
     </div>

@@ -4,6 +4,11 @@ const sequelize = require("../config/db");
 const KhoanThuHoKhau = sequelize.define(
   "KhoanThuHoKhau",
   {
+    MaKhoanThuTheoHo: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     MaKhoanThu: { type: DataTypes.INTEGER, allowNull: false },
     MaHoKhau: { type: DataTypes.STRING(10), allowNull: false },
     SoLuong: { type: DataTypes.INTEGER },
@@ -200,7 +205,65 @@ const assignKhoanThuToHoKhau = async (req, res) => {
   }
 };
 
+// Update trạng thái khoản thu
+const updateTrangThaiKhoanThu = async (req, res) => {
+  try {
+    const { maHoKhau, maKhoanThu } = req.params;
+    const { TrangThai } = req.body;
+
+    if (!maHoKhau || !maKhoanThu) {
+      return res.status(400).json({
+        success: false,
+        error: "Thiếu thông tin mã hộ khẩu hoặc mã khoản thu",
+      });
+    }
+
+    const trangThaiMoi = TrangThai || "da_thu";
+
+    // Sử dụng raw query để cập nhật
+    const [result] = await sequelize.query(
+      `
+      UPDATE KhoanThuTheoHo 
+      SET TrangThai = :trangThai 
+      WHERE MaHoKhau = :maHoKhau AND MaKhoanThu = :maKhoanThu
+      `,
+      {
+        replacements: {
+          trangThai: trangThaiMoi,
+          maHoKhau: maHoKhau,
+          maKhoanThu: maKhoanThu,
+        },
+        type: sequelize.QueryTypes.UPDATE,
+      }
+    );
+
+    if (result === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Không tìm thấy khoản thu",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Cập nhật trạng thái thành công",
+      data: {
+        MaHoKhau: maHoKhau,
+        MaKhoanThu: maKhoanThu,
+        TrangThai: trangThaiMoi,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating TrangThai:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   assignKhoanThuToHoKhau,
   getKhoanThuByHoKhau,
+  updateTrangThaiKhoanThu,
 };
