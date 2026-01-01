@@ -201,34 +201,34 @@ const findOwnerByApartment = async (req, res) => {
 
 // Assign hộ khẩu cho căn hộ
 const assignHoKhauForCanHo = async (req, res) => {
-    const {ma_ho_khau, ma_can_ho_moi} = req.body
+    const { ma_ho_khau, ma_can_ho_moi } = req.body
     const trans = await sequelize.transaction()
 
     try {
-        const hoKhau = await HoKhau.findByPk(ma_ho_khau, {transaction: trans})
-        if(!hoKhau) {
+        const hoKhau = await HoKhau.findByPk(ma_ho_khau, { transaction: trans })
+        if (!hoKhau) {
             await trans.rollback()
             return res.status(404).json({
                 message: "Không tìm thấy hộ khẩu!"
             })
         }
 
-        if(hoKhau.MaCanHo === ma_can_ho_moi) {
+        if (hoKhau.MaCanHo === ma_can_ho_moi) {
             await trans.rollback()
             return res.status(400).json({
                 message: "Hộ khẩu đang ở căn hộ này rồi!"
             })
         }
 
-        const canHoMoi = await CanHo.findByPk(ma_can_ho_moi, {transaction: trans})
-        if(!canHoMoi) {
+        const canHoMoi = await HoKhau.findByPk(ma_can_ho_moi, { transaction: trans })
+        if (!canHoMoi) {
             await trans.rollback()
             return res.status(404).json({
                 message: "Không tìm thấy căn hộ mới!"
             })
         }
 
-        if(canHoMoi.TrangThai === "cho_thue") {
+        if (canHoMoi.TrangThai === "cho_thue") {
             await trans.rollback()
             return res.status(400).json({
                 message: "Căn hộ đang cho thuê, không thể gán hộ khẩu cư trú!"
@@ -236,11 +236,11 @@ const assignHoKhauForCanHo = async (req, res) => {
         }
 
         const isOccupied = await CanHo.findOne({
-            where: {MaCanHo: ma_can_ho_moi},
+            where: { MaCanHo: ma_can_ho_moi },
             transaction: trans
         })
 
-        if(isOccupied) {
+        if (isOccupied) {
             await trans.rollback()
             return res.status(400).json({
                 message: "Căn hộ mới đã có hộ khác ở rồi!"
@@ -249,14 +249,14 @@ const assignHoKhauForCanHo = async (req, res) => {
 
         const ma_can_ho_cu = hoKhau.MaCanHo
 
-        await hoKhau.update({MaCanHo: ma_can_ho_moi}, {transaction: trans})
+        await hoKhau.update({ MaCanHo: ma_can_ho_moi }, { transaction: trans })
 
-        await canHoMoi.update({TrangThai: "chu_o"}, {transaction: trans})
+        await canHoMoi.update({ TrangThai: "chu_o" }, { transaction: trans })
 
-        if(ma_can_ho_cu) {
+        if (ma_can_ho_cu) {
             await CanHo.update(
-                {TrangThai: "trong"},
-                {where: {MaCanHo: ma_can_ho_cu}, transaction: trans}
+                { TrangThai: "trong" },
+                { where: { MaCanHo: ma_can_ho_cu }, transaction: trans }
             )
         }
 
@@ -269,7 +269,7 @@ const assignHoKhauForCanHo = async (req, res) => {
         })
     } catch (err) {
         await trans.rollback()
-        res.status(500).json({error: err.message})
+        res.status(500).json({ error: err.message })
     }
 }
 
@@ -324,12 +324,53 @@ const updateCanHo = async (req, res) => {
             TenCanHo: req.body.TenCanHo,
             Tang: req.body.Tang,
             DienTich: req.body.DienTich,
-            Mota: req.body.MoTa
+            MoTa: req.body.MoTa
         })
+
+        const updatedCanHo = await CanHo.findByPk(req.params.id)
+        res.json(updatedCanHo)
+    } catch (err) {
+        res.status(500).json({ error: err.message })
+    }
+}
+
+// GAN CHU HO
+const ganChuHo = async (req, res) => {
+    const { ma_ho_khau, ma_nhan_khau } = req.body
+
+    const trans = await sequelize.transaction()
+
+    try {
+        const nhanKhau = await NhanKhau.findByPk(ma_nhan_khau, { transaction: trans })
+        if (!nhanKhau || nhanKhau.MaHoKhau !== ma_ho_khau) {
+            await trans.rollback()
+            return res.status(400).json({
+                message: "Nhân khẩu không thuộc hộ khẩu này!"
+            })
+        }
+
+        const chuHo = await NhanKhau.findOne({
+            where: {
+                MaHoKhau: ma_ho_khau,
+                QuanHe: "chu ho",
+            },
+            transaction: trans
+        })
+
+        if (chuHo) {
+            await trans.rollback()
+            return res.status(400).json({
+                message: "Hộ khẩu này đã có chủ hộ rồi!"
+            })
+        }
+
+        await nhanKhau.update({ QuanHe: "chu ho" }, { transaction: trans })
+        await trans.commit()
         res.json({
-            message: "Cập nhật căn hộ thành công!"
+            message: "Gán chủ hộ thành công!"
         })
     } catch (err) {
+        await trans.rollback()
         res.status(500).json({ error: err.message })
     }
 }
@@ -342,5 +383,6 @@ module.exports = {
     updateCanHo,
     findHouseholdInAparment,
     findOwnerByApartment,
-    assignHoKhauForCanHo
+    assignHoKhauForCanHo,
+    ganChuHo
 }

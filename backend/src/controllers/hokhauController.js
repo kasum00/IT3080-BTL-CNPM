@@ -71,7 +71,21 @@ const getAllHoKhau = async (req, res) => {
         const data = await HoKhau.findAll({
             order: [["MaHoKhau", "ASC"]]
         })
-        res.json(data)
+
+        const result = []
+        for(const hk of data) {
+            const chuHo = await NhanKhau.findOne({
+                where: {
+                    MaHoKhau: hk.MaHoKhau,
+                    QuanHe: "chu ho"
+                }
+            })
+            result.push({
+                ...hk.toJSON(),
+                ChuHo: chuHo ? chuHo.HoTen : null
+            })
+        }
+        res.json(result)
     } catch (err) {
         res.status(500).json({ error: err.message })
     }
@@ -86,7 +100,17 @@ const getHoKhauByID = async (req, res) => {
                 message: "Không tìm thấy hộ khẩu!"
             })
         }
-        res.json(data)
+        const chuHo = await NhanKhau.findOne({
+            where: {
+                MaHoKhau: data.MaHoKhau,
+                QuanHe: "chu ho"
+            }
+        })
+
+        res.json({
+            ...data.toJSON(),
+            ChuHo: chuHo ? chuHo.HoTen : null
+        })
     } catch (err) {
         res.status(500).json({ error: err.message })
     }
@@ -107,8 +131,18 @@ const updateHoKhau = async (req, res) => {
             NoiCap: req.body.NoiCap,
             NgayCap: req.body.NgayCap
         })
+
+        const chuHo = await NhanKhau.findOne({
+            where: {
+                MaHoKhau: hoKhau.MaHoKhau,
+                QuanHe: "chu ho"
+            }
+        })
+
+        const updatedHoKhau = await HoKhau.findByPk(req.params.id)
         res.json({
-            message: "Cập nhật hộ khẩu thành công!"
+            ...updateHoKhau.toJSON(),
+            ChuHo: chuHo ? chuHo.HoTen : null
         })
     } catch (err) {
         res.status(500).json({ error: err.message })
@@ -156,47 +190,6 @@ const deleteHoKhau = async (req, res) => {
     }
 }
 
-// GAN CHU HO
-const ganChuHo = async (req, res) => {
-    const { ma_ho_khau, ma_nhan_khau } = req.body
-
-    const trans = await sequelize.transaction()
-
-    try {
-        const nhanKhau = await NhanKhau.findByPk(ma_nhan_khau, { transaction: trans })
-        if (!nhanKhau || nhanKhau.MaHoKhau !== ma_ho_khau) {
-            await trans.rollback()
-            return res.status(400).json({
-                message: "Nhân khẩu không thuộc hộ khẩu này!"
-            })
-        }
-
-        const chuHo = await NhanKhau.findOne({
-            where: {
-                MaHoKhau: ma_ho_khau,
-                QuanHe: "chu ho",
-            },
-            transaction: trans
-        })
-
-        if (chuHo) {
-            await trans.rollback()
-            return res.status(400).json({
-                message: "Hộ khẩu này đã có chủ hộ rồi!"
-            })
-        }
-
-        await nhanKhau.update({ QuanHe: "chu ho" }, { transaction: trans })
-        await trans.commit()
-        res.json({
-            message: "Gán chủ hộ thành công!"
-        })
-    } catch (err) {
-        await trans.rollback()
-        res.status(500).json({ error: err.message })
-    }
-}
-
 module.exports = {
     HoKhau,
     createHoKhau,
@@ -204,5 +197,4 @@ module.exports = {
     getHoKhauByID,
     updateHoKhau,
     deleteHoKhau,
-    ganChuHo
 }

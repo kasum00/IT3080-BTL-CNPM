@@ -10,6 +10,8 @@ router.get("/tim-chu-ho/:id", CanHoController.findOwnerByApartment);
 
 router.post("/chuyen-can-ho", CanHoController.assignHoKhauForCanHo)
 
+router.post("/gan-chu-ho", CanHoController.ganChuHo)
+
 router.post("/", CanHoController.createCanHo)
 router.get("/", CanHoController.getAllCanHo)
 router.get("/:id", CanHoController.getCanHoByID)

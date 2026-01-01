@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách căn hộ</title>
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/apartment.css">
@@ -17,7 +18,7 @@
             <div class="role">Ban quản lý</div>
 
             <div class="profile">
-                <img src="../assets/logo.png">
+                <img title="img" src="../assets/logo.png">
                 <div class="admin-name">Phú Trần</div>
             </div>
 
@@ -56,7 +57,7 @@
                 <h1>Danh sách căn hộ</h1>
                 <div class="actions">
                     <button class="btn-add">Thêm căn hộ</button>
-                    <input placeholder="Tìm kiếm">
+                    <input id="search-input" placeholder="Tìm kiếm">
                 </div>
             </div>
 
@@ -109,37 +110,37 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Tên căn hộ</label>
-                        <input type="text" id="modal-name" readonly>
+                        <input placeholder="..." type="text" id="modal-name" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Tầng</label>
-                        <input type="text" id="modal-floor" readonly>
+                        <input placeholder="..." type="text" id="modal-floor" readonly>
                     </div>
 
                     <div class="form-group full">
                         <label>Mô tả</label>
-                        <input type="text" id="modal-desc" readonly>
+                        <input placeholder="..." type="text" id="modal-desc" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Diện tích</label>
-                        <input type="text" id="modal-area" readonly>
+                        <input placeholder="..." type="text" id="modal-area" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Chủ căn hộ</label>
-                        <input type="text" id="modal-owner" readonly>
+                        <input placeholder="..." type="text" id="modal-owner" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="modal-start" readonly>
+                        <input placeholder="..." type="date" id="modal-start" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="modal-end" readonly>
+                        <input placeholder="..." type="date" id="modal-end" readonly>
                     </div>
                 </div>
             </div>
@@ -167,37 +168,37 @@
                 <div class="edit-grid">
                     <div class="form-item">
                         <label>Tên căn hộ</label>
-                        <input id="edit-name">
+                        <input placeholder="..." id="edit-name">
                     </div>
 
                     <div class="form-item">
                         <label>Tầng</label>
-                        <input id="edit-floor">
+                        <input placeholder="..." id="edit-floor">
                     </div>
 
                     <div class="form-item full">
                         <label>Mô tả</label>
-                        <input id="edit-desc">
+                        <input placeholder="..." id="edit-desc">
                     </div>
 
                     <div class="form-item">
                         <label>Diện tích</label>
-                        <input id="edit-area">
+                        <input placeholder="..." id="edit-area">
                     </div>
 
                     <div class="form-item">
                         <label>Chủ căn hộ</label>
-                        <input id="edit-owner">
+                        <input placeholder="..." id="edit-owner">
                     </div>
 
                     <div class="form-item">
                         <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="edit-start">
+                        <input placeholder="..." type="date" id="edit-start">
                     </div>
 
                     <div class="form-item">
                         <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="edit-end">
+                        <input placeholder="..." type="date" id="edit-end">
                     </div>
                 </div>
             </div>
@@ -244,42 +245,42 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Mã căn hộ</label>
-                        <input id="add-ma">
+                        <input placeholder="..." id="add-ma">
                     </div>
 
                     <div class="form-group">
                         <label>Tên căn hộ</label>
-                        <input id="add-name">
+                        <input placeholder="..." id="add-name">
                     </div>
 
                     <div class="form-group">
                         <label>Tầng</label>
-                        <input id="add-floor">
+                        <input placeholder="..." id="add-floor">
                     </div>
 
                     <div class="form-group full">
                         <label>Mô tả</label>
-                        <input id="add-desc">
+                        <input placeholder="..." id="add-desc">
                     </div>
 
                     <div class="form-group">
                         <label>Diện tích</label>
-                        <input id="add-area">
+                        <input placeholder="..." id="add-area">
                     </div>
 
                     <div class="form-group">
                         <label>Chủ căn hộ (nếu có)</label>
-                        <input id="add-owner">
+                        <input placeholder="..." id="add-owner">
                     </div>
 
                     <div class="form-group">
                         <label>Ngày bắt đầu thuê</label>
-                        <input type="date" id="add-start">
+                        <input placeholder="..." type="date" id="add-start">
                     </div>
 
                     <div class="form-group">
                         <label>Ngày kết thúc thuê</label>
-                        <input type="date" id="add-end">
+                        <input placeholder="..." type="date" id="add-end">
                     </div>
                 </div>
             </div>

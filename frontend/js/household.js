@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     let currentRow = null;
+    let currentHoKhauID = null;
 
     /* ===============================
        MODALS
@@ -10,7 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const addModal = document.getElementById("addModal");
     const deleteModal = document.getElementById("deleteModal");
     const notifyModal = document.getElementById("notifyModal");
+    const tbody = document.querySelector(".household-table tbody")
 
+    /* ===============================
+       NOTIFY
+    =============================== */
     const notifyText = document.getElementById("notify-text");
     const notifyOk = document.getElementById("notify-ok");
     const closeNotify = document.getElementById("close-notify");
@@ -27,29 +32,66 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     /* ===============================
-       OPEN DETAIL
+       RENDER ROW
     =============================== */
-    function openDetail(btn) {
-        currentRow = btn.closest("tr");
+    function renderRow(hokhau) {
+        const tr = document.createElement("tr")
 
-        document.getElementById("modal-ma").value = btn.dataset.ma || "";
-        document.getElementById("modal-canHo").value = btn.dataset.canHo || "";
-        document.getElementById("modal-chuHo").value = btn.dataset.chuHo || "";
-        document.getElementById("modal-diaChi").value = btn.dataset.diaChi || "";
-        document.getElementById("modal-noiCap").value = btn.dataset.noiCap || "";
-        document.getElementById("modal-ngayCap").value = btn.dataset.ngayCap || "";
+        tr.innerHTML = `
+            <td>${hokhau.MaHoKhau}</td>
+            <td>${hokhau.MaCanHo || "Chưa gán"}</td>
+            <td>${hokhau.ChuHo ?? "Chưa có"}</td>
+            <td>${hokhau.DiaChiThuongTru || ""}</td>
+            <td>${hokhau.NgayCap || ""}</td>
+            <td class="action">
+                <span class="btn-detail"></span>
+                <span class="btn-remove"></span>
+            </td>
+        `
+        tr.querySelector(".btn-detail").addEventListener("click", () => {
+            currentRow = tr
+            openDetail(hokhau.MaHoKhau)
+        })
 
-        detailModal.classList.add("show");
+        tr.querySelector(".btn-remove").addEventListener("click", () => {
+            currentRow = tr
+            currentHoKhauID = hokhau.MaHoKhau
+            deleteModal.classList.add("show")
+        });
+
+        return tr
     }
 
     /* ===============================
-       ICON DETAIL (DÒNG CŨ)
+       CALL API GET ALL
     =============================== */
-    document.querySelectorAll(".btn-detail").forEach(btn => {
-        btn.addEventListener("click", function () {
-            openDetail(this);
+    fetch("http://localhost:3000/api/ho-khau")
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = "";
+            data.forEach(hokhau => tbody.appendChild(renderRow(hokhau)));
         });
-    });
+
+    /* ===============================
+       OPEN DETAIL
+    =============================== */
+    function openDetail(maHoKhau) {
+        currentHoKhauID = maHoKhau
+
+        fetch(`http://localhost:3000/api/ho-khau/${maHoKhau}`)
+            .then(res => res.json())
+            .then(hokhau => {
+                document.getElementById("modal-ma").value = hokhau.MaHoKhau
+                document.getElementById("modal-canHo").value = hokhau.MaCanHo || ""
+                document.getElementById("modal-chuHo").value = hokhau.ChuHo || "";
+                document.getElementById("modal-diaChi").value = hokhau.DiaChiThuongTru || "";
+                document.getElementById("modal-noiCap").value = hokhau.NoiCap || "";
+                document.getElementById("modal-ngayCap").value = hokhau.NgayCap || "";
+
+                detailModal.classList.add("show");
+            })
+
+    }
 
     /* ===============================
        CLOSE DETAIL
@@ -58,12 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(id)?.addEventListener("click", () => {
             detailModal.classList.remove("show");
         });
-    });
-
-    detailModal.addEventListener("click", e => {
-        if (e.target === detailModal) {
-            detailModal.classList.remove("show");
-        }
     });
 
     /* ===============================
@@ -94,25 +130,23 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btn-save-edit").addEventListener("click", () => {
 
         if (!currentRow) return;
-
-        const ma = document.getElementById("edit-ma").value;
-        const canHo = document.getElementById("edit-canHo").value;
-        const chuHo = document.getElementById("edit-chuHo").value;
-
-        currentRow.children[0].innerText = ma;
-        currentRow.children[1].innerText = canHo;
-        currentRow.children[2].innerText = chuHo;
-
-        const btn = currentRow.querySelector(".btn-detail");
-        btn.dataset.ma = ma;
-        btn.dataset.canHo = canHo;
-        btn.dataset.chuHo = chuHo;
-        btn.dataset.diaChi = document.getElementById("edit-diaChi").value;
-        btn.dataset.noiCap = document.getElementById("edit-noiCap").value;
-        btn.dataset.ngayCap = document.getElementById("edit-ngayCap").value;
-
-        editModal.classList.remove("show");
-        showNotify("Cập nhật hộ khẩu thành công!");
+        fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                DiaChiThuongTru: document.getElementById("edit-diaChi").value,
+                NoiCap: document.getElementById("edit-noiCap").value,
+                NgayCap: document.getElementById("edit-ngayCap").value
+            })
+        })
+            .then(res => res.json())
+            .then(updated => {
+                const newRow = renderRow(updated);
+                currentRow.replaceWith(newRow);
+                currentRow = newRow;
+                editModal.classList.remove("show");
+                showNotify("Cập nhật hộ khẩu thành công!");
+            });
     });
 
     document.getElementById("close-edit").addEventListener("click", () => {
@@ -134,59 +168,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("save-add").addEventListener("click", () => {
-
-        const ma = document.getElementById("add-ma").value;
-        const canHo = document.getElementById("add-canHo").value;
-        const chuHo = document.getElementById("add-chuHo").value;
-        const diaChi = document.getElementById("add-diaChi").value;
-        const noiCap = document.getElementById("add-noiCap").value;
-        const ngayCap = document.getElementById("add-ngayCap").value;
-
-        const tbody = document.querySelector(".household-table tbody");
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${ma}</td>
-            <td>${canHo}</td>
-            <td>${chuHo}</td>
-            <td>${diaChi}</td>
-            <td>${ngayCap}</td>
-            <td class="action">
-                <span class="btn-detail"
-                    data-ma="${ma}"
-                    data-can-ho="${canHo}"
-                    data-chu-ho="${chuHo}"
-                    data-dia-chi="${diaChi}"
-                    data-noi-cap="${noiCap}"
-                    data-ngay-cap="${ngayCap}">
-                </span>
-                <span class="btn-remove"></span>
-            </td>
-        `;
-
-        tbody.appendChild(tr);
-        addModal.classList.remove("show");
-
-        tr.querySelector(".btn-detail").addEventListener("click", function () {
-            openDetail(this);
-        });
-
-        tr.querySelector(".btn-remove").addEventListener("click", () => {
-            currentRow = tr;
-            deleteModal.classList.add("show");
-        });
-
-        showNotify("Thêm hộ khẩu thành công!");
-    });
-
-    /* ===============================
-       DELETE
-    =============================== */
-    document.querySelectorAll(".btn-remove").forEach(btn => {
-        btn.addEventListener("click", () => {
-            currentRow = btn.closest("tr");
-            deleteModal.classList.add("show");
-        });
+        fetch("http://localhost:3000/api/ho-khau", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                MaHoKhau: document.getElementById("add-ma").value,
+                MaCanHo: document.getElementById("add-canHo").value || null,
+                DiaChiThuongTru: document.getElementById("add-diaChi").value,
+                NoiCap: document.getElementById("add-noiCap").value,
+                NgayCap: document.getElementById("add-ngayCap").value
+            })
+        })
+            .then(res => res.json())
+            .then(hokhau => {
+                tbody.appendChild(renderRow(hokhau));
+                addModal.classList.remove("show");
+                showNotify("Thêm hộ khẩu thành công!");
+            });
     });
 
     ["cancel-delete", "close-delete"].forEach(id =>
@@ -196,9 +194,14 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     document.getElementById("confirm-delete").addEventListener("click", () => {
-        if (currentRow) currentRow.remove();
-        deleteModal.classList.remove("show");
-        showNotify("Xóa hộ khẩu thành công!");
+        fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
+            method: "DELETE"
+        })
+        .then(() => {
+            currentRow.remove();
+            deleteModal.classList.remove("show");
+            showNotify("Xóa hộ khẩu thành công!");
+        });
     });
 
 });
