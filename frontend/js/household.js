@@ -168,23 +168,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     document.getElementById("save-add").addEventListener("click", async () => {
+        const maCanHo = document.getElementById("add-canHo").value
+        const ngayCap = document.getElementById("add-ngayCap").value
+
         await fetch("http://localhost:3000/api/ho-khau", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 MaHoKhau: document.getElementById("add-ma").value,
-                MaCanHo: document.getElementById("add-canHo").value || null,
+                MaCanHo: maCanHo ? Number(maCanHo) : null,
                 DiaChiThuongTru: document.getElementById("add-diaChi").value,
                 NoiCap: document.getElementById("add-noiCap").value,
-                NgayCap: document.getElementById("add-ngayCap").value
+                NgayCap: ngayCap ? ngayCap : null
             })
         })
-            .then(res => res.json())
-            .then(hokhau => {
-                tbody.appendChild(renderRow(hokhau));
-                addModal.classList.remove("show");
-                showNotify("Thêm hộ khẩu thành công!");
-            });
+            .then(async res => {
+                const data = await res.json()
+                if (!res.ok) {
+                    addModal.classList.remove("show")
+                    showNotify(data.message || "Thêm hộ khẩu thất bại!")
+                    return;
+                }
+                tbody.appendChild(renderRow(data))
+                addModal.classList.remove("show")
+                showNotify("Thêm hộ khẩu thành công!")
+            })
     });
 
     ["cancel-delete", "close-delete"].forEach(id =>
@@ -197,11 +205,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         await fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
             method: "DELETE"
         })
-        .then(() => {
-            currentRow.remove();
-            deleteModal.classList.remove("show");
-            showNotify("Xóa hộ khẩu thành công!");
+            .then(() => {
+                currentRow.remove();
+                deleteModal.classList.remove("show");
+                showNotify("Xóa hộ khẩu thành công!");
+            });
+    });
+    const searchInput = document.getElementById("search-input");
+
+    searchInput.addEventListener("input", () => {
+        const keyword = searchInput.value.toLowerCase().trim();
+        const rows = document.querySelectorAll(".household-table tbody tr");
+
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(keyword) ? "" : "none";
         });
     });
-
 });

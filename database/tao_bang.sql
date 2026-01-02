@@ -12,7 +12,9 @@ create table CanHo(
     TenCanHo nvarchar(100),
     Tang nvarchar(50),
     DienTich float,
-    TrangThai nvarchar(20) default 'trong', -- trong/ chu_o/ cho_thue
+    TrangThai ENUM('trong','chu_o','cho_thue') DEFAULT 'trong', 
+	ngay_bat_dau_thue DATE NULL, 
+	ngay_ket_thuc_thue DATE NULL,
     MoTa NVARCHAR(500)
 );
 
@@ -55,7 +57,8 @@ create table TamTru(
     DiaChiThuongTru nvarchar(200),
     DiaChiTamTru nvarchar(200),
     CanCuocCongDan varchar(20),
-    
+    ngay_bat_dau DATE, 
+	ngay_ket_thuc DATE,
     FOREIGN KEY (MaNhanKhau) REFERENCES NhanKhau(MaNhanKhau)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -144,4 +147,3 @@ WHERE nk.QuanHe = 'chu ho'
   AND tk.VaiTro = 'cu_dan';
 
 SET SQL_SAFE_UPDATES = 1;
-

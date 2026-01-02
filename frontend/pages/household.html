@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách hộ khẩu</title>
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/household.css">
@@ -17,7 +18,7 @@
             <div class="role">Ban quản lý</div>
 
             <div class="profile">
-                <img src="../assets/logo.png">
+                <img title="." src="../assets/logo.png">
                 <div class="admin-name">Phú Trần</div>
             </div>
 
@@ -57,7 +58,7 @@
                 <h1>Danh sách hộ khẩu</h1>
                 <div class="actions">
                     <button class="btn-add">Thêm hộ khẩu</button>
-                    <input placeholder="Tìm kiếm">
+                    <input id="search-input" placeholder="Tìm kiếm">
                 </div>
             </div>
 
@@ -75,19 +76,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>HK001</td>
-                                <td>A1-01</td>
-                                <td>Nguyễn Văn A</td>
-                                <td>Chung cư BlueMoon</td>
-                                <td>01/01/2024</td>
-                                <td class="action">
-                                    <span class="btn-detail" data-ma="HK001" data-can-ho="A1-01"
-                                        data-chu-ho="Nguyễn Văn A" data-dia-chi="Chung cư BlueMoon"
-                                        data-noi-cap="Hà Nội" data-ngay-cap="2024-01-01">
-                                    </span>
-                                    <span class="btn-remove"></span>
-                                </td>
                         </tbody>
                     </table>
                 </div>
@@ -97,7 +85,7 @@
     </div>
     <!-- ===============================
      MODAL CHI TIẾT HỘ KHẨU
-================================ -->
+    ================================ -->
     <div id="household-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -109,32 +97,32 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Mã hộ khẩu</label>
-                        <input type="text" id="modal-ma" readonly>
+                        <input title="." type="text" id="modal-ma" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Căn hộ</label>
-                        <input type="text" id="modal-canHo" readonly>
+                        <input title="." type="text" id="modal-canHo" readonly>
                     </div>
 
                     <div class="form-group full">
                         <label>Chủ hộ</label>
-                        <input type="text" id="modal-chuHo" readonly>
+                        <input title="." type="text" id="modal-chuHo" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Địa chỉ thường trú</label>
-                        <input type="text" id="modal-diaChi" readonly>
+                        <input title="." type="text" id="modal-diaChi" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Nơi cấp</label>
-                        <input type="text" id="modal-noiCap" readonly>
+                        <input title="." type="text" id="modal-noiCap" readonly>
                     </div>
 
                     <div class="form-group">
                         <label>Ngày cấp</label>
-                        <input type="date" id="modal-ngayCap" readonly>
+                        <input title="." type="date" id="modal-ngayCap" readonly>
                     </div>
 
                 </div>
@@ -163,32 +151,32 @@
                 <div class="edit-grid">
                     <div class="form-item">
                         <label>Mã hộ khẩu</label>
-                        <input id="edit-ma">
+                        <input title="." id="edit-ma">
                     </div>
 
                     <div class="form-item">
                         <label>Căn hộ</label>
-                        <input id="edit-canHo">
+                        <input title="." id="edit-canHo">
                     </div>
 
                     <div class="form-item full">
                         <label>Chủ hộ</label>
-                        <input id="edit-chuHo">
+                        <input title="." id="edit-chuHo">
                     </div>
 
                     <div class="form-item">
                         <label>Địa chỉ thường trú</label>
-                        <input id="edit-diaChi">
+                        <input title="." id="edit-diaChi">
                     </div>
 
                     <div class="form-item">
                         <label>Nơi cấp<picture></picture></label>
-                        <input id="edit-noiCap">
+                        <input title="." id="edit-noiCap">
                     </div>
 
                     <div class="form-item">
                         <label>Ngày cấp<picture></picture></label>
-                        <input id="edit-ngayCap">
+                        <input title="." id="edit-ngayCap">
                     </div>
 
                 </div>
@@ -235,32 +223,32 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Mã hộ khẩu</label>
-                        <input id="add-ma">
+                        <input title="." id="add-ma">
                     </div>
 
                     <div class="form-group">
                         <label>Căn hộ</label>
-                        <input id="add-canHo">
+                        <input title="." id="add-canHo">
                     </div>
 
                     <div class="form-group full">
                         <label>Chủ hộ</label>
-                        <input id="add-chuHo">
+                        <input title="." id="add-chuHo">
                     </div>
 
                     <div class="form-group">
                         <label>Địa chỉ thường trú</label>
-                        <input id="add-diaChi">
+                        <input title="." id="add-diaChi">
                     </div>
 
                     <div class="form-group">
                         <label>Nơi cấp</label>
-                        <input id="add-noiCap">
+                        <input title="." id="add-noiCap">
                     </div>
 
                     <div class="form-group">
                         <label>Ngày cấp</label>
-                        <input type="date" id="add-ngayCap">
+                        <input title="." type="date" id="add-ngayCap">
                     </div>
                 </div>
             </div>

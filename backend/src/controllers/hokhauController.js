@@ -55,10 +55,66 @@ const NhanKhau = sequelize.define(
     }
 )
 
+const CanHo = sequelize.define(
+    "CanHo", {
+    MaCanHo: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    MaHoKhau: {
+        type: DataTypes.STRING(10),
+        allowNull: true
+    },
+    TenCanHo: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    }
+},
+    {
+        tableName: "CanHo",
+        timestamps: false
+    }
+)
+
 // CREATE
 const createHoKhau = async (req, res) => {
     try {
-        const data = await HoKhau.create(req.body)
+        let { MaHoKhau, MaCanHo } = req.body
+
+        if (MaCanHo === "" || MaCanHo === undefined) {
+            MaCanHo = null
+        }
+
+        const checkExist = await HoKhau.findByPk(MaHoKhau)
+        if (checkExist) {
+            return res.status(400).json({
+                message: "Mã hộ khẩu đã tồn tại!"
+            })
+        }
+        if (MaCanHo) {
+            const canHo = await CanHo.findByPk(MaCanHo)
+            if (!canHo) {
+                return res.status(400).json({
+                    message: "Căn hộ không tồn tại!"
+                })
+            }
+            if (canHo.MaHoKhau) {
+                return res.status(400).json({
+                    message: "Căn hộ này đã có hộ khẩu!"
+                })
+            }
+        }
+        const data = await HoKhau.create({
+            MaHoKhau,
+            MaCanHo,
+            DiaChiThuongTru: req.body.DiaChiThuongTru,
+            NoiCap: req.body.NoiCap,
+            NgayCap: req.body.NgayCap
+        })
+        if (MaCanHo) {
+            await CanHo.update({ MaHoKhau }, { where: { MaCanHo } })
+        }
         res.json(data)
     } catch (err) {
         res.status(500).json({ error: err.message })
