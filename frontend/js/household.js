@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     let currentRow = null;
     let currentHoKhauID = null;
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ===============================
        CALL API GET ALL
     =============================== */
-    fetch("http://localhost:3000/api/ho-khau")
+    await fetch("http://localhost:3000/api/ho-khau")
         .then(res => res.json())
         .then(data => {
             tbody.innerHTML = "";
@@ -75,10 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ===============================
        OPEN DETAIL
     =============================== */
-    function openDetail(maHoKhau) {
+    async function openDetail(maHoKhau) {
         currentHoKhauID = maHoKhau
 
-        fetch(`http://localhost:3000/api/ho-khau/${maHoKhau}`)
+        await fetch(`http://localhost:3000/api/ho-khau/${maHoKhau}`)
             .then(res => res.json())
             .then(hokhau => {
                 document.getElementById("modal-ma").value = hokhau.MaHoKhau
@@ -127,10 +127,10 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ===============================
        SAVE EDIT (1 LẦN DUY NHẤT)
     =============================== */
-    document.getElementById("btn-save-edit").addEventListener("click", () => {
+    document.getElementById("btn-save-edit").addEventListener("click", async () => {
 
         if (!currentRow) return;
-        fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
+        await fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -167,8 +167,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    document.getElementById("save-add").addEventListener("click", () => {
-        fetch("http://localhost:3000/api/ho-khau", {
+    document.getElementById("save-add").addEventListener("click", async () => {
+        await fetch("http://localhost:3000/api/ho-khau", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -193,8 +193,8 @@ document.addEventListener("DOMContentLoaded", () => {
         )
     );
 
-    document.getElementById("confirm-delete").addEventListener("click", () => {
-        fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
+    document.getElementById("confirm-delete").addEventListener("click", async () => {
+        await fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
             method: "DELETE"
         })
         .then(() => {

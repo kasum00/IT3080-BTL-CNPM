@@ -73,7 +73,7 @@ const getAllHoKhau = async (req, res) => {
         })
 
         const result = []
-        for(const hk of data) {
+        for (const hk of data) {
             const chuHo = await NhanKhau.findOne({
                 where: {
                     MaHoKhau: hk.MaHoKhau,
@@ -141,7 +141,7 @@ const updateHoKhau = async (req, res) => {
 
         const updatedHoKhau = await HoKhau.findByPk(req.params.id)
         res.json({
-            ...updateHoKhau.toJSON(),
+            ...updatedHoKhau.toJSON(),
             ChuHo: chuHo ? chuHo.HoTen : null
         })
     } catch (err) {
@@ -155,30 +155,30 @@ const deleteHoKhau = async (req, res) => {
     const trans = await sequelize.transaction()
 
     try {
-        const hoKhau = await HoKhau.findByPk(id, {transaction: trans})
+        const hoKhau = await HoKhau.findByPk(id, { transaction: trans })
         if (!hoKhau) {
             return res.status(404).json({
                 message: "Không tìm thấy hộ khẩu!"
             })
-        }  
+        }
 
         const ma_can_ho = hoKhau.MaCanHo
         await NhanKhau.destroy({
-            where: {MaHoKhau: id},
+            where: { MaHoKhau: id },
             transaction: trans
         })
 
-        await hoKhau.destroy({transaction: trans})
+        await hoKhau.destroy({ transaction: trans })
 
-        if(ma_can_ho) {
+        if (ma_can_ho) {
             await sequelize.query(`
                 UPDATE CanHo
                 SET TrangThai = 'trong'
                 WHERE MaCanHo = :ma_can_ho`,
-            {
-                replacements: {ma_can_ho},
-                transaction: trans
-            })
+                {
+                    replacements: { ma_can_ho },
+                    transaction: trans
+                })
         }
         await trans.commit()
         res.json({

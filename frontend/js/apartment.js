@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     let currentRow = null;
     let currentCanHoID = null
@@ -33,6 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ===============================
        RENDER ROW
     =============================== */
+
+    const statusLabel = {
+        'trong': "Trống",
+        'chu_o': "Chủ ở",
+        'cho_thue': "Cho thuê",
+    }
+
     function renderRow(canho) {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -40,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <td>${canho.TenCanHo}</td>
             <td>${canho.Tang}</td>
             <td>${canho.DienTich}</td>
-            <td>${canho.TrangThai}</td>
+            <td>${statusLabel[canho.TrangThai] || ""}</td>
             <td class="action">
                 <span class="btn-detail" data-id="${canho.MaCanHo}"></span>
             </td>
@@ -55,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ===============================
        CALL API GET ALL
     =============================== */
-    fetch("http://localhost:3000/api/can-ho")
+    await fetch("http://localhost:3000/api/can-ho")
         .then(res => res.json())
         .then(data => {
             tbody.innerHTML = ""
@@ -65,10 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ===============================
        OPEN DETAIL
     =============================== */
-    function openDetail(id) {
+    async function openDetail(id) {
         currentCanHoID = id
 
-        fetch(`http://localhost:3000/api/can-ho/${id}`)
+        await fetch(`http://localhost:3000/api/can-ho/${id}`)
             .then(res => res.json())
             .then(canho => {
                 document.getElementById("modal-name").value = canho.TenCanHo || "";
@@ -127,10 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ===============================
        SAVE EDIT (CHỈ 1 LẦN)
     =============================== */
-    document.getElementById("btn-save-edit").addEventListener("click", () => {
+    document.getElementById("btn-save-edit").addEventListener("click", async () => {
         if (!currentRow) return;
 
-        fetch(`http://localhost:3000/api/can-ho/${currentCanHoID}`, {
+        await fetch(`http://localhost:3000/api/can-ho/${currentCanHoID}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -172,9 +179,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    document.getElementById("save-add").addEventListener("click", () => {
+    document.getElementById("save-add").addEventListener("click", async () => {
 
-        fetch("http://localhost:3000/api/can-ho", {
+        await fetch("http://localhost:3000/api/can-ho", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
