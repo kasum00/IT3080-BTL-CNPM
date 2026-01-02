@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách khoản thu</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/fee-list.css">
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <!-- SIDEBAR (GIỐNG 100%) -->
+        <aside class="sidebar">
+            <h2>QUẢN LÝ CHUNG CƯ</h2>
+            <div class="role">Ban quản lý</div>
+
+            <div class="profile">
+                <img src="../assets/logo.png">
+                <div class="admin-name">Phú Trần</div>
+            </div>
+
+            <nav>
+                <a class="nav-home" href="dashboard.html">Trang chủ</a>
+
+                <a href="#" class="nav-family has-arrow open">Quản lý hộ gia đình</a>
+                <div class="submenu">
+                    <a href="apartment.html">Căn hộ</a>
+                    <a href="household.html">Hộ khẩu</a>
+                </div>
+
+                <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
+                <div class="submenu">
+                    <a href="resident.html">Quản lý nhân khẩu</a>
+                    <a href="temporary.html">Quản lý tạm trú</a>
+                    <a href="absence.html">Quản lý tạm vắng</a>
+                </div>
+
+                <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
+                <div class="submenu show">
+                    <a class="active" href="fee-list.html">Danh sách khoản thu</a>
+                    <a href="fee-manage.html">Khoản thu theo hộ</a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="logout-btn">Đăng xuất</button>
+                <div class="version">phiên bản 1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content">
+            <div class="fee-list-header">
+                <h1>Danh sách khoản thu</h1>
+                <div class="actions">
+                    <button class="btn-add">Thêm khoản thu</button>
+                    <input placeholder="Tìm kiếm">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <div class="table-scroll">
+                    <table class="fee-list-table">
+                        <thead>
+                            <tr>
+                                <th>Mã khoản thu</th>
+                                <th>Tên khoản thu</th>
+                                <th>Loại khoản thu</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                                <th>Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>KT-01</td>
+                                <td>Phí quản lý - 01</td>
+                                <td>Phí quản lý</td>
+                                <td>2025-01-01</td>
+                                <td>2025-12-31</td>
+
+                                <td class="action">
+                                    <span class="btn-detail" data-name="Phí quản lý - 01" data-type="Phí quản lý"
+                                    data-desc="Đóng theo hộ" 
+                                    data-budget="100000000/120000000" data-unit="100/120"
+                                    data-start="2025-01-01" data-end="2025-12-31">
+                                    </span>
+                                    <span class="btn-remove"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+    </div>
+    <!-- ===============================
+     MODAL CHI TIẾT KHOẢN THU
+    ================================ -->
+    <div id="fee-list-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Chi tiết khoản thu</h3>
+                <button class="modal-close" id="close-modal">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên khoản thu</label>
+                        <input type="text" id="modal-name" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loại khoản thu</label>
+                        <input type="text" id="modal-type" readonly>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Mô tả</label>
+                        <input type="text" id="modal-desc" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số tiền (đã thu/cần thu) - VND</label>
+                        <input type="text" id="modal-budget" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số hộ (đã thu/cần thu) - Hộ</label>
+                        <input type="text" id="modal-unit" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="modal-start" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="modal-end" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="btn-close-detail">Đóng</button>
+                <button class="btn-primary" id="btn-open-edit">
+                    Chỉnh sửa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL CHỈNH SỬA KHOẢN THU
+    ================================ -->
+    <div id="editModal" class="modal-overlay">
+        <div class="edit-modal">
+            <div class="edit-header">
+                <h3>Chỉnh sửa khoản thu</h3>
+                <button class="modal-close" id="close-edit">x</button>
+            </div>
+
+            <div class="edit-body">
+                <div class="edit-grid">
+                    <div class="form-item">
+                        <label>Tên khoản thu</label>
+                        <input id="edit-name">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Loại khoản thu</label>
+                        <input id="edit-type">
+                    </div>
+
+                    <div class="form-item full">
+                        <label>Mô tả</label>
+                        <input id="edit-desc">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Số tiền - VND</label>
+                        <input id="edit-budget">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Đơn vị</label>
+                        <select id="edit-unit" class="select-styled">
+                            <option value="" disabled selected>Chọn đơn vị...</option>
+                            <option value="Nhân khẩu">Nhân khẩu</option>
+                            <option value="Hộ khẩu">Hộ khẩu</option>
+                        </select>
+                    </div>
+
+                    <div class="form-item">
+                        <label>Ngày bắt đầu thuê</label>
+                        <input type="date" id="edit-start">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Ngày kết thúc thuê</label>
+                        <input type="date" id="edit-end">
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-footer">
+                <button class="btn-danger" id="btn-close-edit">Đóng</button>
+                <button class="btn-primary" id="btn-save-edit">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- ===============================
+     MODAL THỒNG BÁO CHỈNH SỬA KHOẢN THU
+    ================================ -->
+    <div id="notifyModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="notify-close" id="close-notify">x</button>
+            </div>
+
+            <div class="modal-body notify-body">
+                <h2 id="notify-text"></h2>
+            </div>
+
+            <div class="modal-footer">
+                <button id="notify-ok" class="btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+        MODAL THÊM KHOẢN THU
+    ================================ -->
+    <div id="addModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông tin khoản thu</h3>
+                <button class="modal-close" id="close-add">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên khoản thu</label>
+                        <input id="add-name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loại khoản thu</label>
+                        <input id="add-type">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Chú thích</label>
+                        <input id="add-desc">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số tiền - VND</label>
+                        <input id="add-budget">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Đơn vị</label>
+                        <select id="add-unit" class="select-styled">
+                            <option value="" disabled selected>Chọn đơn vị...</option>
+                            <option value="Nhân khẩu">Nhân khẩu</option>
+                            <option value="Hộ khẩu">Hộ khẩu</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="add-start">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="add-end">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="cancel-add">Đóng</button>
+                <button class="btn-primary" id="save-add">Lưu</button>
+            </div>
+        </div>
+    </div>
+    <!-- ===============================
+    MODAL XÁC NHẬN XÓA KHOẢN THU
+    ================================ -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="modal-close" id="close-delete">x</button>
+            </div>
+
+            <div class="modal-body notify-body">
+                <h2>Bạn có chắc chắn muốn xóa khoản thu này không</h2>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="confirm-delete">OK</button>
+                <button class="btn-primary" id="cancel-delete">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/fee-list.js"></script>
+</body>
+
+</html>
