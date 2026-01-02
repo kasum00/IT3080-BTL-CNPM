@@ -54,7 +54,10 @@ const createNhanKhau = async (req, res) => {
 const getAllNhanKhau = async (req, res) => {
   try {
     const data = await NhanKhau.findAll({
-      order: [["MaNhanKhau", "ASC"]],
+      order: [
+        ["MaHoKhau", "ASC"],
+        ["QuanHe", "ASC"], // chủ hộ
+      ],
     });
     res.json(data);
   } catch (err) {

@@ -6,7 +6,9 @@ const hoaDonRoutes = require("./routes/hoaDonRoutes");
 const nhanKhauRoutes = require("./routes/nhanKhauRoutes");
 const tamTruRoutes = require("./routes/tamTruRoutes");
 const tamVangRoutes = require("./routes/tamVangRoutes");
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 app.use("/api", khoanThuRoutes);
 app.use("/api", khoanThuHoKhauRoutes);
