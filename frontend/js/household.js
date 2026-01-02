@@ -32,6 +32,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
     /* ===============================
+       LOAD TABLE
+    =============================== */
+    async function loadHoKhau() {
+        try {
+            const res = await fetch("http://localhost:3000/api/ho-khau")
+            const data = await res.json()
+
+            if (!res.ok) {
+                showNotify(data.message || "Không tải được danh sách hộ khẩu!");
+                return;
+            }
+
+            tbody.innerHTML = ""
+            data.forEach(hokhau => tbody.appendChild(renderRow(hokhau)))
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
+    }
+    
+    /* ===============================
+       INIT
+    =============================== */
+    await loadHoKhau();
+
+    /* ===============================
        RENDER ROW
     =============================== */
     function renderRow(hokhau) {
@@ -63,34 +88,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     /* ===============================
-       CALL API GET ALL
-    =============================== */
-    await fetch("http://localhost:3000/api/ho-khau")
-        .then(res => res.json())
-        .then(data => {
-            tbody.innerHTML = "";
-            data.forEach(hokhau => tbody.appendChild(renderRow(hokhau)));
-        });
-
-    /* ===============================
        OPEN DETAIL
     =============================== */
     async function openDetail(maHoKhau) {
-        currentHoKhauID = maHoKhau
+        try {
+            const res = await fetch(`http://localhost:3000/api/ho-khau/${maHoKhau}`)
+            const hokhau = await res.json()
 
-        await fetch(`http://localhost:3000/api/ho-khau/${maHoKhau}`)
-            .then(res => res.json())
-            .then(hokhau => {
-                document.getElementById("modal-ma").value = hokhau.MaHoKhau
-                document.getElementById("modal-canHo").value = hokhau.MaCanHo || ""
-                document.getElementById("modal-chuHo").value = hokhau.ChuHo || "";
-                document.getElementById("modal-diaChi").value = hokhau.DiaChiThuongTru || "";
-                document.getElementById("modal-noiCap").value = hokhau.NoiCap || "";
-                document.getElementById("modal-ngayCap").value = hokhau.NgayCap || "";
+            if (!res.ok) {
+                detailModal.classList.remove("show")
+                showNotify(hokhau.message || "Không tải được chi tiết hộ khẩu");
+                return;
+            }
 
-                detailModal.classList.add("show");
-            })
+            document.getElementById("modal-ma").value = hokhau.MaHoKhau
+            document.getElementById("modal-canHo").value = hokhau.MaCanHo || ""
+            document.getElementById("modal-chuHo").value = hokhau.ChuHo || "";
+            document.getElementById("modal-diaChi").value = hokhau.DiaChiThuongTru || "";
+            document.getElementById("modal-noiCap").value = hokhau.NoiCap || "";
+            document.getElementById("modal-ngayCap").value = hokhau.NgayCap || "";
 
+            detailModal.classList.add("show");
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
     }
 
     /* ===============================
@@ -107,6 +128,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     =============================== */
     document.getElementById("btn-open-edit").addEventListener("click", () => {
         detailModal.classList.remove("show");
+
+        currentHoKhauID = document.getElementById("modal-ma").value;
 
         document.getElementById("edit-ma").value =
             document.getElementById("modal-ma").value;
@@ -128,25 +151,30 @@ document.addEventListener("DOMContentLoaded", async () => {
        SAVE EDIT (1 LẦN DUY NHẤT)
     =============================== */
     document.getElementById("btn-save-edit").addEventListener("click", async () => {
-
-        if (!currentRow) return;
-        await fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                DiaChiThuongTru: document.getElementById("edit-diaChi").value,
-                NoiCap: document.getElementById("edit-noiCap").value,
-                NgayCap: document.getElementById("edit-ngayCap").value
+        try {
+            const id = document.getElementById("edit-ma").value.trim()
+            const res = await fetch(`http://localhost:3000/api/ho-khau/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    DiaChiThuongTru: document.getElementById("edit-diaChi").value,
+                    NoiCap: document.getElementById("edit-noiCap").value,
+                    NgayCap: document.getElementById("edit-ngayCap").value
+                })
             })
-        })
-            .then(res => res.json())
-            .then(updated => {
-                const newRow = renderRow(updated);
-                currentRow.replaceWith(newRow);
-                currentRow = newRow;
-                editModal.classList.remove("show");
-                showNotify("Cập nhật hộ khẩu thành công!");
-            });
+
+            const data = await res.json()
+            if (!res.ok) {
+                editModal.classList.remove("show")
+                showNotify(data.message || "Cập nhật hộ khẩu thất bại!");
+                return;
+            }
+            editModal.classList.remove("show");
+            showNotify("Cập nhật hộ khẩu thành công!");
+            await loadHoKhau()
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
     });
 
     document.getElementById("close-edit").addEventListener("click", () => {
@@ -168,31 +196,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     document.getElementById("save-add").addEventListener("click", async () => {
-        const maCanHo = document.getElementById("add-canHo").value
-        const ngayCap = document.getElementById("add-ngayCap").value
+        try {
+            const maCanHo = document.getElementById("add-canHo").value
+            const ngayCap = document.getElementById("add-ngayCap").value
 
-        await fetch("http://localhost:3000/api/ho-khau", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                MaHoKhau: document.getElementById("add-ma").value,
-                MaCanHo: maCanHo ? Number(maCanHo) : null,
-                DiaChiThuongTru: document.getElementById("add-diaChi").value,
-                NoiCap: document.getElementById("add-noiCap").value,
-                NgayCap: ngayCap ? ngayCap : null
+            const res = await fetch("http://localhost:3000/api/ho-khau", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    MaHoKhau: document.getElementById("add-ma").value.trim(),
+                    MaCanHo: maCanHo ? Number(maCanHo) : null,
+                    DiaChiThuongTru: document.getElementById("add-diaChi").value.trim(),
+                    NoiCap: document.getElementById("add-noiCap").value.trim(),
+                    NgayCap: ngayCap ? ngayCap : null
+                })
             })
-        })
-            .then(async res => {
-                const data = await res.json()
-                if (!res.ok) {
-                    addModal.classList.remove("show")
-                    showNotify(data.message || "Thêm hộ khẩu thất bại!")
-                    return;
-                }
-                tbody.appendChild(renderRow(data))
+
+            const data = await res.json()
+            if (!res.ok) {
                 addModal.classList.remove("show")
-                showNotify("Thêm hộ khẩu thành công!")
-            })
+                showNotify(data.message || "Thêm hộ khẩu thất bại!")
+                return;
+            }
+
+            addModal.classList.remove("show")
+            showNotify("Thêm hộ khẩu thành công!")
+            await loadHoKhau()
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
     });
 
     ["cancel-delete", "close-delete"].forEach(id =>
@@ -202,15 +234,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
     document.getElementById("confirm-delete").addEventListener("click", async () => {
-        await fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
-            method: "DELETE"
-        })
-            .then(() => {
-                currentRow.remove();
-                deleteModal.classList.remove("show");
-                showNotify("Xóa hộ khẩu thành công!");
-            });
+        try {
+            const res = await fetch(`http://localhost:3000/api/ho-khau/${currentHoKhauID}`, {
+                method: "DELETE"
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                deleteModal.classList.remove("show")
+                showNotify(data.message || "Xóa hộ khẩu thất bại!")
+                return
+            }
+            deleteModal.classList.remove("show");
+            await loadHoKhau()
+            showNotify("Xóa hộ khẩu thành công!");
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
     });
+
+    /* ===============================
+       SEARCH
+    =============================== */
+
     const searchInput = document.getElementById("search-input");
 
     searchInput.addEventListener("input", () => {

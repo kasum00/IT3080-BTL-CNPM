@@ -30,15 +30,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
     })
 
-    /* ===============================
-       RENDER ROW
-    =============================== */
-
     const statusLabel = {
         'trong': "Trống",
         'chu_o': "Chủ ở",
         'cho_thue': "Cho thuê",
     }
+
+    /* ===============================
+       LOAD TABLE
+    =============================== */
+
+    async function loadCanHo() {
+        try {
+            const res = await fetch("http://localhost:3000/api/can-ho")
+            const data = await res.json()
+
+            if (!res.ok) {
+                showNotify(data.message || "Không tải được danh sách căn hộ!");
+                return;
+            }
+
+            tbody.innerHTML = ""
+            data.forEach(canho => tbody.appendChild(renderRow(canho)))
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
+    }
+
+    /* ===============================
+       INIT
+    =============================== */
+    await loadCanHo();
+
+    /* ===============================
+       RENDER ROW
+    =============================== */
 
     function renderRow(canho) {
         const tr = document.createElement("tr");
@@ -60,43 +86,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     /* ===============================
-       CALL API GET ALL
-    =============================== */
-    await fetch("http://localhost:3000/api/can-ho")
-        .then(res => res.json())
-        .then(data => {
-            tbody.innerHTML = ""
-            data.forEach(canho => tbody.appendChild(renderRow(canho)))
-        })
-
-    /* ===============================
        OPEN DETAIL
     =============================== */
     async function openDetail(id) {
         currentCanHoID = id
+        try {
+            const res = await fetch(`http://localhost:3000/api/can-ho/${id}`)
+            const canho = await res.json()
 
-        await fetch(`http://localhost:3000/api/can-ho/${id}`)
-            .then(res => res.json())
-            .then(canho => {
-                document.getElementById("modal-name").value = canho.TenCanHo || "";
-                document.getElementById("modal-floor").value = canho.Tang || "";
-                document.getElementById("modal-area").value = canho.DienTich || "";
-                document.getElementById("modal-desc").value = canho.MoTa || "";
-                // document.getElementById("modal-start").value = canho.NgayBatDau || "";
-                // document.getElementById("modal-end").value = canho.NgayKetThuc || "";
+            if (!res.ok) {
+                detailModal.classList.remove("show")
+                showNotify(data.message || "Không tải được chi tiết căn hộ!")
+                return
+            }
 
-                fetch(`http://localhost:3000/api/can-ho/tim-chu-ho/${id}`)
-                    .then(res => res.json())
-                    .then(chuHo => {
-                        document.getElementById("modal-owner").value =
-                            chuHo?.HoTen || "";
-                    })
-                    .catch(() => {
-                        document.getElementById("modal-owner").value = "";
-                    });
+            document.getElementById("modal-name").value = canho.TenCanHo || "";
+            document.getElementById("modal-floor").value = canho.Tang || "";
+            document.getElementById("modal-area").value = canho.DienTich || "";
+            document.getElementById("modal-desc").value = canho.MoTa || "";
+            // document.getElementById("modal-start").value = canho.NgayBatDau || "";
+            // document.getElementById("modal-end").value = canho.NgayKetThuc || "";
 
-                detailModal.classList.add("show");
-            })
+            try {
+                const ownerRes = await fetch(`http://localhost:3000/api/can-ho/tim-chu-ho/${id}`)
+                const owner = await ownerRes.json()
+                document.getElementById("modal-owner").value = owner?.chuHo?.HoTen || ""
+            } catch (err) {
+                document.getElementById("modal-owner").value = ""
+            }
+            detailModal.classList.add("show");
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
     }
 
     /* ===============================
@@ -135,30 +156,31 @@ document.addEventListener("DOMContentLoaded", async () => {
        SAVE EDIT (CHỈ 1 LẦN)
     =============================== */
     document.getElementById("btn-save-edit").addEventListener("click", async () => {
-        if (!currentRow) return;
-
-        await fetch(`http://localhost:3000/api/can-ho/${currentCanHoID}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                TenCanHo: document.getElementById("edit-name").value,
-                Tang: document.getElementById("edit-floor").value,
-                DienTich: document.getElementById("edit-area").value,
-                MoTa: document.getElementById("edit-desc").value
+        try {
+            const res = await fetch(`http://localhost:3000/api/can-ho/${currentCanHoID}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    TenCanHo: document.getElementById("edit-name").value,
+                    Tang: document.getElementById("edit-floor").value,
+                    DienTich: document.getElementById("edit-area").value,
+                    MoTa: document.getElementById("edit-desc").value
+                })
             })
-        })
-            .then(res => res.json())
-            .then(canho => {
-                if (!currentRow) return
 
-                currentRow.children[1].innerText = document.getElementById("edit-name").value;
-                currentRow.children[2].innerText = document.getElementById("edit-floor").value;
-                currentRow.children[3].innerText = document.getElementById("edit-area").value;
-                currentRow.children[4].innerText = document.getElementById("edit-desc").value || "Trống";
-
+            const data = await res.json()
+            if (!res.ok) {
                 editModal.classList.remove("show")
-                showNotify("Lưu chỉnh sửa căn hộ thành công!")
-            })
+                showNotify(data.message || "Cập nhật căn hộ thất bại!")
+                return
+            }
+
+            editModal.classList.remove("show")
+            showNotify("Lưu chỉnh sửa căn hộ thành công!")
+            await loadCanHo()
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
     });
 
     document.getElementById("close-edit").addEventListener("click", () => {
@@ -180,24 +202,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     document.getElementById("save-add").addEventListener("click", async () => {
+        try {
+            const res = await fetch("http://localhost:3000/api/can-ho", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    TenCanHo: document.getElementById("add-name").value,
+                    Tang: document.getElementById("add-floor").value,
+                    DienTich: document.getElementById("add-area").value,
+                    MoTa: document.getElementById("add-desc").value
+                })
+            })
 
-        await fetch("http://localhost:3000/api/can-ho", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                TenCanHo: document.getElementById("add-name").value,
-                Tang: document.getElementById("add-floor").value,
-                DienTich: document.getElementById("add-area").value,
-                MoTa: document.getElementById("add-desc").value
-            })
-        })
-            .then(res => res.json())
-            .then(canho => {
-                tbody.appendChild(renderRow(canho))
+            const data = await res.json()
+            if (!res.ok) {
                 addModal.classList.remove("show")
-                showNotify("Thêm căn hộ thành công!")
-            })
+                showNotify("Thêm căn hộ thất bại!")
+                return
+            }
+
+            addModal.classList.remove("show")
+            showNotify("Thêm căn hộ thành công!")
+            await loadCanHo()
+        } catch (err) {
+            showNotify("Lỗi kết nối server!")
+        }
     });
+
+    /* ===============================
+       SEARCH
+    =============================== */
 
     const searchInput = document.getElementById("search-input")
 

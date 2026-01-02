@@ -220,7 +220,7 @@ const assignHoKhauForCanHo = async (req, res) => {
             })
         }
 
-        const canHoMoi = await HoKhau.findByPk(ma_can_ho_moi, { transaction: trans })
+        const canHoMoi = await CanHo.findByPk(ma_can_ho_moi, { transaction: trans })
         if (!canHoMoi) {
             await trans.rollback()
             return res.status(404).json({

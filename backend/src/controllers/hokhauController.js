@@ -182,10 +182,12 @@ const updateHoKhau = async (req, res) => {
             })
         }
 
+        const { DiaChiThuongTru, NoiCap, NgayCap } = req.body
+
         await hoKhau.update({
-            DiaChiThuongTru: req.body.DiaChiThuongTru,
-            NoiCap: req.body.NoiCap,
-            NgayCap: req.body.NgayCap
+            DiaChiThuongTru: DiaChiThuongTru?.trim() || null,
+            NoiCap: NoiCap?.trim() || null,
+            NgayCap: NgayCap?.trim() || null
         })
 
         const chuHo = await NhanKhau.findOne({
@@ -195,9 +197,8 @@ const updateHoKhau = async (req, res) => {
             }
         })
 
-        const updatedHoKhau = await HoKhau.findByPk(req.params.id)
         res.json({
-            ...updatedHoKhau.toJSON(),
+            ...hoKhau.toJSON(),
             ChuHo: chuHo ? chuHo.HoTen : null
         })
     } catch (err) {
