@@ -67,7 +67,8 @@ create table TamTru(
 create table TamVang(
 	MaTamVang int auto_increment primary key,
     MaNhanKhau int,
-    ThoiHan Date,
+    NgayBatDau DATE, 
+    NgayKetThuc DATE,
     LyDo nvarchar(200),
     FOREIGN KEY (MaNhanKhau) REFERENCES NhanKhau(MaNhanKhau)
         ON DELETE CASCADE ON UPDATE CASCADE

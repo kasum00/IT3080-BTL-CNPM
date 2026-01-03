@@ -44,6 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById(id).onclick = () =>
       document.getElementById("notifyModal").classList.remove("show");
   });
+  //search
+  document
+    .getElementById("searchInput")
+    ?.addEventListener("input", searchNhanKhau);
 });
 
 /* ===============================

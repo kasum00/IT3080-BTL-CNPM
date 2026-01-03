@@ -13,7 +13,10 @@ const TamVang = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    ThoiHan: {
+    NgayBatDau: {
+      type: DataTypes.DATE,
+    },
+    NgayKetThuc: {
       type: DataTypes.DATE,
     },
     LyDo: {
@@ -26,39 +29,77 @@ const TamVang = sequelize.define(
   }
 );
 
-
 // create
 const createTamVang = async (req, res) => {
   try {
-    const data = await TamVang.create(req.body);
-    res.json(data);
+    const { MaNhanKhau, NgayBatDau, NgayKetThuc, LyDo } = req.body;
+
+    if (!MaNhanKhau || !NgayBatDau || !NgayKetThuc) {
+      return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
+    }
+
+    const tamVang = await TamVang.create({
+      MaNhanKhau,
+      NgayBatDau,
+      NgayKetThuc,
+      LyDo,
+    });
+
+    res.status(201).json(tamVang);
   } catch (err) {
-    res.status(500).json({ err: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server" });
   }
 };
 
 // get all
 const getAllTamVang = async (req, res) => {
   try {
-    const data = await TamVang.findAll({
-      order: [["MaTamVang", "ASC"]],
-    });
-    res.json(data);
+    const [rows] = await sequelize.query(`
+      SELECT
+        tv.MaTamVang,
+        nk.HoTen,
+        nk.CanCuocCongDan AS CCCD,
+        tv.NgayBatDau,
+        tv.NgayKetThuc,
+        tv.LyDo
+      FROM TamVang tv
+      JOIN NhanKhau nk ON tv.MaNhanKhau = nk.MaNhanKhau
+    `);
+
+    res.json(rows);
   } catch (err) {
-    res.status(500).json({ err: err.message });
+    res.status(500).json({ message: "Lỗi server" });
   }
 };
 
 // get by id
 const getTamVangByID = async (req, res) => {
   try {
-    const data = await TamVang.findByPk(req.params.id);
-    if (!data) {
-      return res.status(404).json({
-        message: "Không tìm thấy tạm vắng!",
-      });
+    const [rows] = await sequelize.query(
+      `
+      SELECT 
+        tv.MaTamVang,
+        nk.HoTen,
+        nk.CanCuocCongDan AS CCCD,
+        tv.NgayBatDau,
+        tv.NgayKetThuc,
+        tv.LyDo
+      FROM TamVang tv
+      JOIN NhanKhau nk ON tv.MaNhanKhau = nk.MaNhanKhau
+      WHERE tv.MaTamVang = :id
+    `,
+      {
+        replacements: { id: req.params.id },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!rows) {
+      return res.status(404).json({ message: "Không tìm thấy tạm vắng!" });
     }
-    res.json(data);
+    // rows lúc này là 1 object (vì dùng QueryTypes.SELECT)
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
