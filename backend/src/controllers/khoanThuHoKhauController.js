@@ -262,8 +262,53 @@ const updateTrangThaiKhoanThu = async (req, res) => {
   }
 };
 
+// Xóa khoản thu khỏi hộ khẩu (bỏ gán)
+const deleteKhoanThuFromHoKhau = async (req, res) => {
+  try {
+    const { maHoKhau, maKhoanThu } = req.params;
+
+    if (!maHoKhau || !maKhoanThu) {
+      return res.status(400).json({
+        success: false,
+        error: "Thiếu thông tin mã hộ khẩu hoặc mã khoản thu",
+      });
+    }
+
+    // Tìm record cần xóa
+    const record = await KhoanThuHoKhau.findOne({
+      where: { MaHoKhau: maHoKhau, MaKhoanThu: maKhoanThu },
+    });
+
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        error: "Không tìm thấy khoản thu đã gán cho hộ khẩu này",
+      });
+    }
+
+    // Xóa record
+    await record.destroy();
+
+    res.json({
+      success: true,
+      message: "Đã bỏ gán khoản thu khỏi hộ khẩu",
+      data: {
+        MaHoKhau: maHoKhau,
+        MaKhoanThu: maKhoanThu,
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting KhoanThuHoKhau:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   assignKhoanThuToHoKhau,
   getKhoanThuByHoKhau,
   updateTrangThaiKhoanThu,
+  deleteKhoanThuFromHoKhau,
 };

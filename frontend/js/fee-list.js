@@ -431,4 +431,427 @@ document.addEventListener("DOMContentLoaded", () => {
         showNotify("Có lỗi xảy ra khi xóa!");
       });
   });
+
+  /* ===============================
+       GÁN KHOẢN THU CHO HỘ KHẨU
+    =============================== */
+  const assignFeeModal = document.getElementById("assignFeeModal");
+  const btnAssignFee = document.getElementById("btn-assign-fee");
+  const closeAssign = document.getElementById("close-assign");
+  const btnCancelAssign = document.getElementById("btn-cancel-assign");
+  const btnSaveAssign = document.getElementById("btn-save-assign");
+  const assignTbody = document.getElementById("assign-tbody");
+  const checkboxAll = document.getElementById("checkbox-all");
+  const selectedCount = document.getElementById("selected-count");
+
+  let allApartments = [];
+  let filteredApartments = [];
+  let assignedApartments = new Set(); // Lưu các căn hộ đã được gán khoản thu này
+  let changedApartments = new Map(); // Lưu các thay đổi: maHoKhau -> true/false (gán/bỏ gán)
+
+  // Parse mã căn hộ để lấy tòa, tầng
+  // Format: "Căn hộ A101" -> Tòa A, Tầng 1, Căn 01
+  function parseApartmentCode(code) {
+    const codeStr = String(code || "").trim();
+    if (!codeStr || codeStr === "null" || codeStr === "undefined") {
+      return { building: "", floor: 0 };
+    }
+
+    // Tìm pattern: chữ cái + 3-4 chữ số (VD: A201, B1501)
+    const match = codeStr.match(/([A-Za-z])(\d{3,4})/);
+
+    if (!match) {
+      return { building: "", floor: 0 };
+    }
+
+    const building = match[1].toUpperCase();
+    const numberPart = match[2];
+
+    // Xử lý tầng:
+    // A101 -> 101 -> tầng 1
+    // A201 -> 201 -> tầng 2
+    let floor = 0;
+    if (numberPart.length === 3) {
+      floor = parseInt(numberPart.charAt(0));
+    } else if (numberPart.length === 4) {
+      floor = parseInt(numberPart.substring(0, 2));
+    }
+
+    return { building, floor };
+  }
+
+  // Mở modal gán khoản thu
+  btnAssignFee?.addEventListener("click", async () => {
+    if (!selectedId) {
+      showNotify("Chưa chọn khoản thu!");
+      return;
+    }
+
+    detailModal.classList.remove("show");
+    assignFeeModal.classList.add("show");
+
+    // Reset
+    changedApartments.clear();
+    assignedApartments.clear();
+
+    // Load danh sách căn hộ và hộ khẩu
+    await loadApartmentsForAssign();
+
+    // Load các hộ khẩu đã được gán khoản thu này
+    await loadAssignedHouseholds();
+
+    // Render table (không cần populate floor dropdown nữa)
+    filterAndRenderAssignTable();
+  });
+
+  // Load danh sách căn hộ
+  async function loadApartmentsForAssign() {
+    try {
+      const res = await fetch("http://localhost:3000/api/can-ho");
+      const response = await res.json();
+      const apartments = Array.isArray(response)
+        ? response
+        : response.data || [];
+
+      // Load thêm thông tin chủ hộ cho mỗi căn hộ
+      allApartments = [];
+      for (const apt of apartments) {
+        let chuHo = "Chưa có chủ hộ";
+
+        try {
+          const ownerRes = await fetch(
+            `http://localhost:3000/api/can-ho/tim-chu-ho/${apt.MaCanHo}`
+          );
+          const ownerData = await ownerRes.json();
+
+          if (ownerData.chuHo && ownerData.chuHo.HoTen) {
+            chuHo = ownerData.chuHo.HoTen;
+          }
+        } catch (err) {
+          console.error(`Lỗi khi tìm chủ hộ cho ${apt.MaCanHo}:`, err);
+        }
+
+        const parsed = parseApartmentCode(apt.TenCanHo); // Parse từ TenCanHo
+        allApartments.push({
+          ...apt,
+          chuHo,
+          building: parsed.building,
+          floor: parsed.floor,
+        });
+
+        // Debug: log parsed values
+        console.log(
+          `Căn hộ ${apt.MaCanHo} - Tên: ${apt.TenCanHo} -> Tòa=${parsed.building}, Tầng=${parsed.floor}`
+        );
+      }
+
+      filteredApartments = [...allApartments];
+      console.log(`Loaded ${allApartments.length} apartments`);
+    } catch (err) {
+      console.error("Error loading apartments:", err);
+      showNotify("Không thể tải danh sách căn hộ!");
+    }
+  }
+
+  // Load các hộ khẩu đã được gán khoản thu
+  async function loadAssignedHouseholds() {
+    try {
+      // Giả sử có API endpoint để lấy danh sách hộ khẩu đã gán khoản thu
+      // Nếu không có, bạn cần tạo endpoint mới trong backend
+      // Tạm thời comment lại, sẽ implement khi có API
+
+      // const res = await fetch(`http://localhost:3000/api/khoan-thu/${selectedId}/ho-khau`);
+      // const data = await res.json();
+      // if (data.success && data.data) {
+      //   data.data.forEach(item => {
+      //     assignedApartments.add(item.MaHoKhau);
+      //   });
+      // }
+
+      // Tạm thời load từ bảng khoan_thu_ho_khau
+      for (const apt of allApartments) {
+        if (apt.MaHoKhau) {
+          try {
+            const res = await fetch(
+              `http://localhost:3000/api/khoan-thu-ho-khau/${apt.MaHoKhau}`
+            );
+            const data = await res.json();
+
+            if (data.success && data.data) {
+              const hasThisFee = data.data.some(
+                (fee) => fee.MaKhoanThu === selectedId
+              );
+              if (hasThisFee) {
+                assignedApartments.add(apt.MaHoKhau);
+              }
+            }
+          } catch (err) {
+            console.error(`Lỗi khi kiểm tra gán cho ${apt.MaHoKhau}:`, err);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error loading assigned households:", err);
+    }
+  }
+
+  // Không cần populate floor dropdown nữa vì dùng input number
+
+  // Filter và render bảng
+  function filterAndRenderAssignTable() {
+    const buildingEl = document.getElementById("assign-filter-building");
+    const floorEl = document.getElementById("assign-filter-floor");
+    const apartmentEl = document.getElementById("assign-filter-apartment");
+
+    // Null check
+    if (!buildingEl || !floorEl || !apartmentEl) {
+      console.error("Cannot find filter elements");
+      return;
+    }
+
+    const buildingFilter = buildingEl.value.trim().toUpperCase();
+    const floorFilterInput = floorEl.value.trim();
+    const floorFilter = floorFilterInput ? parseInt(floorFilterInput) : null;
+    const apartmentFilter = apartmentEl.value.toLowerCase().trim();
+
+    console.log(
+      `Filter - Tòa: "${buildingFilter}", Tầng: ${floorFilter}, Tìm kiếm: "${apartmentFilter}"`
+    );
+
+    filteredApartments = allApartments.filter((apt) => {
+      let match = true;
+
+      // Lọc theo tòa (so sánh uppercase)
+      if (buildingFilter && apt.building.toUpperCase() !== buildingFilter) {
+        match = false;
+      }
+
+      // Lọc theo tầng (so sánh số)
+      if (floorFilter !== null && apt.floor !== floorFilter) {
+        match = false;
+      }
+
+      // Lọc theo mã/tên căn hộ
+      if (apartmentFilter) {
+        const code = String(apt.MaCanHo || "").toLowerCase();
+        const name = String(apt.TenCanHo || "").toLowerCase();
+        if (
+          !code.includes(apartmentFilter) &&
+          !name.includes(apartmentFilter)
+        ) {
+          match = false;
+        }
+      }
+
+      return match;
+    });
+
+    console.log(`Filtered: ${filteredApartments.length} apartments`);
+    renderAssignTable();
+  }
+
+  // Render bảng gán khoản thu
+  function renderAssignTable() {
+    assignTbody.innerHTML = "";
+
+    if (!filteredApartments || filteredApartments.length === 0) {
+      assignTbody.innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 30px; color: #999;">
+            Không có căn hộ nào
+          </td>
+        </tr>
+      `;
+      updateSelectedCount();
+      return;
+    }
+
+    filteredApartments.forEach((apt) => {
+      const tr = document.createElement("tr");
+      const maHoKhau = apt.MaHoKhau || "";
+
+      // Kiểm tra trạng thái: đã gán ban đầu + thay đổi mới
+      let isAssigned = assignedApartments.has(maHoKhau);
+      if (changedApartments.has(maHoKhau)) {
+        isAssigned = changedApartments.get(maHoKhau);
+      }
+
+      const statusText = maHoKhau
+        ? isAssigned
+          ? "Đã gán"
+          : "Chưa gán"
+        : "Chưa có hộ khẩu";
+      const statusClass = maHoKhau
+        ? isAssigned
+          ? "status-assigned"
+          : "status-not-assigned"
+        : "status-not-assigned";
+
+      tr.innerHTML = `
+        <td>
+          <input type="checkbox" 
+            class="apt-checkbox" 
+            data-ma-ho-khau="${maHoKhau}"
+            ${!maHoKhau ? "disabled" : ""}
+            ${isAssigned ? "checked" : ""}>
+        </td>
+        <td>${apt.MaCanHo}</td>
+        <td>${apt.TenCanHo}</td>
+        <td>${apt.building}</td>
+        <td>${apt.floor}</td>
+        <td>${maHoKhau || "—"}</td>
+        <td>${apt.chuHo}</td>
+        <td><span class="${statusClass}">${statusText}</span></td>
+      `;
+
+      assignTbody.appendChild(tr);
+    });
+
+    // Attach checkbox events
+    attachCheckboxEvents();
+    updateSelectedCount();
+  }
+
+  // Attach checkbox events
+  function attachCheckboxEvents() {
+    document.querySelectorAll(".apt-checkbox").forEach((checkbox) => {
+      checkbox.addEventListener("change", (e) => {
+        const maHoKhau = e.target.dataset.maHoKhau;
+        const isChecked = e.target.checked;
+
+        // Lưu thay đổi
+        const originallyAssigned = assignedApartments.has(maHoKhau);
+        if (isChecked !== originallyAssigned) {
+          changedApartments.set(maHoKhau, isChecked);
+        } else {
+          changedApartments.delete(maHoKhau);
+        }
+
+        updateSelectedCount();
+        renderAssignTable(); // Re-render để cập nhật trạng thái
+      });
+    });
+  }
+
+  // Update selected count
+  function updateSelectedCount() {
+    const checkedBoxes = document.querySelectorAll(
+      ".apt-checkbox:checked:not(:disabled)"
+    );
+    selectedCount.textContent = checkedBoxes.length;
+  }
+
+  // Checkbox all
+  checkboxAll?.addEventListener("change", (e) => {
+    const isChecked = e.target.checked;
+
+    filteredApartments.forEach((apt) => {
+      if (apt.MaHoKhau) {
+        const originallyAssigned = assignedApartments.has(apt.MaHoKhau);
+        if (isChecked !== originallyAssigned) {
+          changedApartments.set(apt.MaHoKhau, isChecked);
+        } else {
+          changedApartments.delete(apt.MaHoKhau);
+        }
+      }
+    });
+
+    renderAssignTable();
+  });
+
+  // Filter events
+  document
+    .getElementById("assign-filter-building")
+    ?.addEventListener("change", filterAndRenderAssignTable);
+
+  document
+    .getElementById("assign-filter-floor")
+    ?.addEventListener("change", filterAndRenderAssignTable);
+
+  document
+    .getElementById("assign-filter-apartment")
+    ?.addEventListener("input", filterAndRenderAssignTable);
+
+  // Chọn tất cả
+  document.getElementById("btn-select-all")?.addEventListener("click", () => {
+    filteredApartments.forEach((apt) => {
+      if (apt.MaHoKhau) {
+        changedApartments.set(apt.MaHoKhau, true);
+      }
+    });
+    renderAssignTable();
+  });
+
+  // Bỏ chọn tất cả
+  document.getElementById("btn-deselect-all")?.addEventListener("click", () => {
+    filteredApartments.forEach((apt) => {
+      if (apt.MaHoKhau) {
+        changedApartments.set(apt.MaHoKhau, false);
+      }
+    });
+    renderAssignTable();
+  });
+
+  // Đóng modal
+  [closeAssign, btnCancelAssign].forEach((btn) => {
+    btn?.addEventListener("click", () => {
+      assignFeeModal.classList.remove("show");
+    });
+  });
+
+  assignFeeModal?.addEventListener("click", (e) => {
+    if (e.target === assignFeeModal) {
+      assignFeeModal.classList.remove("show");
+    }
+  });
+
+  // Lưu thay đổi
+  btnSaveAssign?.addEventListener("click", async () => {
+    if (changedApartments.size === 0) {
+      showNotify("Không có thay đổi nào!");
+      return;
+    }
+
+    try {
+      // Gửi từng request để gán/bỏ gán
+      const promises = [];
+
+      for (const [maHoKhau, shouldAssign] of changedApartments.entries()) {
+        if (shouldAssign) {
+          // Gán khoản thu cho hộ
+          promises.push(
+            fetch("http://localhost:3000/api/khoan-thu-ho-khau", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                MaHoKhau: maHoKhau,
+                MaKhoanThu: selectedId,
+              }),
+            })
+          );
+        } else {
+          // Bỏ gán khoản thu (xóa)
+          promises.push(
+            fetch(
+              `http://localhost:3000/api/khoan-thu-ho-khau/${maHoKhau}/${selectedId}`,
+              {
+                method: "DELETE",
+              }
+            )
+          );
+        }
+      }
+
+      await Promise.all(promises);
+
+      assignFeeModal.classList.remove("show");
+      showNotify(`Đã cập nhật gán khoản thu cho ${changedApartments.size} hộ!`);
+
+      // Reset
+      changedApartments.clear();
+    } catch (err) {
+      console.error("Error saving assignments:", err);
+      showNotify("Có lỗi xảy ra khi lưu thay đổi!");
+    }
+  });
 });
