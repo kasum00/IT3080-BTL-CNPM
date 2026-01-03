@@ -189,55 +189,88 @@ INSERT INTO KhoanThuTheoHo (MaKhoanThu, MaHoKhau, SoLuong, ThanhTien, TrangThai)
 (10, 'HK008', 1, 200000, 'ĐÃ ĐÓNG');
 
 
-INSERT INTO NhanKhau (MaHoKhau, HoTen, QuanHe) VALUES
--- HK001
-('HK001', 'Nguyễn Văn An', 'chu ho'),
-('HK001', 'Trần Thị Bích', 'vo'),
-('HK001', 'Nguyễn Văn Minh', 'con'),
-('HK001', 'Nguyễn Thị Hoa', 'con'),
+INSERT INTO NhanKhau
+(MaHoKhau, HoTen, CanCuocCongDan, NgaySinh, NoiSinh, DanToc, NgheNghiep, QuanHe, GhiChu, TrangThai, MaTaiKhoan)
+VALUES
+('HK001','Nguyễn Văn An','001200000101','1974-02-12','Hà Nội','Kinh','Kinh doanh','chu ho',NULL,1,NULL),
+('HK001','Trần Thị Bích','001200000102','1978-07-25','Hà Nội','Kinh','Nội trợ','vo',NULL,1,NULL),
+('HK001','Nguyễn Văn Minh','001200000103','2002-05-18','Hà Nội','Kinh','Sinh viên','con',NULL,1,NULL),
+('HK001','Nguyễn Thị Hoa','001200000104','2005-09-30','Hà Nội','Kinh','Học sinh','con',NULL,1,NULL),
 
--- HK002
-('HK002', 'Phạm Đức Thắng', 'chu ho'),
-('HK002', 'Lê Thị Mai', 'vo'),
-('HK002', 'Phạm Thị Lan', 'con'),
+('HK002','Phạm Đức Thắng','001200000105','1972-11-10','Thái Bình','Kinh','Cán bộ nhà nước','chu ho',NULL,1,NULL),
+('HK002','Lê Thị Mai','001200000106','1976-04-22','Thái Bình','Kinh','Giáo viên tiểu học','vo',NULL,1,NULL),
+('HK002','Phạm Thị Lan','001200000107','2006-08-14','Thái Bình','Kinh','Học sinh','con',NULL,1,NULL),
 
--- HK003
-('HK003', 'Hoàng Văn Hùng', 'chu ho'),
-('HK003', 'Nguyễn Thị Thu', 'vo'),
-('HK003', 'Hoàng Văn Nam', 'con'),
-('HK003', 'Hoàng Thị Ngọc', 'con'),
-('HK003', 'Hoàng Văn Tuấn', 'con'),
+('HK003','Hoàng Văn Hùng','001200000108','1970-02-05','Hải Phòng','Kinh','Kỹ sư xây dựng','chu ho',NULL,1,NULL),
+('HK003','Nguyễn Thị Thu','001200000109','1974-06-19','Hải Phòng','Kinh','Nhân viên kế toán','vo',NULL,1,NULL),
+('HK003','Hoàng Văn Nam','001200000110','1998-01-12','Hải Phòng','Kinh','Nhân viên văn phòng','con',NULL,1,NULL),
+('HK003','Hoàng Thị Ngọc','001200000111','2001-03-08','Hải Phòng','Kinh','Sinh viên','con',NULL,1,NULL),
+('HK003','Hoàng Văn Tuấn','001200000112','2004-10-21','Hải Phòng','Kinh','Học sinh THPT','con',NULL,1,NULL),
 
--- HK004
-('HK004', 'Trần Quốc Toàn', 'chu ho'),
-('HK004', 'Vũ Thị Hằng', 'vo'),
+('HK004','Trần Quốc Toàn','001200000113','1976-12-02','Quảng Ninh','Kinh','Luật sư','chu ho',NULL,1,NULL),
+('HK004','Vũ Thị Hằng','001200000114','1980-09-15','Quảng Ninh','Kinh','Nhân viên ngân hàng','vo',NULL,1,NULL),
 
--- HK005
-('HK005', 'Đặng Minh Tuấn', 'chu ho'),
-('HK005', 'Phạm Thị Linh', 'vo'),
-('HK005', 'Đặng Minh Châu', 'con'),
-('HK005', 'Nguyễn Văn Hải', 'nguoi thue'),
+('HK005','Đặng Minh Tuấn','001200000115','1973-04-18','Nam Định','Kinh','Chủ doanh nghiệp nhỏ','chu ho',NULL,1,NULL),
+('HK005','Phạm Thị Linh','001200000116','1977-07-09','Nam Định','Kinh','Nhân viên bán hàng','vo',NULL,1,NULL),
+('HK005','Đặng Minh Châu','001200000117','2003-02-27','Nam Định','Kinh','Sinh viên','con',NULL,1,NULL),
+('HK005','Nguyễn Văn Hải','001200000118','1992-11-11','Nam Định','Kinh','Lao động tự do','nguoi thue',NULL,1,NULL),
 
--- HK006
-('HK006', 'Lý Thanh Sơn', 'chu ho'),
-('HK006', 'Ngô Thị Tuyết', 'vo'),
-('HK006', 'Lý Thanh Long', 'con'),
-('HK006', 'Lý Thị Hương', 'con'),
-('HK006', 'Lý Thanh Tùng', 'con'),
+('HK006','Lý Thanh Sơn','001200000119','1969-01-20','Hà Nam','Kinh','Giám đốc công ty','chu ho',NULL,1,NULL),
+('HK006','Ngô Thị Tuyết','001200000120','1972-08-06','Hà Nam','Kinh','Kế toán trưởng','vo',NULL,1,NULL),
+('HK006','Lý Thanh Long','001200000121','1999-03-15','Hà Nam','Kinh','Kỹ sư phần mềm','con',NULL,1,NULL),
+('HK006','Lý Thị Hương','001200000122','2002-06-28','Hà Nam','Kinh','Sinh viên','con',NULL,1,NULL),
+('HK006','Lý Thanh Tùng','001200000123','2006-12-05','Hà Nam','Kinh','Học sinh','con',NULL,1,NULL),
 
--- HK007
-('HK007', 'Bùi Văn Đức', 'chu ho'),
-('HK007', 'Đỗ Thị Hạnh', 'vo'),
-('HK007', 'Bùi Văn Khoa', 'con'),
-('HK007', 'Trần Thị Lan', 'nguoi thue'),
+('HK007','Bùi Văn Đức','001200000124','1974-05-09','Ninh Bình','Kinh','Cán bộ hưu trí','chu ho',NULL,1,NULL),
+('HK007','Đỗ Thị Hạnh','001200000125','1978-10-17','Ninh Bình','Kinh','Nội trợ','vo',NULL,1,NULL);
 
--- HK008
-('HK008', 'Võ Minh Quân', 'chu ho'),
-('HK008', 'Trương Thị Ánh', 'vo'),
-('HK008', 'Võ Minh Anh', 'con'),
-('HK008', 'Võ Minh Đức', 'con');
+--tam trú
+INSERT INTO TamTru
+(MaNhanKhau, DiaChiThuongTru, DiaChiTamTru, CanCuocCongDan, ngayBatDau, ngayKetThuc)
+VALUES
+(1, 'Nam Định', 'Căn hộ A101, Chung cư Bluemoon', '001200000101', '2023-01-01', '2023-12-31'),
+(2, 'Thái Bình', 'Căn hộ A101, Chung cư Bluemoon', '001200000102', '2023-02-01', '2023-11-30'),
+(3, 'Hà Nội', 'Căn hộ A101, Chung cư Bluemoon', '001200000103', '2023-03-01', '2023-09-30'),
+(4, 'Hải Phòng', 'Căn hộ A101, Chung cư Sunrise', '001200000104', '2023-04-01', '2023-10-31'),
+(5, 'Thanh Hóa', 'Căn hộ A102, Chung cư Sunrise', '001200000105', '2023-01-15', '2023-12-15'),
+(6, 'Nghệ An', 'Căn hộ A102, Chung cư Bluemoon', '001200000106', '2023-02-10', '2023-08-10'),
+(7, 'Hà Tĩnh', 'Căn hộ A102, Chung cư Sunrise', '001200000107', '2023-03-05', '2023-09-05'),
+(8, 'Quảng Bình', 'Căn hộ A201, Chung cư Sunrise', '001200000108', '2023-01-01', '2023-06-30'),
+(9, 'Huế', 'Căn hộ A201, Chung cư Sunrise', '001200000109', '2023-02-01', '2023-07-31'),
+(10, 'Đà Nẵng', 'Căn hộ A201, Chung cư Sunrise', '001200000110', '2023-03-01', '2023-12-31'),
+(11, 'Quảng Nam', 'Căn hộ A202, Chung cư Sunrise', '001200000111', '2023-01-20', '2023-10-20'),
+(12, 'Quảng Ngãi', 'Căn hộ A202, Chung cư Sunrise', '001200000112', '2023-02-15', '2023-08-15'),
+(13, 'Bình Định', 'Căn hộ B101, Chung cư Sunrise', '001200000113', '2023-01-01', '2023-12-31'),
+(14, 'Phú Yên', 'Căn hộ B101, Chung cư Sunrise', '001200000114', '2023-03-01', '2023-09-01'),
+(15, 'Khánh Hòa', 'Căn hộ B101, Chung cư Sunrise', '001200000115', '2023-04-01', '2023-10-01'),
+(16, 'Ninh Thuận', 'Căn hộ B102, Chung cư Sunrise', '001200000116', '2023-01-10', '2023-07-10'),
+(17, 'Bình Thuận', 'Căn hộ B102, Chung cư Sunrise', '001200000117', '2023-02-10', '2023-08-10'),
+(18, 'Đồng Nai', 'Căn hộ C101, Chung cư Sunrise', '001200000118', '2023-01-01', '2023-12-31'),
+(19, 'Bình Dương', 'Căn hộ C101, Chung cư Sunrise', '001200000119', '2023-03-01', '2023-09-30'),
+(20, 'Tây Ninh', 'Căn hộ C201, Chung cư Sunrise', '001200000120', '2023-02-01', '2023-08-31');
 
-
+--tạm vắng
+INSERT INTO TamVang (MaNhanKhau, NgayBatDau, NgayKetThuc, LyDo) VALUES
+(1, '2025-01-02', '2025-04-03', 'Đi công tác dài ngày'),
+(2, '2025-03-15', '2025-04-10', 'Chăm sóc người thân'),
+(3, '2025-06-01', '2025-06-15', 'Về quê nghỉ hè'),
+(4, '2025-06-05', '2025-06-20', 'Nghỉ hè cùng gia đình'),
+(5, '2025-04-01', '2025-05-05', 'Đi công tác tỉnh khác'),
+(6, '2025-04-05', '2025-04-18', 'Dự đám cưới người thân'),
+(7, '2025-06-10', '2025-06-30', 'Nghỉ hè'),
+(8, '2025-03-10', '2025-03-25', 'Khám chữa bệnh'),
+(9, '2025-03-20', '2025-04-02', 'Đi công tác ngắn hạn'),
+(10, '2025-05-01', '2025-05-20', 'Thực tập công ty'),
+(11, '2025-06-01', '2025-06-10', 'Về quê nghỉ hè'),
+(13, '2025-04-01', '2025-04-30', 'Đi công tác nước ngoài'),
+(14, '2025-04-20', '2025-05-12', 'Chăm sóc cha mẹ'),
+(15, '2025-03-10', '2025-03-28', 'Giải quyết công việc cá nhân'),
+(16, '2025-03-25', '2025-04-15', 'Về quê thăm gia đình'),
+(18, '2025-03-15', '2025-04-01', 'Chuyển nơi thuê mới'),
+(19, '2025-04-01', '2025-05-10', 'Hội họp công tác dài ngày'),
+(21, '2025-04-05', '2025-04-25', 'Du lịch nước ngoài'),
+(23, '2025-06-01', '2025-06-05', 'Nghỉ hè'),
+(27, '2025-03-20', '2025-04-08', 'Về quê giải quyết việc cá nhân');
 
 -- Bật lại safe update mode
 SET SQL_SAFE_UPDATES = 1;
