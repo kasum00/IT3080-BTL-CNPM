@@ -8,6 +8,7 @@
 .actions {
   display: flex;
   gap: 16px;
+  align-items: center;
 }
 
 .btn-add {
@@ -19,11 +20,27 @@
   cursor: pointer;
 }
 
+.btn-filter {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.btn-filter:hover {
+  background: #1976d2;
+}
+
 .actions input {
   padding: 10px 16px;
   border-radius: 20px;
   border: none;
   background: #eef4ff;
+  min-width: 250px;
 }
 
 .table-wrapper {
@@ -483,4 +500,15 @@ tbody tr {
 .status-unpaid {
   color: #ff5722;
   font-weight: 500;
+}
+
+.status-partial {
+  color: #ff9800;
+  font-weight: 500;
+}
+
+.status-none {
+  color: #999;
+  font-weight: 500;
+  font-style: italic;
 }

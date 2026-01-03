@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   let currentRow = null;
   let selectedId = null;
+  let allFees = []; // Lưu tất cả dữ liệu để filter
 
   function attachEvents() {
     document.querySelectorAll(".btn-detail").forEach((btn) => {
@@ -17,49 +18,53 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===============================
+     RENDER TABLE
+     =============================== */
+  function renderFees(fees) {
+    const tbody = document.querySelector(".fee-list-table tbody");
+    tbody.innerHTML = "";
+
+    fees.forEach((fee) => {
+      const tr = document.createElement("tr");
+      const loaiKhoanThu = fee.LoaiKhoanThu === 1 ? "Định kỳ" : "Một lần";
+
+      tr.innerHTML = `
+        <td>${fee.MaKhoanThu}</td>
+        <td>${fee.TenKhoanThu}</td>
+        <td>${loaiKhoanThu}</td>
+        <td>${fee.ThoiGianBatDau || ""}</td>
+        <td>${fee.ThoiGianKetThuc || ""}</td>
+        <td class="action">
+            <span class="btn-detail"
+                data-id="${fee.MaKhoanThu}"
+                data-name="${fee.TenKhoanThu}"
+                data-type="${fee.LoaiKhoanThu}"
+                data-status="${fee.ChiTiet || ""}"
+                data-budget="${fee.DonGia || ""}"
+                data-unit="${fee.DonViTinh || ""}"
+                data-start="${fee.ThoiGianBatDau || ""}"
+                data-end="${fee.ThoiGianKetThuc || ""}"
+                data-note="${fee.GhiChu || ""}">
+            </span>
+            <span class="btn-remove" data-id="${fee.MaKhoanThu}"></span>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    attachEvents();
+  }
+
+  /* ===============================
      LOAD FROM BACKEND - DONE
      =============================== */
   function loadFees() {
     fetch("http://localhost:3000/api/khoan-thu")
       .then((res) => res.json())
       .then((response) => {
-        console.log("API Response:", response); // debug
-
-        const tbody = document.querySelector(".fee-list-table tbody");
-        tbody.innerHTML = "";
-
-        const fees = response.data || [];
-
-        fees.forEach((fee) => {
-          const tr = document.createElement("tr");
-
-          const loaiKhoanThu = fee.LoaiKhoanThu === 1 ? "Định kỳ" : "Một lần";
-
-          tr.innerHTML = `
-            <td>${fee.MaKhoanThu}</td>
-            <td>${fee.TenKhoanThu}</td>
-            <td>${loaiKhoanThu}</td>
-            <td>${fee.ThoiGianBatDau || ""}</td>
-            <td>${fee.ThoiGianKetThuc || ""}</td>
-            <td class="action">
-                <span class="btn-detail"
-                    data-id="${fee.MaKhoanThu}"
-                    data-name="${fee.TenKhoanThu}"
-                    data-type="${fee.LoaiKhoanThu}"
-                    data-status="${fee.ChiTiet || ""}"
-                    data-budget="${fee.DonGia || ""}"
-                    data-unit="${fee.DonViTinh || ""}"
-                    data-start="${fee.ThoiGianBatDau || ""}"
-                    data-end="${fee.ThoiGianKetThuc || ""}"
-                    data-note="${fee.GhiChu || ""}">
-                </span>
-                <span class="btn-remove" data-id="${fee.MaKhoanThu}"></span>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        attachEvents();
+        console.log("API Response:", response);
+        allFees = response.data || [];
+        renderFees(allFees);
       })
       .catch((err) => {
         console.error("Error loading fees:", err);
@@ -68,6 +73,134 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadFees();
+
+  /* ===============================
+     TÌM KIẾM VÀ LỌC
+     =============================== */
+  const searchInput = document.getElementById("search-input");
+  const filterModal = document.getElementById("filterModal");
+  const btnOpenFilter = document.getElementById("btn-open-filter");
+  const btnApplyFilter = document.getElementById("btn-apply-filter");
+  const btnResetFilter = document.getElementById("btn-reset-filter");
+  const closeFilter = document.getElementById("close-filter");
+
+  // Tìm kiếm theo tên hoặc mã khoản thu
+  searchInput.addEventListener("input", (e) => {
+    const keyword = e.target.value.toLowerCase().trim();
+
+    const filtered = allFees.filter((fee) => {
+      const maKhoanThu = (fee.MaKhoanThu || "").toLowerCase();
+      const tenKhoanThu = (fee.TenKhoanThu || "").toLowerCase();
+      return maKhoanThu.includes(keyword) || tenKhoanThu.includes(keyword);
+    });
+
+    renderFees(filtered);
+  });
+
+  // Mở modal filter
+  btnOpenFilter.addEventListener("click", () => {
+    filterModal.classList.add("show");
+  });
+
+  // Đóng modal filter
+  closeFilter.addEventListener("click", () => {
+    filterModal.classList.remove("show");
+  });
+
+  filterModal.addEventListener("click", (e) => {
+    if (e.target === filterModal) {
+      filterModal.classList.remove("show");
+    }
+  });
+
+  // Áp dụng filter
+  btnApplyFilter.addEventListener("click", () => {
+    const minPrice =
+      parseFloat(document.getElementById("filter-min-price").value) || 0;
+    const maxPrice =
+      parseFloat(document.getElementById("filter-max-price").value) || Infinity;
+    const startDate = document.getElementById("filter-start-date").value;
+    const endDate = document.getElementById("filter-end-date").value;
+    const filterType = document.getElementById("filter-type").value;
+    const sortOption = document.getElementById("filter-sort").value;
+
+    let filtered = [...allFees];
+
+    // Lọc theo giá
+    filtered = filtered.filter((fee) => {
+      const price = fee.DonGia || 0;
+      return price >= minPrice && price <= maxPrice;
+    });
+
+    // Lọc theo ngày bắt đầu
+    if (startDate) {
+      filtered = filtered.filter((fee) => {
+        return !fee.ThoiGianBatDau || fee.ThoiGianBatDau >= startDate;
+      });
+    }
+
+    // Lọc theo ngày kết thúc
+    if (endDate) {
+      filtered = filtered.filter((fee) => {
+        return !fee.ThoiGianKetThuc || fee.ThoiGianKetThuc <= endDate;
+      });
+    }
+
+    // Lọc theo loại khoản thu
+    if (filterType) {
+      filtered = filtered.filter((fee) => {
+        return fee.LoaiKhoanThu === parseInt(filterType);
+      });
+    }
+
+    // Sắp xếp
+    switch (sortOption) {
+      case "name-asc":
+        filtered.sort((a, b) =>
+          (a.TenKhoanThu || "").localeCompare(b.TenKhoanThu || "")
+        );
+        break;
+      case "name-desc":
+        filtered.sort((a, b) =>
+          (b.TenKhoanThu || "").localeCompare(a.TenKhoanThu || "")
+        );
+        break;
+      case "price-asc":
+        filtered.sort((a, b) => (a.DonGia || 0) - (b.DonGia || 0));
+        break;
+      case "price-desc":
+        filtered.sort((a, b) => (b.DonGia || 0) - (a.DonGia || 0));
+        break;
+      case "date-asc":
+        filtered.sort((a, b) =>
+          (a.ThoiGianBatDau || "").localeCompare(b.ThoiGianBatDau || "")
+        );
+        break;
+      case "date-desc":
+        filtered.sort((a, b) =>
+          (b.ThoiGianBatDau || "").localeCompare(a.ThoiGianBatDau || "")
+        );
+        break;
+    }
+
+    renderFees(filtered);
+    filterModal.classList.remove("show");
+    showNotify(`Đã lọc được ${filtered.length} khoản thu`);
+  });
+
+  // Reset filter
+  btnResetFilter.addEventListener("click", () => {
+    document.getElementById("filter-min-price").value = "";
+    document.getElementById("filter-max-price").value = "";
+    document.getElementById("filter-start-date").value = "";
+    document.getElementById("filter-end-date").value = "";
+    document.getElementById("filter-type").value = "";
+    document.getElementById("filter-sort").value = "name-asc";
+
+    renderFees(allFees);
+    filterModal.classList.remove("show");
+    showNotify("Đã đặt lại bộ lọc");
+  });
 
   /* ===============================
        MODALS

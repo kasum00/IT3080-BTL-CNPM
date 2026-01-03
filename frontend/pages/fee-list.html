@@ -56,7 +56,8 @@
                 <h1>Danh sách khoản thu</h1>
                 <div class="actions">
                     <button class="btn-add">Thêm khoản thu</button>
-                    <input placeholder="Tìm kiếm">
+                    <input id="search-input" placeholder="Tìm theo tên hoặc mã khoản thu...">
+                    <button class="btn-filter" id="btn-open-filter" title="Lọc nâng cao">🔍</button>
                 </div>
             </div>
 
@@ -319,6 +320,68 @@
             <div class="modal-footer">
                 <button class="btn-danger" id="confirm-delete">OK</button>
                 <button class="btn-primary" id="cancel-delete">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+    MODAL LỌC KHOẢN THU
+    ================================ -->
+    <div id="filterModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Lọc khoản thu</h3>
+                <button class="modal-close" id="close-filter">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Số tiền tối thiểu (VND)</label>
+                        <input type="number" id="filter-min-price" placeholder="Nhập số tiền tối thiểu">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số tiền tối đa (VND)</label>
+                        <input type="number" id="filter-max-price" placeholder="Nhập số tiền tối đa">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày bắt đầu (từ)</label>
+                        <input type="date" id="filter-start-date">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày kết thúc (đến)</label>
+                        <input type="date" id="filter-end-date">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loại khoản thu</label>
+                        <select id="filter-type" class="select-styled">
+                            <option value="">Tất cả</option>
+                            <option value="1">Định kỳ</option>
+                            <option value="2">Một lần</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sắp xếp theo</label>
+                        <select id="filter-sort" class="select-styled">
+                            <option value="name-asc">Tên (A-Z)</option>
+                            <option value="name-desc">Tên (Z-A)</option>
+                            <option value="price-asc">Số tiền (Tăng dần)</option>
+                            <option value="price-desc">Số tiền (Giảm dần)</option>
+                            <option value="date-asc">Ngày (Cũ → Mới)</option>
+                            <option value="date-desc">Ngày (Mới → Cũ)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="btn-reset-filter">Đặt lại</button>
+                <button class="btn-primary" id="btn-apply-filter">Áp dụng</button>
             </div>
         </div>
     </div>

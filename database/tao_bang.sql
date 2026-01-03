@@ -89,7 +89,7 @@ CREATE TABLE KhoanThuTheoHo(
     MaKhoanThu INT,
     MaHoKhau VARCHAR(10),
     SoLuong INT DEFAULT 0,              -- Số nhân khẩu trong hộ
-    ThanhTien INT DEFAULT 0,            -- = SoLuong * DonGia (tính qua trigger)
+    ThanhTien INT DEFAULT 0,            -- = SoLuong * DonGia (tính trigger)
     TrangThai VARCHAR(20) DEFAULT 'Chưa đóng', -- 'Đã đóng', 'Chưa đóng'
     FOREIGN KEY (MaKhoanThu) REFERENCES KhoanThu(MaKhoanThu)
         ON DELETE CASCADE ON UPDATE CASCADE,

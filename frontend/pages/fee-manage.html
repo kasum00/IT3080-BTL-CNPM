@@ -57,7 +57,8 @@
             <div class="fee-manage-header">
                 <h1>Quản lý khoản thu theo hộ</h1>
                 <div class="actions">
-                    <input placeholder="Tìm kiếm">
+                    <input id="search-apt-input" placeholder="Tìm theo mã hoặc tên căn hộ...">
+                    <button class="btn-filter" id="btn-open-apt-filter" title="Lọc nâng cao">🔍</button>
                 </div>
             </div>
 
@@ -71,6 +72,7 @@
                                 <th>Chủ căn hộ</th>
                                 <th>Tầng</th>
                                 <th>Trạng thái</th>
+                                <th>Tình trạng thanh toán</th>
                                 <th>Chi tiết khoản thu theo hộ</th>
                             </tr>
                         </thead>
@@ -391,6 +393,70 @@
             <div class="modal-footer">
                 <button class="btn-danger" id="cancel-add">Đóng</button>
                 <button class="btn-primary" id="save-add">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+    MODAL LỌC KHOẢN THU THEO HỘ
+    ================================ -->
+    <div id="apartmentFilterModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Lọc căn hộ</h3>
+                <button class="modal-close" id="close-apt-filter">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tình trạng thanh toán</label>
+                        <select id="filter-payment-status" class="select-styled">
+                            <option value="">Tất cả</option>
+                            <option value="paid">Đã đóng</option>
+                            <option value="partial">Một phần</option>
+                            <option value="unpaid">Chưa đóng</option>
+                            <option value="none">Chưa có khoản thu</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trạng thái căn hộ</label>
+                        <select id="filter-apartment-status" class="select-styled">
+                            <option value="">Tất cả</option>
+                            <option value="chu_o">Chủ ở</option>
+                            <option value="cho_thue">Cho thuê</option>
+                            <option value="trong">Trống</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tổng tiền tối thiểu (VND)</label>
+                        <input type="number" id="filter-apt-min-total" placeholder="Nhập số tiền tối thiểu">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tổng tiền tối đa (VND)</label>
+                        <input type="number" id="filter-apt-max-total" placeholder="Nhập số tiền tối đa">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Sắp xếp theo</label>
+                        <select id="filter-apt-sort" class="select-styled">
+                            <option value="code-asc">Mã căn hộ (A-Z)</option>
+                            <option value="code-desc">Mã căn hộ (Z-A)</option>
+                            <option value="name-asc">Tên căn hộ (A-Z)</option>
+                            <option value="name-desc">Tên căn hộ (Z-A)</option>
+                            <option value="total-asc">Tổng tiền (Tăng dần)</option>
+                            <option value="total-desc">Tổng tiền (Giảm dần)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="btn-reset-apt-filter">Đặt lại</button>
+                <button class="btn-primary" id="btn-apply-apt-filter">Áp dụng</button>
             </div>
         </div>
     </div>

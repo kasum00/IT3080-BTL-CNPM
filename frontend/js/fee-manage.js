@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Khai báo biến toàn cục trong scope
   let currentRow = null;
   let selectedId = null;
+  let allApartments = []; // Lưu tất cả dữ liệu để filter
 
   function attachEvents() {
     document.querySelectorAll(".btn-detail").forEach((btn) => {
@@ -234,7 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 tbody.appendChild(tr);
               });
 
-              // Attach event cho nút xuất hóa đơn
               attachExportInvoiceEvents();
             } else {
               empty.style.display = "block";
@@ -294,17 +294,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await res.json();
       console.log("API Response:", response); // debug
 
-      const tbody = document.querySelector(".fee-manage-table tbody");
-      tbody.innerHTML = "";
-
-      //API trả về Array trực tiếp (không có .data), nên apartments là mảng rỗng.
-      // return array trực tiếp hoặc object có property data
       const apartments = Array.isArray(response)
         ? response
         : response.data || [];
       console.log("Apartments to render:", apartments.length); // debug
 
-      // tìm chủ hộ
+      // Lấy thông tin đầy đủ cho từng căn hộ
+      allApartments = [];
+
       for (const apartment of apartments) {
         let chuCanHo = "Chưa có chủ hộ";
 
@@ -327,41 +324,116 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const maHoKhau = apartment.MaHoKhau || "";
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${apartment.MaCanHo}</td>
-          <td>${apartment.TenCanHo}</td>
-          <td>${chuCanHo}</td> 
-          <td>${apartment.Tang || ""}</td>
-          <td>${apartment.TrangThai || ""}</td>
-          <td class="action">
-            <span class="btn-detail"
-                data-id="${apartment.MaCanHo}"
-                data-name="${apartment.TenCanHo}"
-                data-owner="${chuCanHo}"
-                data-hokhau="${maHoKhau}"
-                data-floor="${apartment.Tang || ""}"
-                data-status="${apartment.TrangThai || ""}"
-                data-area="${apartment.DienTich || ""}"
-                data-note="${apartment.MoTa || ""}">
-            </span>
-            <span class="btn-invoice-list"
-                data-name="${apartment.TenCanHo}"
-                data-owner="${chuCanHo}"
-                data-hokhau="${maHoKhau}"
-                title="Xem danh sách hóa đơn">
-            </span>
-          </td>
-        `;
-        tbody.appendChild(tr);
+
+        // Lấy trạng thái thanh toán và tổng tiền
+        let paymentStatus = "Chưa có khoản thu";
+        let statusClass = "none";
+        let totalAmount = 0;
+        let paidAmount = 0;
+
+        if (maHoKhau) {
+          try {
+            const feeRes = await fetch(
+              `http://localhost:3000/api/khoan-thu-ho-khau/${maHoKhau}`
+            );
+            const feeData = await feeRes.json();
+
+            if (feeData.success && feeData.data && feeData.data.length > 0) {
+              const totalFees = feeData.data.length;
+              const paidFees = feeData.data.filter(
+                (fee) =>
+                  fee.TrangThai === "Đã đóng" || fee.TrangThai === "da_thu"
+              ).length;
+
+              // Tính tổng tiền
+              feeData.data.forEach((fee) => {
+                totalAmount += fee.ThanhTien || 0;
+                if (fee.TrangThai === "Đã đóng" || fee.TrangThai === "da_thu") {
+                  paidAmount += fee.ThanhTien || 0;
+                }
+              });
+
+              if (paidFees === totalFees) {
+                paymentStatus = "Đã đóng";
+                statusClass = "paid";
+              } else if (paidFees > 0) {
+                paymentStatus = `Một phần (${paidFees}/${totalFees})`;
+                statusClass = "partial";
+              } else {
+                paymentStatus = "Chưa đóng";
+                statusClass = "unpaid";
+              }
+            }
+          } catch (err) {
+            console.error(
+              `Lỗi khi tải trạng thái thanh toán cho hộ khẩu ${maHoKhau}:`,
+              err
+            );
+          }
+        }
+
+        // Lưu thông tin đầy đủ vào allApartments
+        allApartments.push({
+          ...apartment,
+          chuCanHo,
+          maHoKhau,
+          paymentStatus,
+          statusClass,
+          totalAmount,
+          paidAmount,
+        });
       }
 
-      attachEvents();
+      renderApartments(allApartments);
     } catch (err) {
       console.error("Error loading apartment fee:", err);
       showNotify("Không thể tải danh sách khoản thu!");
     }
   }
+
+  /* ===============================
+     RENDER TABLE
+     =============================== */
+  function renderApartments(apartments) {
+    const tbody = document.querySelector(".fee-manage-table tbody");
+    tbody.innerHTML = "";
+
+    apartments.forEach((apartment) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${apartment.MaCanHo}</td>
+        <td>${apartment.TenCanHo}</td>
+        <td>${apartment.chuCanHo}</td> 
+        <td>${apartment.Tang || ""}</td>
+        <td>${apartment.TrangThai || ""}</td>
+        <td><span class="status-${apartment.statusClass}">${
+        apartment.paymentStatus
+      }</span></td>
+        <td class="action">
+          <span class="btn-detail"
+              data-id="${apartment.MaCanHo}"
+              data-name="${apartment.TenCanHo}"
+              data-owner="${apartment.chuCanHo}"
+              data-hokhau="${apartment.maHoKhau}"
+              data-floor="${apartment.Tang || ""}"
+              data-status="${apartment.TrangThai || ""}"
+              data-area="${apartment.DienTich || ""}"
+              data-note="${apartment.MoTa || ""}">
+          </span>
+          <span class="btn-invoice-list"
+              data-name="${apartment.TenCanHo}"
+              data-owner="${apartment.chuCanHo}"
+              data-hokhau="${apartment.maHoKhau}"
+              title="Xem danh sách hóa đơn">
+          </span>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    attachEvents();
+  }
+
   loadapartmentFees();
   /* ===============================
        MODAL CHI TIẾT
@@ -465,131 +537,140 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Hàm tạo PDF hóa đơn
- function exportInvoicePDF(data) {
-  // 1. Cấu hình thông tin cố định của Ban Quản Lý (Thay đổi theo thực tế)
-  const bqlInfo = {
-    name: "BAN QUẢN LÝ CHUNG CƯ BLUEMOON",
-    address: "Ngã Tư Văn Phú, Quận Hà Đông, TP. Hà Nội",
-    taxCode: "0101811757", 
-    phone: "0543.8592.750",
-    bankAccount: "111000005576 - Ngân hàng Vietinbank - CN Hà Đông",
-    logo: "../assets/logo.png" // Đường dẫn logo của bạn
-  };
-
-  // 2. Tạo nội dung HTML (Sử dụng dấu huyền ` để tính toán biểu thức JS)
-  const invoiceHTML = `
-  <div style="font-family: 'Times New Roman', Times, serif; padding: 20px; background: white; color: #000; line-height: 1.4; width: 190mm; margin: auto; border: 1px solid #eee;">
-      
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 10px;">
-          <div style="width: 70%; display: flex; align-items: center;">
-              <img src="${bqlInfo.logo}" style="height: 65px; margin-right: 15px;" onerror="this.src='https://via.placeholder.com/70x70?text=LOGO'">
-              <div>
-                  <h2 style="margin: 0; font-size: 15px; color: #1F5FA9; text-transform: uppercase;">${bqlInfo.name}</h2>
-                  <p style="margin: 2px 0; font-size: 12px;"><strong>Mã số thuế:</strong> ${bqlInfo.taxCode}</p>
-                  <p style="margin: 2px 0; font-size: 12px;"><strong>Địa chỉ:</strong> ${bqlInfo.address}</p>
-                  <p style="margin: 2px 0; font-size: 12px;"><strong>Điện thoại:</strong> ${bqlInfo.phone}</p>
-                  <p style="margin: 2px 0; font-size: 12px;"><strong>Số tài khoản:</strong> ${bqlInfo.bankAccount}</p>
-              </div>
+  function exportInvoicePDF(data) {
+    // Tạo HTML content cho hóa đơn
+    const invoiceHTML = `
+      <div style="font-family: 'Times New Roman', serif; padding: 40px; background: white;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #1F5FA9; font-size: 28px; margin: 0; font-weight: bold;">HÓA ĐƠN KHOẢN THU</h1>
+          <div style="margin-top: 15px;">
+            <p style="margin: 5px 0; font-size: 14px; font-weight: bold;">CHUNG CƯ BLUEMOON</p>
+            <p style="margin: 5px 0; font-size: 12px;">Địa chỉ: Hà Nội</p>
+            <p style="margin: 5px 0; font-size: 12px;">Điện thoại: 024.xxxx.xxxx</p>
           </div>
-          <div style="width: 25%; text-align: right; font-size: 12px;">
-              <p style="margin: 0;"><strong>Mẫu số:</strong> 01GTKT0/001</p>
-              <p style="margin: 0;"><strong>Ký hiệu:</strong> MS/26E</p>
-              <p style="margin: 0; color: #d32f2f;"><strong>Số:</strong> ${String(Math.floor(Math.random() * 1000000)).padStart(7, '0')}</p>
-          </div>
-      </div>
-
-      <div style="text-align: center; margin: 20px 0;">
-          <h1 style="margin: 0; color: #d32f2f; font-size: 22px; font-weight: bold;">HÓA ĐƠN THANH TOÁN</h1>
-          <p style="margin: 2px 0; font-style: italic; font-size: 12px;">(Bản thể hiện của hóa đơn điện tử)</p>
-          <p style="margin: 2px 0; font-size: 13px;">Ngày ${new Date().getDate()} tháng ${new Date().getMonth() + 1} năm ${new Date().getFullYear()}</p>
-      </div>
-
-      <div style="margin-bottom: 15px; font-size: 14px; border-top: 1px solid #000; padding-top: 10px;">
+        </div>
+        
+        <hr style="border: 1px solid #333; margin: 20px 0;">
+        
+        <!-- Thông tin hóa đơn -->
+        <div style="margin: 30px 0;">
+          <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 15px;">THÔNG TIN HÓA ĐƠN</h3>
           <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                  <td style="width: 25%; padding: 2px 0;">Họ tên người mua hàng:</td>
-                  <td style="font-weight: bold;">${data.tenChuHo || "Nguyễn Văn An"}</td>
-              </tr>
-              <tr>
-                  <td style="padding: 2px 0;">Tên đơn vị (Căn hộ):</td>
-                  <td>Căn hộ ${data.tenCanHo || "N/A"} - Mã hộ: ${data.maHoKhau || "N/A"}</td>
-              </tr>
-              <tr>
-                  <td style="padding: 2px 0;">Tên hóa đơn:</td>
-                  <td>${data.tenHoaDon || "N/A"}</td>
-              </tr>
+            <tr>
+              <td style="padding: 8px 0; font-size: 13px; width: 40%;"><strong>Tên hóa đơn:</strong></td>
+              <td style="padding: 8px 0; font-size: 13px;">${
+                data.tenHoaDon || "N/A"
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-size: 13px;"><strong>Mã hộ khẩu:</strong></td>
+              <td style="padding: 8px 0; font-size: 13px;">${
+                data.maHoKhau || "N/A"
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-size: 13px;"><strong>Mã khoản thu:</strong></td>
+              <td style="padding: 8px 0; font-size: 13px;">${
+                data.maKhoanThu || "N/A"
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-size: 13px;"><strong>Tên khoản thu:</strong></td>
+              <td style="padding: 8px 0; font-size: 13px;">${
+                data.tenKhoanThu || "N/A"
+              }</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-size: 13px;"><strong>Ngày xuất hóa đơn:</strong></td>
+              <td style="padding: 8px 0; font-size: 13px;">${
+                data.ngayXuat || new Date().toLocaleDateString("vi-VN")
+              }</td>
+            </tr>
           </table>
+        </div>
+        
+        <hr style="border: 0.5px solid #999; margin: 20px 0;">
+        
+        <!-- Số tiền -->
+        <div style="margin: 30px 0; padding: 20px; background-color: #f8f9fa;">
+          <h3 style="color: #2196F3; font-size: 18px; margin-bottom: 10px; font-weight: bold;">SỐ TIỀN THANH TOÁN</h3>
+          <p style="color: #FF5722; font-size: 24px; font-weight: bold; margin: 10px 0;">${
+            data.soTien
+          } đ</p>
+        </div>
+        
+        <!-- Ghi chú -->
+        <div style="margin: 25px 0; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107;">
+          <p style="margin: 5px 0; font-size: 12px; font-style: italic; color: #666;">Vui lòng thanh toán đúng hạn để tránh phát sinh phí trễ hạn.</p>
+          <p style="margin: 5px 0; font-size: 12px; font-style: italic; color: #666;">Mọi thắc mắc xin vui lòng liên hệ Ban quản lý.</p>
+        </div>
+        
+        <!-- Chữ ký -->
+        <div style="margin-top: 60px;">
+          <table style="width: 100%;">
+            <tr>
+              <td style="text-align: center; width: 50%;">
+                <p style="font-size: 13px; font-weight: bold;">Người lập phiếu</p>
+                <p style="font-size: 11px; font-style: italic; margin-top: 60px;">(Ký, họ tên)</p>
+              </td>
+              <td style="text-align: center; width: 50%;">
+                <p style="font-size: 13px; font-weight: bold;">Ban quản lý</p>
+                <p style="font-size: 11px; font-style: italic; margin-top: 60px;">(Ký, đóng dấu)</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        
+        <!-- Footer -->
+        <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #999;">
+          <p>Hóa đơn được tạo tự động ngày ${new Date().toLocaleString(
+            "vi-VN"
+          )}</p>
+        </div>
       </div>
+    `;
 
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 13px;">
-          <thead>
-              <tr style="background-color: #f2f2f2; text-align: center; font-weight: bold;">
-                  <th style="border: 1px solid #000; padding: 5px; width: 40px;">STT</th>
-                  <th style="border: 1px solid #000; padding: 5px;">Tên hàng hóa, dịch vụ</th>
-                  <th style="border: 1px solid #000; padding: 5px; width: 60px;">ĐVT</th>
-                  <th style="border: 1px solid #000; padding: 5px; width: 100px;">Thành tiền</th>
-              </tr>
-          </thead>
-          <tbody>
-              <tr style="min-height: 150px;">
-                  <td style="border: 1px solid #000; padding: 10px; text-align: center; vertical-align: top;">1</td>
-                  <td style="border: 1px solid #000; padding: 10px; vertical-align: top;">
-                      <p style="margin: 0; font-weight: bold;">${data.tenKhoanThu || "Phí dịch vụ chung cư"}</p>
-                      <p style="margin: 5px 0 0; font-size: 11px; color: #555;">Mã khoản thu: ${data.maKhoanThu || "N/A"}</p>
-                  </td>
-                  <td style="border: 1px solid #000; padding: 10px; text-align: center; vertical-align: top;">Tháng</td>
-                  <td style="border: 1px solid #000; padding: 10px; text-align: right; vertical-align: top;">
-                      ${data.soTien}
-                  </td>
-              </tr>
-              <tr style="font-weight: bold; background: #fafafa;">
-                  <td colspan="3" style="border: 1px solid #000; padding: 8px; text-align: right; text-transform: uppercase;">Tổng cộng tiền thanh toán:</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #d32f2f;">
-                      ${data.soTien} đ
-                  </td>
-              </tr>
-          </tbody>
-      </table>
+    // Tạo một div tạm để chứa nội dung
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = invoiceHTML;
+    tempDiv.style.width = "210mm"; // A4 width
+    tempDiv.style.minHeight = "297mm"; // A4 height
+    document.body.appendChild(tempDiv);
 
-      <div style="display: flex; justify-content: space-around; margin-top: 20px; text-align: center;">
-          <div style="width: 45%;">
-              <p style="margin: 0; font-weight: bold;">Người mua hàng</p>
-              <p style="margin: 0; font-size: 11px; font-style: italic;">(Ký, ghi rõ họ tên)</p>
-          </div>
-          <div style="width: 45%; position: relative;">
-              <p style="margin: 0; font-weight: bold;">Người bán hàng</p>
-              <p style="margin: 0; font-size: 11px; font-style: italic;">(Ký, ghi rõ họ tên, đóng dấu)</p>
-              
-              <div style="margin-top: 15px; border: 2px solid #4CAF50; padding: 5px; color: #4CAF50; font-size: 11px; font-weight: bold; text-align: left; width: fit-content; margin-left: auto; margin-right: auto; transform: rotate(-2deg);">
-                  Signature Valid<br>
-                  Ký bởi: ${bqlInfo.name}<br>
-                  Ngày ký: ${new Date().toLocaleDateString("vi-VN")}
-              </div>
-          </div>
-      </div>
+    // Cấu hình html2pdf
+    const opt = {
+      margin: 10,
+      filename: `HoaDon_${data.maKhoanThu}_${Date.now()}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        letterRendering: true,
+        logging: false,
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
 
-      <div style="margin-top: 50px; text-align: center; font-size: 11px; color: #666; border-top: 1px dashed #ccc; padding-top: 10px;">
-          Tra cứu hóa đơn tại Website: https://bluemoon.vn/tra-cuu-hoa-don<br>
-          (Cần kiểm tra, đối chiếu khi lập, giao, nhận hóa đơn)
-      </div>
-  </div>`;
-
-  // 3. Cấu hình html2pdf để xuất file chuẩn A4
-  const opt = {
-    margin: 5,
-    filename: `HoaDon_${data.maKhoanThu}_${data.maHoKhau}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { 
-        scale: 2, 
-        useCORS: true, 
-        letterRendering: true 
-    },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  // Thực hiện lưu file
-  html2pdf().set(opt).from(invoiceHTML).save();
-}
+    // Tạo và tải PDF - sử dụng element trực tiếp, không dùng .from()
+    setTimeout(() => {
+      html2pdf()
+        .set(opt)
+        .from(tempDiv)
+        .save()
+        .then(() => {
+          // Xóa div tạm sau khi tạo PDF
+          document.body.removeChild(tempDiv);
+        })
+        .catch((error) => {
+          console.error("Lỗi khi tạo PDF:", error);
+          if (document.body.contains(tempDiv)) {
+            document.body.removeChild(tempDiv);
+          }
+          showNotify("Có lỗi xảy ra khi xuất PDF!");
+        });
+    }, 200);
+  }
 
   /* ===============================
        ĐÓNG MODAL THANH TOÁN
@@ -634,5 +715,124 @@ document.addEventListener("DOMContentLoaded", () => {
       notifyModal.classList.remove("show");
     });
   });
-});
 
+  /* ===============================
+     TÌM KIẾM VÀ LỌC THEO CĂN HỘ
+     =============================== */
+  const searchAptInput = document.getElementById("search-apt-input");
+  const apartmentFilterModal = document.getElementById("apartmentFilterModal");
+  const btnOpenAptFilter = document.getElementById("btn-open-apt-filter");
+  const btnApplyAptFilter = document.getElementById("btn-apply-apt-filter");
+  const btnResetAptFilter = document.getElementById("btn-reset-apt-filter");
+  const closeAptFilter = document.getElementById("close-apt-filter");
+
+  // Tìm kiếm theo mã hoặc tên
+  searchAptInput?.addEventListener("input", (e) => {
+    const keyword = e.target.value.toLowerCase().trim();
+
+    const filtered = allApartments.filter((apt) => {
+      const maCanHo = (apt.MaCanHo || "").toLowerCase();
+      const tenCanHo = (apt.TenCanHo || "").toLowerCase();
+      return maCanHo.includes(keyword) || tenCanHo.includes(keyword);
+    });
+
+    renderApartments(filtered);
+  });
+
+  // Mở modal filter
+  btnOpenAptFilter?.addEventListener("click", () => {
+    apartmentFilterModal.classList.add("show");
+  });
+
+  // Đóng modal filter
+  closeAptFilter?.addEventListener("click", () => {
+    apartmentFilterModal.classList.remove("show");
+  });
+
+  apartmentFilterModal?.addEventListener("click", (e) => {
+    if (e.target === apartmentFilterModal) {
+      apartmentFilterModal.classList.remove("show");
+    }
+  });
+
+  // apply filter
+  btnApplyAptFilter?.addEventListener("click", () => {
+    const paymentStatus = document.getElementById(
+      "filter-payment-status"
+    ).value;
+    const apartmentStatus = document.getElementById(
+      "filter-apartment-status"
+    ).value;
+    const minTotal =
+      parseFloat(document.getElementById("filter-apt-min-total").value) || 0;
+    const maxTotal =
+      parseFloat(document.getElementById("filter-apt-max-total").value) ||
+      Infinity;
+    const sortOption = document.getElementById("filter-apt-sort").value;
+
+    let filtered = [...allApartments];
+
+    // Lọc theo tình trạng thanh toán
+    if (paymentStatus) {
+      filtered = filtered.filter((apt) => apt.statusClass === paymentStatus);
+    }
+
+    // Lọc theo trạng thái căn hộ
+    if (apartmentStatus) {
+      filtered = filtered.filter((apt) => apt.TrangThai === apartmentStatus);
+    }
+
+    // Lọc theo tổng tiền
+    filtered = filtered.filter((apt) => {
+      const total = apt.totalAmount || 0;
+      return total >= minTotal && total <= maxTotal;
+    });
+
+    // Sắp xếp
+    switch (sortOption) {
+      case "code-asc":
+        filtered.sort((a, b) =>
+          (a.MaCanHo || "").localeCompare(b.MaCanHo || "")
+        );
+        break;
+      case "code-desc":
+        filtered.sort((a, b) =>
+          (b.MaCanHo || "").localeCompare(a.MaCanHo || "")
+        );
+        break;
+      case "name-asc":
+        filtered.sort((a, b) =>
+          (a.TenCanHo || "").localeCompare(b.TenCanHo || "")
+        );
+        break;
+      case "name-desc":
+        filtered.sort((a, b) =>
+          (b.TenCanHo || "").localeCompare(a.TenCanHo || "")
+        );
+        break;
+      case "total-asc":
+        filtered.sort((a, b) => (a.totalAmount || 0) - (b.totalAmount || 0));
+        break;
+      case "total-desc":
+        filtered.sort((a, b) => (b.totalAmount || 0) - (a.totalAmount || 0));
+        break;
+    }
+
+    renderApartments(filtered);
+    apartmentFilterModal.classList.remove("show");
+    showNotify(`Đã lọc được ${filtered.length} căn hộ`);
+  });
+
+  // Reset filter
+  btnResetAptFilter?.addEventListener("click", () => {
+    document.getElementById("filter-payment-status").value = "";
+    document.getElementById("filter-apartment-status").value = "";
+    document.getElementById("filter-apt-min-total").value = "";
+    document.getElementById("filter-apt-max-total").value = "";
+    document.getElementById("filter-apt-sort").value = "code-asc";
+
+    renderApartments(allApartments);
+    apartmentFilterModal.classList.remove("show");
+    showNotify("Đã reset filter");
+  });
+});
