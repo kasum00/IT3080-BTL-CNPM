@@ -145,7 +145,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("edit-floor").value = document.getElementById("modal-floor").value;
         document.getElementById("edit-area").value = document.getElementById("modal-area").value;
         document.getElementById("edit-desc").value = document.getElementById("modal-desc").value;
-        document.getElementById("edit-owner").value = document.getElementById("modal-owner").value;
         // document.getElementById("edit-start").value = document.getElementById("modal-start").value;
         // document.getElementById("edit-end").value = document.getElementById("modal-end").value;
 
@@ -170,7 +169,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const data = await res.json()
             if (!res.ok) {
-                editModal.classList.remove("show")
                 showNotify(data.message || "Cập nhật căn hộ thất bại!")
                 return
             }
@@ -216,8 +214,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const data = await res.json()
             if (!res.ok) {
-                addModal.classList.remove("show")
-                showNotify("Thêm căn hộ thất bại!")
+                showNotify(data.message || "Thêm căn hộ thất bại!")
                 return
             }
 

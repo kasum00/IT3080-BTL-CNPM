@@ -77,6 +77,9 @@ const CanHo = sequelize.define(
     }
 )
 
+HoKhau.belongsTo(CanHo, { foreignKey: "MaCanHo" })
+CanHo.hasOne(HoKhau, { foreignKey: "MaCanHo" })
+
 // CREATE
 const createHoKhau = async (req, res) => {
     try {
@@ -125,6 +128,10 @@ const createHoKhau = async (req, res) => {
 const getAllHoKhau = async (req, res) => {
     try {
         const data = await HoKhau.findAll({
+            include: [{
+                model: CanHo,
+                attributes: ["TenCanHo"]
+            }],
             order: [["MaHoKhau", "ASC"]]
         })
 
@@ -138,6 +145,7 @@ const getAllHoKhau = async (req, res) => {
             })
             result.push({
                 ...hk.toJSON(),
+                TenCanHo: hk.CanHo ? hk.CanHo.TenCanHo : null,
                 ChuHo: chuHo ? chuHo.HoTen : null
             })
         }
@@ -150,7 +158,12 @@ const getAllHoKhau = async (req, res) => {
 // GET BY ID
 const getHoKhauByID = async (req, res) => {
     try {
-        const data = await HoKhau.findByPk(req.params.id)
+        const data = await HoKhau.findByPk(req.params.id, {
+            include: [{
+                model: CanHo,
+                attributes: ["TenCanHo"]
+            }]
+        })
         if (!data) {
             return res.status(404).json({
                 message: "Không tìm thấy hộ khẩu!"
@@ -165,6 +178,7 @@ const getHoKhauByID = async (req, res) => {
 
         res.json({
             ...data.toJSON(),
+            TenCanHo: data.CanHo ? data.CanHo.TenCanHo : null,
             ChuHo: chuHo ? chuHo.HoTen : null
         })
     } catch (err) {

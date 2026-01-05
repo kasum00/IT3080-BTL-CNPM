@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             showNotify("Lỗi kết nối server!")
         }
     }
-    
+
     /* ===============================
        INIT
     =============================== */
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         tr.innerHTML = `
             <td>${hokhau.MaHoKhau}</td>
-            <td>${hokhau.MaCanHo || "Chưa gán"}</td>
+            <td>${hokhau.TenCanHo || "Chưa gán"}</td>
             <td>${hokhau.ChuHo ?? "Chưa có"}</td>
             <td>${hokhau.DiaChiThuongTru || ""}</td>
             <td>${hokhau.NgayCap || ""}</td>
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             document.getElementById("modal-ma").value = hokhau.MaHoKhau
-            document.getElementById("modal-canHo").value = hokhau.MaCanHo || ""
+            document.getElementById("modal-canHo").value = hokhau.TenCanHo || ""
             document.getElementById("modal-chuHo").value = hokhau.ChuHo || "";
             document.getElementById("modal-diaChi").value = hokhau.DiaChiThuongTru || "";
             document.getElementById("modal-noiCap").value = hokhau.NoiCap || "";
@@ -165,7 +165,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const data = await res.json()
             if (!res.ok) {
-                editModal.classList.remove("show")
                 showNotify(data.message || "Cập nhật hộ khẩu thất bại!");
                 return;
             }

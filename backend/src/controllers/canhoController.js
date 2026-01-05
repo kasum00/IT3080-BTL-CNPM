@@ -273,10 +273,46 @@ const assignHoKhauForCanHo = async (req, res) => {
     }
 }
 
+// VALIDATE
+const validateCanHoInput = (data) => {
+    const missInput = []
+    const invalidInput = ""
+
+    if (!data.TenCanHo || data.TenCanHo.trim() === "") {
+        missInput.push("Tên căn hộ")
+    }
+    if (!data.Tang || data.Tang.trim() === "") {
+        missInput.push("Tầng")
+    }
+    if (data.DienTich === undefined || data.DienTich === null || data.DienTich === "") {
+        missInput.push("Diện tích")
+    } else if (isNaN(Number(data.DienTich)) || Number(data.DienTich) <= 0) {
+        invalidInput = "Giá trị diện tích không hợp lệ!"
+    }
+    if (missInput.length > 0) {
+        return `Thiếu thông tin: ${missInput.join(", ")}`
+    }
+    if (invalidInput.length > 0) {
+        return invalidInput
+    }
+    return null
+}
+
 // CREATE
 const createCanHo = async (req, res) => {
     try {
-        const data = await CanHo.create(req.body)
+        const errMsg = validateCanHoInput(req.body)
+        if (errMsg) {
+            return res.status(400).json({
+                message: errMsg
+            })
+        }
+        const data = await CanHo.create({
+            TenCanHo: req.body.TenCanHo,
+            Tang: req.body.Tang,
+            DienTich: req.body.DienTich,
+            MoTa: req.body.MoTa || null
+        })
         res.json(data)
     } catch (err) {
         res.status(500).json({ error: err.message })
@@ -317,6 +353,13 @@ const updateCanHo = async (req, res) => {
         if (!data) {
             return res.status(404).json({
                 message: "Không tìm thấy căn hộ!"
+            })
+        }
+
+        const errMsg = validateCanHoInput(req.body)
+        if (errMsg) {
+            return res.status(400).json({
+                message: errMsg
             })
         }
 
