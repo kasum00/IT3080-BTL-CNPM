@@ -237,6 +237,14 @@ tbody tr {
   font-size: 14px;
 }
 
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+  min-height: 16px;
+}
+
 .modal-footer {
   padding: 18px 24px;
   display: flex;

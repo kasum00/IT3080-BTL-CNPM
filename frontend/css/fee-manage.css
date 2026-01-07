@@ -168,10 +168,21 @@ tbody tr {
   background-repeat: no-repeat;
   background-size: contain;
   cursor: pointer;
+  transition: opacity 0.3s;
 }
 
 .btn-export-invoice:hover {
   opacity: 0.7;
+}
+
+.btn-export-invoice.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
+.btn-export-invoice.disabled:hover {
+  opacity: 0.3;
 }
 
 .invoice-action {
@@ -209,9 +220,7 @@ tbody tr {
 
 .modal-table-wrapper {
   /* Chỉnh padding trái là 24px để thẳng hàng với Header */
-  padding: 20px 24px;
-
-  /* Đảm bảo không có viền hay khoảng cách lạ */
+  padding: 0;
   margin: 0;
   width: 100%;
   box-sizing: border-box;
@@ -220,6 +229,7 @@ tbody tr {
   max-height: 400px;
   overflow-y: auto;
   overflow-x: hidden;
+  position: relative;
 }
 
 .modal-header {
@@ -282,6 +292,61 @@ tbody tr {
   border-radius: 14px;
   padding: 10px 14px;
   font-size: 14px;
+}
+
+.select-styled {
+  background: #e5e5e5;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 14px;
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  padding-right: 35px;
+}
+
+.select-styled:focus {
+  background-color: #d5d5d5;
+}
+
+/* ===============================
+   MODAL TABLE STYLES - FIX SCROLL
+=============================== */
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modal-table th,
+.modal-table td {
+  padding: 12px 24px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-table thead th {
+  background-color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.modal-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.modal-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .modal-footer {

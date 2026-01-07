@@ -350,7 +350,56 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("save-add").addEventListener("click", () => {
+    // Validate form
+    const errors = {};
+
+    const tenKhoanThu = document.getElementById("add-name").value.trim();
     const addType = document.getElementById("add-type").value;
+    const donGia = document.getElementById("add-budget").value;
+    const donViTinh = document.getElementById("add-unit").value;
+    const ngayBatDau = document.getElementById("add-start").value;
+    const ngayKetThuc = document.getElementById("add-end").value;
+
+    // Clear previous errors
+    document
+      .querySelectorAll(".error-message")
+      .forEach((el) => (el.textContent = ""));
+
+    // Validate
+    if (!tenKhoanThu) {
+      errors.name = "Vui lòng nhập tên khoản thu";
+      document.getElementById("error-add-name").textContent = errors.name;
+    }
+
+    if (!addType) {
+      errors.type = "Vui lòng chọn loại khoản thu";
+      document.getElementById("error-add-type").textContent = errors.type;
+    }
+
+    if (!donGia || donGia <= 0) {
+      errors.budget = "Vui lòng nhập đơn giá hợp lệ";
+      document.getElementById("error-add-budget").textContent = errors.budget;
+    }
+
+    if (!donViTinh) {
+      errors.unit = "Vui lòng chọn đơn vị tính";
+      document.getElementById("error-add-unit").textContent = errors.unit;
+    }
+
+    if (!ngayBatDau) {
+      errors.start = "Vui lòng chọn ngày bắt đầu";
+      document.getElementById("error-add-start").textContent = errors.start;
+    }
+
+    if (!ngayKetThuc) {
+      errors.end = "Vui lòng chọn ngày kết thúc";
+      document.getElementById("error-add-end").textContent = errors.end;
+    }
+
+    // If there are errors, don't submit
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
 
     // "Định kỳ" → 1, "Một lần" → 2
     let loaiKhoanThu;
@@ -367,13 +416,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const payload = {
-      TenKhoanThu: document.getElementById("add-name").value,
+      TenKhoanThu: tenKhoanThu,
       LoaiKhoanThu: loaiKhoanThu,
       ChiTiet: document.getElementById("add-desc").value,
-      DonGia: parseInt(document.getElementById("add-budget").value) || 0,
-      DonViTinh: document.getElementById("add-unit").value,
-      ThoiGianBatDau: document.getElementById("add-start").value,
-      ThoiGianKetThuc: document.getElementById("add-end").value,
+      DonGia: parseInt(donGia) || 0,
+      DonViTinh: donViTinh,
+      ThoiGianBatDau: ngayBatDau,
+      ThoiGianKetThuc: ngayKetThuc,
       GhiChu: document.getElementById("add-note")?.value || "",
     };
 

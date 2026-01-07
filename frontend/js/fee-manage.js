@@ -226,14 +226,21 @@ document.addEventListener("DOMContentLoaded", () => {
                   isPaid ? "Đã đóng" : "Chưa đóng"
                 }</span></td>
                   <td class="invoice-action">
-                    <span class="btn-export-invoice" 
+                    <span class="btn-export-invoice ${
+                      !isPaid ? "disabled" : ""
+                    }" 
                       data-ma-khoan-thu="${fee.MaKhoanThu}"
                       data-ma-ho-khau="${maHoKhau}"
                       data-ten-khoan-thu="${fee.TenKhoanThu || ""}"
                       data-thanh-tien="${thanhTien}"
                       data-ten-can-ho="${tenCanHo}"
                       data-ten-chu-ho="${tenChuHo}"
-                      title="Xuất hóa đơn"></span>
+                      data-is-paid="${isPaid}"
+                      title="${
+                        isPaid
+                          ? "Xuất hóa đơn"
+                          : "Vui lòng thanh toán trước khi xuất hóa đơn"
+                      }"></span>
                   </td>
                 `;
                 tbody.appendChild(tr);
@@ -262,6 +269,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function attachExportInvoiceEvents() {
     document.querySelectorAll(".btn-export-invoice").forEach((btn) => {
       btn.addEventListener("click", () => {
+        const isPaid = btn.dataset.isPaid === "true";
+
+        // Kiểm tra nếu chưa đóng thì không cho xuất
+        if (!isPaid) {
+          showNotify(
+            "Đây là khoản thu chưa đóng, vui lòng thanh toán trước khi xuất hóa đơn!"
+          );
+          return;
+        }
+
         const maKhoanThu = btn.dataset.maKhoanThu;
         const maHoKhau = btn.dataset.maHoKhau;
         const tenKhoanThu = btn.dataset.tenKhoanThu;
