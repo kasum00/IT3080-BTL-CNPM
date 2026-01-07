@@ -1,5 +1,5 @@
 -- tạo database
-CREATE DATABASE IF NOT EXISTS bluemoon
+CREATE DATABASE IF NOT EXISTS bluemoon2
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
@@ -12,7 +12,9 @@ create table CanHo(
     TenCanHo nvarchar(100),
     Tang nvarchar(50),
     DienTich float,
-    TrangThai nvarchar(20) default 'trong', -- trong/ chu_o/ cho_thue
+    TrangThai ENUM('trong','chu_o','cho_thue') DEFAULT 'trong',
+    ngay_bat_dau_thue DATE NULL, 
+	ngay_ket_thuc_thue DATE NULL,
     MoTa NVARCHAR(500)
 );
 
@@ -55,7 +57,8 @@ create table TamTru(
     DiaChiThuongTru nvarchar(200),
     DiaChiTamTru nvarchar(200),
     CanCuocCongDan varchar(20),
-    
+    ngayBatDau DATE, 
+	ngayKetThuc DATE,
     FOREIGN KEY (MaNhanKhau) REFERENCES NhanKhau(MaNhanKhau)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -74,7 +77,7 @@ create table TamVang(
 create table KhoanThu(
 	MaKhoanThu int auto_increment primary key,
     TenKhoanThu nvarchar(100),
-    LoaiKhoanThu INT, -- 1: định kỳ, 2: một lần
+    LoaiKhoanThu NVARCHAR(100), -- 1: định kỳ, 2: một lần
     ThoiGianBatDau DATE,
     ThoiGianKetThuc DATE,
     DonViTinh nvarchar(50), -- nhan_khau, ho_khau

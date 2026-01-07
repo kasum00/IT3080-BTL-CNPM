@@ -151,3 +151,19 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_thoigian
+BEFORE INSERT ON KhoanThu
+FOR EACH ROW
+BEGIN
+    IF NEW.ThoiGianKetThuc <= NEW.ThoiGianBatDau THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'ThoiGianKetThuc phải lớn hơn ThoiGianBatDau';
+    END IF;
+END;
+//
+
+DELIMITER ;

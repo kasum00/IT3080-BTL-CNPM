@@ -83,16 +83,16 @@ SET c.MaHoKhau = h.MaHoKhau;
 
 -- 4. Thêm dữ liệu vào bảng KhoanThu
 INSERT INTO KhoanThu (TenKhoanThu, LoaiKhoanThu, ThoiGianBatDau, ThoiGianKetThuc, DonViTinh, DonGia, ChiTiet, GhiChu) VALUES
-('Phí quản lý chung cư', 1, '2024-01-01', '2024-12-31', 'ho_khau', 15000, 'Phí quản lý 15,000đ/m2/tháng', 'Thu hàng tháng'),
-('Phí dịch vụ', 1, '2024-01-01', '2024-12-31', 'nhan_khau', 50000, 'Phí dịch vụ 50,000đ/người/tháng', 'Thu hàng tháng'),
-('Tiền điện', 1, '2024-01-01', '2024-12-31', 'ho_khau', 3500, 'Giá điện 3,500đ/kWh', 'Tính theo số điện tiêu thụ'),
-('Tiền nước', 1, '2024-01-01', '2024-12-31', 'ho_khau', 25000, 'Giá nước 25,000đ/m3', 'Tính theo số nước tiêu thụ'),
-('Phí gửi xe máy', 1, '2024-01-01', '2024-12-31', 'ho_khau', 100000, 'Phí gửi xe 100,000đ/xe/tháng', 'Thu hàng tháng'),
-('Phí gửi xe ô tô', 1, '2024-01-01', '2024-12-31', 'ho_khau', 1200000, 'Phí gửi xe 1,200,000đ/xe/tháng', 'Thu hàng tháng'),
-('Quỹ bảo trì', 2, '2024-03-01', '2024-03-31', 'ho_khau', 500000, 'Đóng góp quỹ bảo trì năm 2024', 'Thu một lần trong năm'),
-('Tết Trung Thu', 2, '2024-09-01', '2024-09-15', 'nhan_khau', 50000, 'Quỹ tổ chức Tết Trung Thu cho trẻ em', 'Thu một lần'),
-('Phí vệ sinh', 1, '2024-01-01', '2024-12-31', 'ho_khau', 30000, 'Phí vệ sinh 30,000đ/hộ/tháng', 'Thu hàng tháng'),
-('Internet', 1, '2024-01-01', '2024-12-31', 'ho_khau', 200000, 'Phí Internet 200,000đ/hộ/tháng', 'Tùy chọn đăng ký');
+('Phí quản lý chung cư', 'Định kỳ', '2024-01-01', '2024-12-31', 'ho_khau', 15000, 'Phí quản lý 15,000đ/m2/tháng', 'Thu hàng tháng'),
+('Phí dịch vụ', 'Định kỳ', '2024-01-01', '2024-12-31', 'nhan_khau', 50000, 'Phí dịch vụ 50,000đ/người/tháng', 'Thu hàng tháng'),
+('Tiền điện', 'Định kỳ', '2024-01-01', '2024-12-31', 'ho_khau', 3500, 'Giá điện 3,500đ/kWh', 'Tính theo số điện tiêu thụ'),
+('Tiền nước', 'Định kỳ', '2024-01-01', '2024-12-31', 'ho_khau', 25000, 'Giá nước 25,000đ/m3', 'Tính theo số nước tiêu thụ'),
+('Phí gửi xe máy', 'Định kỳ', '2024-01-01', '2024-12-31', 'ho_khau', 100000, 'Phí gửi xe 100,000đ/xe/tháng', 'Thu hàng tháng'),
+('Phí gửi xe ô tô', 'Định kỳ', '2024-01-01', '2024-12-31', 'ho_khau', 1200000, 'Phí gửi xe 1,200,000đ/xe/tháng', 'Thu hàng tháng'),
+('Quỹ bảo trì', 'Một lần', '2024-03-01', '2024-03-31', 'ho_khau', 500000, 'Đóng góp quỹ bảo trì năm 2024', 'Thu một lần trong năm'),
+('Tết Trung Thu', 'Một lần', '2024-09-01', '2024-09-15', 'nhan_khau', 50000, 'Quỹ tổ chức Tết Trung Thu cho trẻ em', 'Thu một lần'),
+('Phí vệ sinh', 'Định kỳ', '2024-01-01', '2024-12-31', 'ho_khau', 30000, 'Phí vệ sinh 30,000đ/hộ/tháng', 'Thu hàng tháng'),
+('Internet', 'Định kỳ', '2024-01-01', '2024-12-31', 'ho_khau', 200000, 'Phí Internet 200,000đ/hộ/tháng', 'Tùy chọn đăng ký');
 
 -- 5. Thêm dữ liệu vào bảng KhoanThuTheoHo
 -- Phí quản lý chung cư

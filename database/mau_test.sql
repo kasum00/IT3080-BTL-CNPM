@@ -1,9 +1,15 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
+TRUNCATE TABLE HoaDon;
+TRUNCATE TABLE TongTienHoKhau;
 TRUNCATE TABLE KhoanThuTheoHo;
+TRUNCATE TABLE KhoanThu;
+TRUNCATE TABLE TamTru;
+TRUNCATE TABLE TamVang;
 TRUNCATE TABLE NhanKhau;
 TRUNCATE TABLE HoKhau;
 TRUNCATE TABLE CanHo;
+TRUNCATE TABLE TaiKhoan;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -167,11 +173,11 @@ CALL seed_nhan_khau();
    SEED KHOẢN THU
 ========================================================= */
 INSERT INTO KhoanThu
-(TenKhoanThu, LoaiKhoanThu, ThoiGianBatDau, ThoiGianKetThuc, DonViTinh, DonGia)
+(TenKhoanThu, LoaiKhoanThu, ThoiGianBatDau, ThoiGianKetThuc, DonViTinh, DonGia, ChiTiet, GhiChu)
 VALUES
-('Phí vệ sinh', 1, '2024-01-01', '2024-12-31', 'nhan_khau', 20000),
-('Phí an ninh', 1, '2024-01-01', '2024-12-31', 'ho_khau', 50000),
-('Quỹ bảo trì', 2, '2024-01-01', '2024-12-31', 'ho_khau', 2000000);
+('Phí vệ sinh', 'Định kỳ', '2024-01-01', '2024-12-31', 'nhan_khau', 20000, 'Phí vệ sinh chung theo số nhân khẩu', 'Thu hàng tháng'),
+('Phí an ninh', 'Định kỳ', '2024-01-01', '2024-12-31', 'ho_khau', 50000, 'Phí bảo vệ an ninh khu vực', 'Thu hàng tháng'),
+('Quỹ bảo trì', 'Một lần', '2024-01-01', '2024-12-31', 'ho_khau', 2000000, 'Quỹ bảo trì cơ sở hạ tầng', 'Thu một lần trong năm');
 
 /* =========================================================
    SEED KHOẢN THU THEO HỘ
@@ -206,10 +212,40 @@ SELECT
     2000000
 FROM HoKhau;
 
+/* =========================================================
+   SEED TỔNG TIỀN HỘ KHẨU
+========================================================= */
+INSERT INTO TongTienHoKhau (MaHoKhau, TongTien, TongDaNop, TongConThieu)
+SELECT 
+    hk.MaHoKhau,
+    COALESCE(SUM(kthh.ThanhTien), 0) as TongTien,
+    0 as TongDaNop,
+    COALESCE(SUM(kthh.ThanhTien), 0) as TongConThieu
+FROM HoKhau hk
+LEFT JOIN KhoanThuTheoHo kthh ON hk.MaHoKhau = kthh.MaHoKhau
+GROUP BY hk.MaHoKhau;
+
+/* =========================================================
+   SEED TÀI KHOẢN
+========================================================= */
 -- tài khoản test -- password đều là 123456
-INSERT INTO TaiKhoan (Username, Password, VaiTro) VALUES
-('admin',        '$2b$10$testhashadmin', 'admin'),
-('manager',      '$2b$10$testhashmanager', 'ban_quan_ly'),
-('cudan_hk0001', '$2b$10$testhashcudan', 'cu_dan'),
-('cudan_hk0002', '$2b$10$testhashcudan', 'cu_dan'),
-('cudan_hk0003', '$2b$10$testhashcudan', 'cu_dan');
+INSERT INTO TaiKhoan (Username, Password, VaiTro, TrangThai) VALUES
+('admin',        '$2b$10$testhashadmin', 'admin', 1),
+('manager',      '$2b$10$testhashmanager', 'ban_quan_ly', 1),
+('cudan_hk0001', '$2b$10$testhashcudan', 'cu_dan', 1),
+('cudan_hk0002', '$2b$10$testhashcudan', 'cu_dan', 1),
+('cudan_hk0003', '$2b$10$testhashcudan', 'cu_dan', 1);
+
+/* =========================================================
+   LIÊN KẾT NHÂN KHẨU VỚI TÀI KHOẢN
+========================================================= */
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE NhanKhau nk
+JOIN HoKhau hk ON nk.MaHoKhau = hk.MaHoKhau
+JOIN TaiKhoan tk ON tk.Username = CONCAT('cudan_', LOWER(hk.MaHoKhau))
+SET nk.MaTaiKhoan = tk.MaTaiKhoan
+WHERE nk.QuanHe = 'chu ho'
+  AND tk.VaiTro = 'cu_dan';
+
+SET SQL_SAFE_UPDATES = 1;
