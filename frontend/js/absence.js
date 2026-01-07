@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   /* ===============================
        BIẾN DÙNG CHUNG
@@ -85,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
        MODAL CHỈNH SỬA
     =============================== */
   const editModal = document.getElementById("editModal");
-  const closeEditBtn = document.getElementById("close-edit");
+  const closeEditBtn = document.getElementById("btn-close-edit");
   const btnSaveEdit = document.getElementById("btn-save-edit");
 
   /* ===============================

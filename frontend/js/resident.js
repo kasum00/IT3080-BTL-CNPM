@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // EDIT
   document.getElementById("btn-save-edit").onclick = updateNhanKhau;
-  document.getElementById("close-edit").onclick = () =>
+  document.getElementById("btn-close-edit").onclick = () =>
     document.getElementById("editModal").classList.remove("show");
 
   // DETAIL

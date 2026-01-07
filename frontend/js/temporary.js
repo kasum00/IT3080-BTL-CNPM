@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
      EDIT
   =============================== */
   document.getElementById("btn-save-edit").onclick = updateTamTru;
-  document.getElementById("close-edit").onclick = () =>
+  document.getElementById("btn-close-edit").onclick = () =>
     editModal.classList.remove("show");
 
   document.getElementById("btn-open-edit").onclick = () => {
