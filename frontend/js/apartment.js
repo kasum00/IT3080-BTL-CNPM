@@ -104,8 +104,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("modal-floor").value = canho.Tang || "";
             document.getElementById("modal-area").value = canho.DienTich || "";
             document.getElementById("modal-desc").value = canho.MoTa || "";
-            // document.getElementById("modal-start").value = canho.NgayBatDau || "";
-            // document.getElementById("modal-end").value = canho.NgayKetThuc || "";
+            document.getElementById("modal-start").value = canho.ngay_bat_dau_thue || "";
+            document.getElementById("modal-end").value = canho.ngay_ket_thuc_thue || "";
 
             try {
                 const ownerRes = await fetch(`http://localhost:3000/api/can-ho/tim-chu-ho/${id}`)
@@ -145,8 +145,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("edit-floor").value = document.getElementById("modal-floor").value;
         document.getElementById("edit-area").value = document.getElementById("modal-area").value;
         document.getElementById("edit-desc").value = document.getElementById("modal-desc").value;
-        // document.getElementById("edit-start").value = document.getElementById("modal-start").value;
-        // document.getElementById("edit-end").value = document.getElementById("modal-end").value;
+        document.getElementById("edit-start").value = document.getElementById("modal-start").value;
+        document.getElementById("edit-end").value = document.getElementById("modal-end").value;
 
         editModal.classList.add("show");
     });
@@ -163,7 +163,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     TenCanHo: document.getElementById("edit-name").value,
                     Tang: document.getElementById("edit-floor").value,
                     DienTich: document.getElementById("edit-area").value,
-                    MoTa: document.getElementById("edit-desc").value
+                    MoTa: document.getElementById("edit-desc").value,
+                    ngay_bat_dau_thue: document.getElementById("edit-start").value || null,
+                    ngay_ket_thuc_thue: document.getElementById("edit-end").value || null
                 })
             })
 
@@ -181,7 +183,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    document.getElementById("close-edit").addEventListener("click", () => {
+    document.getElementById("btn-close-edit").addEventListener("click", () => {
         editModal.classList.remove("show");
     });
 
@@ -208,7 +210,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     TenCanHo: document.getElementById("add-name").value,
                     Tang: document.getElementById("add-floor").value,
                     DienTich: document.getElementById("add-area").value,
-                    MoTa: document.getElementById("add-desc").value
+                    MoTa: document.getElementById("add-desc").value,
+                    ngay_bat_dau_thue: document.getElementById("add-start").value || null,
+                    ngay_ket_thuc_thue: document.getElementById("add-end").value || null
                 })
             })
 

@@ -1,4 +1,4 @@
-const { DataTypes, where } = require("sequelize")
+const { DataTypes, Op } = require("sequelize")
 const sequelize = require('../config/db')
 
 const CanHo = sequelize.define(
@@ -14,20 +14,24 @@ const CanHo = sequelize.define(
     },
     TenCanHo: {
         type: DataTypes.STRING(100),
-        allowNull: true
     },
     Tang: {
         type: DataTypes.STRING(50),
-        allowNull: true
     },
     DienTich: {
         type: DataTypes.FLOAT,
-        allowNull: true
     },
     TrangThai: {
         type: DataTypes.STRING(20),
-        allowNull: false,
         defaultValue: "trong"
+    },
+    ngay_bat_dau_thue: {
+        type: DataTypes.DATEONLY,
+        allowNull: true
+    },
+    ngay_ket_thuc_thue: {
+        type: DataTypes.DATEONLY,
+        allowNull: true
     },
     MoTa: {
         type: DataTypes.STRING(500),
@@ -199,102 +203,59 @@ const findOwnerByApartment = async (req, res) => {
     }
 };
 
-// Assign hộ khẩu cho căn hộ
-const assignHoKhauForCanHo = async (req, res) => {
-    const { ma_ho_khau, ma_can_ho_moi } = req.body
-    const trans = await sequelize.transaction()
-
+const getCanHoTrong = async (req, res) => {
     try {
-        const hoKhau = await HoKhau.findByPk(ma_ho_khau, { transaction: trans })
-        if (!hoKhau) {
-            await trans.rollback()
-            return res.status(404).json({
-                message: "Không tìm thấy hộ khẩu!"
-            })
-        }
-
-        if (hoKhau.MaCanHo === ma_can_ho_moi) {
-            await trans.rollback()
-            return res.status(400).json({
-                message: "Hộ khẩu đang ở căn hộ này rồi!"
-            })
-        }
-
-        const canHoMoi = await CanHo.findByPk(ma_can_ho_moi, { transaction: trans })
-        if (!canHoMoi) {
-            await trans.rollback()
-            return res.status(404).json({
-                message: "Không tìm thấy căn hộ mới!"
-            })
-        }
-
-        if (canHoMoi.TrangThai === "cho_thue") {
-            await trans.rollback()
-            return res.status(400).json({
-                message: "Căn hộ đang cho thuê, không thể gán hộ khẩu cư trú!"
-            })
-        }
-
-        const isOccupied = await CanHo.findOne({
-            where: { MaCanHo: ma_can_ho_moi },
-            transaction: trans
+        const data = await CanHo.findAll({
+            where: {
+                MaHoKhau: {
+                    [Op.is]: null
+                }
+            },
+            attributes: ["MaCanHo", "TenCanHo"],
+            order: [["TenCanHo", "ASC"]]
         })
-
-        if (isOccupied) {
-            await trans.rollback()
-            return res.status(400).json({
-                message: "Căn hộ mới đã có hộ khác ở rồi!"
-            })
-        }
-
-        const ma_can_ho_cu = hoKhau.MaCanHo
-
-        await hoKhau.update({ MaCanHo: ma_can_ho_moi }, { transaction: trans })
-
-        await canHoMoi.update({ TrangThai: "chu_o" }, { transaction: trans })
-
-        if (ma_can_ho_cu) {
-            await CanHo.update(
-                { TrangThai: "trong" },
-                { where: { MaCanHo: ma_can_ho_cu }, transaction: trans }
-            )
-        }
-
-        await trans.commit()
-
-        res.json({
-            message: "Chuyển hộ khẩu sang căn hộ mới thành công",
-            can_ho_cu: ma_can_ho_cu,
-            can_ho_moi: ma_can_ho_moi
-        })
+        res.json(data)
     } catch (err) {
-        await trans.rollback()
-        res.status(500).json({ error: err.message })
+        res.status(500).json({
+            error: err.message,
+            message: "Lỗi server!",
+        });
     }
 }
 
 // VALIDATE
 const validateCanHoInput = (data) => {
     const missInput = []
-    const invalidInput = ""
 
-    if (!data.TenCanHo || data.TenCanHo.trim() === "") {
+    if (!data.TenCanHo?.trim()) {
         missInput.push("Tên căn hộ")
     }
-    if (!data.Tang || data.Tang.trim() === "") {
+    if (!data.Tang?.trim()) {
         missInput.push("Tầng")
     }
-    if (data.DienTich === undefined || data.DienTich === null || data.DienTich === "") {
+    if (data.DienTich === undefined || data.DienTich === "") {
         missInput.push("Diện tích")
     } else if (isNaN(Number(data.DienTich)) || Number(data.DienTich) <= 0) {
-        invalidInput = "Giá trị diện tích không hợp lệ!"
+        return "Diện tích không hợp lệ!"
     }
     if (missInput.length > 0) {
         return `Thiếu thông tin: ${missInput.join(", ")}`
     }
-    if (invalidInput.length > 0) {
-        return invalidInput
+    const hasStart = !!data.ngay_bat_dau_thue
+    const hasEnd = !!data.ngay_ket_thuc_thue
+
+    if (hasStart || hasEnd) {
+        if(!hasStart || !hasEnd) {
+            return "Phải nhập đầy đủ ngày bắt đầu và kết thúc cho thuê!"
+        }
+        const start = new Date(data.ngay_bat_dau_thue)
+        const end = new Date(data.ngay_ket_thuc_thue)
+
+        if(end <= start) {
+            return "Ngày kết thúc cho thuê không hợp lệ!"
+        }
     }
+
     return null
 }
 
@@ -311,7 +272,9 @@ const createCanHo = async (req, res) => {
             TenCanHo: req.body.TenCanHo,
             Tang: req.body.Tang,
             DienTich: req.body.DienTich,
-            MoTa: req.body.MoTa || null
+            MoTa: req.body.MoTa || null,
+            ngay_bat_dau_thue: req.body.ngay_bat_dau_thue || null,
+            ngay_ket_thuc_thue: req.body.ngay_ket_thuc_thue || null
         })
         res.json(data)
     } catch (err) {
@@ -349,8 +312,8 @@ const getCanHoByID = async (req, res) => {
 // UPDATE
 const updateCanHo = async (req, res) => {
     try {
-        const data = await CanHo.findByPk(req.params.id)
-        if (!data) {
+        const canHo = await CanHo.findByPk(req.params.id)
+        if (!canHo) {
             return res.status(404).json({
                 message: "Không tìm thấy căn hộ!"
             })
@@ -363,15 +326,16 @@ const updateCanHo = async (req, res) => {
             })
         }
 
-        await data.update({
+        await canHo.update({
             TenCanHo: req.body.TenCanHo,
             Tang: req.body.Tang,
             DienTich: req.body.DienTich,
-            MoTa: req.body.MoTa
+            MoTa: req.body.MoTa,
+            ngay_bat_dau_thue: req.body.ngay_bat_dau_thue || null,
+            ngay_ket_thuc_thue: req.body.ngay_ket_thuc_thue || null
         })
 
-        const updatedCanHo = await CanHo.findByPk(req.params.id)
-        res.json(updatedCanHo)
+        res.json(canHo)
     } catch (err) {
         res.status(500).json({ error: err.message })
     }
@@ -426,6 +390,6 @@ module.exports = {
     updateCanHo,
     findHouseholdInAparment,
     findOwnerByApartment,
-    assignHoKhauForCanHo,
-    ganChuHo
+    ganChuHo,
+    getCanHoTrong
 }

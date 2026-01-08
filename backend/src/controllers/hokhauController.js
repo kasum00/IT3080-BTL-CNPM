@@ -79,11 +79,64 @@ const CanHo = sequelize.define(
 
 HoKhau.belongsTo(CanHo, { foreignKey: "MaCanHo" })
 CanHo.hasOne(HoKhau, { foreignKey: "MaCanHo" })
+HoKhau.hasMany(NhanKhau, { foreignKey: "MaHoKhau" })
+NhanKhau.belongsTo(HoKhau, { foreignKey: "MaHoKhau" })
+
+const validateHoKhauInput = (data, isCreate = true) => {
+    const missInput = []
+
+    if (isCreate && !data.MaHoKhau?.trim()) {
+        missInput.push("Mã hộ khẩu")
+    }
+    if (isCreate && !data.MaCanHo) {
+        missInput.push("Mã căn hộ")
+    }
+
+    if (missInput.length > 0) {
+        return `Thiếu thông tin: ${missInput.join(", ")}`
+    }
+
+    if (data.DiaChiThuongTru) {
+        if (data.DiaChiThuongTru.length > 200) {
+            return "Địa chỉ thường trú không được vượt quá 200 ký tự!"
+        }
+    }
+
+    if (data.NoiCap) {
+        if (data.NoiCap.length > 200) {
+            return "Nơi cấp không được vượt quá 200 ký tự!"
+        }
+    }
+
+    if (data.NgayCap) {
+        const ngayCap = new Date(data.NgayCap)
+        const today = new Date()
+
+        if (isNaN(ngayCap.getTime())) {
+            return "Ngày cấp không hợp lệ!"
+        }
+
+        ngayCap.setHours(0, 0, 0, 0)
+        today.setHours(0, 0, 0, 0)
+
+        if (ngayCap > today) {
+            return "Ngày cấp không được lớn hơn ngày hiện tại!"
+        }
+    }
+    return null
+}
 
 // CREATE
 const createHoKhau = async (req, res) => {
     try {
-        let { MaHoKhau, MaCanHo } = req.body
+        const data = req.body
+
+        const errMsg = validateHoKhauInput(data, true)
+        if (errMsg) {
+            return res.status(400).json({ message: errMsg })
+        }
+
+        let { MaHoKhau, MaCanHo, DiaChiThuongTru, NoiCap, NgayCap } = data
 
         if (MaCanHo === "" || MaCanHo === undefined) {
             MaCanHo = null
@@ -108,17 +161,17 @@ const createHoKhau = async (req, res) => {
                 })
             }
         }
-        const data = await HoKhau.create({
+        const hoKhau = await HoKhau.create({
             MaHoKhau,
             MaCanHo,
-            DiaChiThuongTru: req.body.DiaChiThuongTru,
-            NoiCap: req.body.NoiCap,
-            NgayCap: req.body.NgayCap
+            DiaChiThuongTru: DiaChiThuongTru?.trim() || null,
+            NoiCap: NoiCap?.trim() || null,
+            NgayCap: NgayCap?.trim() || null
         })
         if (MaCanHo) {
             await CanHo.update({ MaHoKhau }, { where: { MaCanHo } })
         }
-        res.json(data)
+        res.json(hoKhau)
     } catch (err) {
         res.status(500).json({ error: err.message })
     }
@@ -179,7 +232,7 @@ const getHoKhauByID = async (req, res) => {
         res.json({
             ...data.toJSON(),
             TenCanHo: data.CanHo ? data.CanHo.TenCanHo : null,
-            ChuHo: chuHo ? chuHo.HoTen : null
+            ChuHo: chuHo?.HoTen || null
         })
     } catch (err) {
         res.status(500).json({ error: err.message })
@@ -196,12 +249,17 @@ const updateHoKhau = async (req, res) => {
             })
         }
 
+        const errMsg = validateHoKhauInput(req.body, false)
+        if (errMsg) {
+            return res.status(400).json({ message: errMsg })
+        }
+
         const { DiaChiThuongTru, NoiCap, NgayCap } = req.body
 
         await hoKhau.update({
             DiaChiThuongTru: DiaChiThuongTru?.trim() || null,
             NoiCap: NoiCap?.trim() || null,
-            NgayCap: NgayCap?.trim() || null
+            NgayCap: NgayCap || null
         })
 
         const chuHo = await NhanKhau.findOne({

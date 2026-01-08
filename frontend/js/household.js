@@ -51,6 +51,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    async function loadCanHoTrong() {
+        try {
+            const res = await fetch("http://localhost:3000/api/can-ho/trong")
+            const data = await res.json()
+
+            const select = document.getElementById("add-canHo")
+            select.innerHTML = `<option value="">Chọn căn hộ</option>`
+
+            data.forEach(canho => {
+                const opt = document.createElement("option")
+                opt.value = canho.MaCanHo
+                opt.textContent = canho.TenCanHo
+                select.appendChild(opt)
+            })
+        } catch (err) {
+            showNotify("Không tải được danh sách căn hộ!")
+        }
+    }
+
     /* ===============================
        INIT
     =============================== */
@@ -176,15 +195,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    document.getElementById("close-edit").addEventListener("click", () => {
+    document.getElementById("btn-close-edit").addEventListener("click", () => {
         editModal.classList.remove("show");
     });
 
     /* ===============================
        ADD HOUSEHOLD
     =============================== */
-    document.querySelector(".btn-add").addEventListener("click", () => {
-        document.querySelectorAll("#addModal input").forEach(i => i.value = "");
+    document.querySelector(".btn-add").addEventListener("click", async () => {
+        document.querySelectorAll("#addModal input").forEach(i => i.value = "")
+        await loadCanHoTrong()
         addModal.classList.add("show");
     });
 
@@ -207,13 +227,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                     MaCanHo: maCanHo ? Number(maCanHo) : null,
                     DiaChiThuongTru: document.getElementById("add-diaChi").value.trim(),
                     NoiCap: document.getElementById("add-noiCap").value.trim(),
-                    NgayCap: ngayCap ? ngayCap : null
+                    NgayCap: ngayCap || null
                 })
             })
 
             const data = await res.json()
             if (!res.ok) {
-                addModal.classList.remove("show")
                 showNotify(data.message || "Thêm hộ khẩu thất bại!")
                 return;
             }
