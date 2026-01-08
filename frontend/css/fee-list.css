@@ -243,6 +243,23 @@ tbody tr {
   margin-top: 4px;
   display: block;
   min-height: 16px;
+  font-weight: 500;
+}
+
+/* Expired fee styling */
+.expired-fee {
+  /* opacity: 0.5; */
+  /* background-color: #f0f0f0; */
+  color: red;
+}
+
+/* .expired-fee td {
+  color: #888;
+} */
+
+.expired-fee .btn-detail,
+.expired-fee .btn-remove {
+  opacity: 0.6;
 }
 
 .modal-footer {

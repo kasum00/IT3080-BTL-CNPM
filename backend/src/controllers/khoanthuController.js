@@ -81,6 +81,19 @@ const createKhoanThu = async (req, res) => {
   try {
     console.log("Request body:", req.body); // debug
 
+    // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
+    if (req.body.ThoiGianKetThuc && req.body.ThoiGianBatDau) {
+      const startDate = new Date(req.body.ThoiGianBatDau);
+      const endDate = new Date(req.body.ThoiGianKetThuc);
+
+      if (endDate <= startDate) {
+        return res.status(400).json({
+          success: false,
+          error: "Ngày kết thúc phải lớn hơn ngày bắt đầu",
+        });
+      }
+    }
+
     const data = await KhoanThu.create(req.body);
 
     console.log("Created data:", data.toJSON());
@@ -133,6 +146,19 @@ const updateKhoanThu = async (req, res) => {
     console.log("update");
     console.log("ID:", req.params.id);
     console.log("Request body:", req.body);
+
+    // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
+    if (req.body.ThoiGianKetThuc && req.body.ThoiGianBatDau) {
+      const startDate = new Date(req.body.ThoiGianBatDau);
+      const endDate = new Date(req.body.ThoiGianKetThuc);
+
+      if (endDate <= startDate) {
+        return res.status(400).json({
+          success: false,
+          error: "Ngày kết thúc phải lớn hơn ngày bắt đầu",
+        });
+      }
+    }
 
     const [rowsUpdated] = await KhoanThu.update(req.body, {
       where: {

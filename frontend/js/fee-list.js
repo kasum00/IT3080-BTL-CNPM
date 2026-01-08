@@ -24,9 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const tbody = document.querySelector(".fee-list-table tbody");
     tbody.innerHTML = "";
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to compare only dates
+
     fees.forEach((fee) => {
       const tr = document.createElement("tr");
       const loaiKhoanThu = fee.LoaiKhoanThu === 1 ? "Định kỳ" : "Một lần";
+
+      // Check if fee is expired
+      let isExpired = false;
+      if (fee.ThoiGianKetThuc) {
+        const endDate = new Date(fee.ThoiGianKetThuc);
+        endDate.setHours(0, 0, 0, 0);
+        isExpired = endDate < today;
+      }
+
+      // Add expired class if needed
+      if (isExpired) {
+        tr.classList.add("expired-fee");
+      }
 
       tr.innerHTML = `
         <td>${fee.MaKhoanThu}</td>
@@ -289,8 +305,46 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("edit-end").value =
       document.getElementById("modal-end").value;
 
+    // Clear error and enable button
+    document.getElementById("error-edit-date-range").textContent = "";
+    document.getElementById("btn-save-edit").disabled = false;
+    document.getElementById("btn-save-edit").style.opacity = "1";
+    document.getElementById("btn-save-edit").style.cursor = "pointer";
+
     editModal.classList.add("show");
   });
+
+  // Real-time validation for edit form date range
+  const editStartInput = document.getElementById("edit-start");
+  const editEndInput = document.getElementById("edit-end");
+  const saveEditBtn = document.getElementById("btn-save-edit");
+  const errorEditDateRange = document.getElementById("error-edit-date-range");
+
+  function validateEditDateRange() {
+    const startDate = editStartInput.value;
+    const endDate = editEndInput.value;
+
+    if (startDate && endDate) {
+      if (new Date(endDate) <= new Date(startDate)) {
+        errorEditDateRange.textContent =
+          "Ngày kết thúc phải lớn hơn ngày bắt đầu";
+        saveEditBtn.disabled = true;
+        saveEditBtn.style.opacity = "0.5";
+        saveEditBtn.style.cursor = "not-allowed";
+        return false;
+      } else {
+        errorEditDateRange.textContent = "";
+        saveEditBtn.disabled = false;
+        saveEditBtn.style.opacity = "1";
+        saveEditBtn.style.cursor = "pointer";
+        return true;
+      }
+    }
+    return true;
+  }
+
+  editStartInput.addEventListener("change", validateEditDateRange);
+  editEndInput.addEventListener("change", validateEditDateRange);
 
   /* ===============================
        SAVE EDIT
@@ -301,14 +355,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const editType = document.getElementById("edit-type").value;
     const loaiKhoanThu = editType === "Định kỳ" ? 1 : 2;
 
+    const ngayBatDau = document.getElementById("edit-start").value;
+    const ngayKetThuc = document.getElementById("edit-end").value;
+
+    // Validate date range
+    if (
+      ngayBatDau &&
+      ngayKetThuc &&
+      new Date(ngayKetThuc) <= new Date(ngayBatDau)
+    ) {
+      document.getElementById("error-edit-date-range").textContent =
+        "Ngày kết thúc phải lớn hơn ngày bắt đầu";
+      return;
+    }
+
     const payload = {
       TenKhoanThu: document.getElementById("edit-name").value,
       LoaiKhoanThu: loaiKhoanThu,
       ChiTiet: document.getElementById("edit-desc").value,
       DonGia: parseInt(document.getElementById("edit-budget").value) || 0,
       DonViTinh: document.getElementById("edit-unit").value,
-      ThoiGianBatDau: document.getElementById("edit-start").value,
-      ThoiGianKetThuc: document.getElementById("edit-end").value,
+      ThoiGianBatDau: ngayBatDau,
+      ThoiGianKetThuc: ngayKetThuc,
     };
 
     console.log("Updating fee:", selectedId, payload); // debug
@@ -340,8 +408,44 @@ document.addEventListener("DOMContentLoaded", () => {
     =============================== */
   document.querySelector(".btn-add").addEventListener("click", () => {
     document.querySelectorAll("#addModal input").forEach((i) => (i.value = ""));
+    document
+      .querySelectorAll("#addModal .error-message")
+      .forEach((el) => (el.textContent = ""));
+    document.getElementById("save-add").disabled = false;
     document.getElementById("addModal").classList.add("show");
   });
+
+  // Real-time validation for add form date range
+  const addStartInput = document.getElementById("add-start");
+  const addEndInput = document.getElementById("add-end");
+  const saveAddBtn = document.getElementById("save-add");
+  const errorAddDateRange = document.getElementById("error-add-date-range");
+
+  function validateAddDateRange() {
+    const startDate = addStartInput.value;
+    const endDate = addEndInput.value;
+
+    if (startDate && endDate) {
+      if (new Date(endDate) <= new Date(startDate)) {
+        errorAddDateRange.textContent =
+          "Ngày kết thúc phải lớn hơn ngày bắt đầu";
+        saveAddBtn.disabled = true;
+        saveAddBtn.style.opacity = "0.5";
+        saveAddBtn.style.cursor = "not-allowed";
+        return false;
+      } else {
+        errorAddDateRange.textContent = "";
+        saveAddBtn.disabled = false;
+        saveAddBtn.style.opacity = "1";
+        saveAddBtn.style.cursor = "pointer";
+        return true;
+      }
+    }
+    return true;
+  }
+
+  addStartInput.addEventListener("change", validateAddDateRange);
+  addEndInput.addEventListener("change", validateAddDateRange);
 
   ["close-add", "cancel-add"].forEach((id) => {
     document.getElementById(id).addEventListener("click", () => {
@@ -394,6 +498,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!ngayKetThuc) {
       errors.end = "Vui lòng chọn ngày kết thúc";
       document.getElementById("error-add-end").textContent = errors.end;
+    }
+
+    // Validate date range
+    if (
+      ngayBatDau &&
+      ngayKetThuc &&
+      new Date(ngayKetThuc) <= new Date(ngayBatDau)
+    ) {
+      errors.dateRange = "Ngày kết thúc phải lớn hơn ngày bắt đầu";
+      document.getElementById("error-add-date-range").textContent =
+        errors.dateRange;
     }
 
     // If there are errors, don't submit
