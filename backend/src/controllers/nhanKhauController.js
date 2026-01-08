@@ -116,6 +116,22 @@ const deleteNhanKhau = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+//lấy tổng
+const getTotalNhanKhau = async (req, res) => {
+  try {
+    const total = await NhanKhau.count();
+    res.json({
+      success: true,
+      total: total,
+    });
+  } catch (error) {
+    console.error("Lỗi lấy tổng nhân khẩu:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server",
+    });
+  }
+};
 
 module.exports = {
   NhanKhau,
@@ -124,4 +140,5 @@ module.exports = {
   getNhanKhauByID,
   updateNhanKhau,
   deleteNhanKhau,
+  getTotalNhanKhau,
 };

@@ -234,3 +234,4 @@ function showNotify(msg) {
   document.getElementById("notify-text").innerText = msg;
   document.getElementById("notifyModal").classList.add("show");
 }
+
