@@ -54,13 +54,17 @@ document.addEventListener("DOMContentLoaded", () => {
                   daDong += thanhTien;
                 }
 
+                // Chuyển đổi loại khoản thu từ số sang text
+                const loaiKhoanThu =
+                  fee.LoaiKhoanThu === 1 ? "Định kỳ" : "Một lần";
+
                 const tr = document.createElement("tr");
                 tr.dataset.maKhoanThu = fee.MaKhoanThu;
                 tr.dataset.thanhTien = thanhTien;
                 tr.innerHTML = `
                   <td>${fee.MaKhoanThu}</td>
                   <td>${fee.TenKhoanThu || ""}</td>
-                  <td>${fee.LoaiKhoanThu || ""}</td>
+                  <td>${loaiKhoanThu}</td>
                   <td>${
                     fee.ThanhTien
                       ? fee.ThanhTien.toLocaleString("vi-VN") + " đ"
@@ -209,6 +213,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 const isPaid =
                   fee.TrangThai === "Đã đóng" || fee.TrangThai === "da_thu";
 
+                // Chuyển đổi loại khoản thu từ số sang text
+                const loaiKhoanThu =
+                  fee.LoaiKhoanThu === 1 ? "Định kỳ" : "Một lần";
+
                 const tr = document.createElement("tr");
                 tr.dataset.maKhoanThu = fee.MaKhoanThu;
                 tr.dataset.maHoKhau = maHoKhau;
@@ -216,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 tr.innerHTML = `
                   <td>${fee.MaKhoanThu}</td>
                   <td>${fee.TenKhoanThu || ""}</td>
-                  <td>${fee.LoaiKhoanThu || ""}</td>
+                  <td>${loaiKhoanThu}</td>
                   <td>${
                     fee.ThanhTien
                       ? fee.ThanhTien.toLocaleString("vi-VN") + " đ"

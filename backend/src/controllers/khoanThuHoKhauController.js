@@ -128,14 +128,27 @@ const getKhoanThuByHoKhau = async (req, res) => {
   }
 };
 
-const calculateFee = async (maHoKhau) => {
+const calculateFee = async (maHoKhau, maKhoanThu) => {
   const hoKhau = await HoKhau.findByPk(maHoKhau);
   if (!hoKhau) {
     throw new Error("Không tìm thấy hộ khẩu");
   }
 
-  const canHo = await CanHo.findByPk(hoKhau.MaCanHo);
-  const dienTich = canHo ? canHo.DienTich : 0;
+  // Lấy thông tin khoản thu để biết đơn vị tính
+  const khoanThu = await sequelize.query(
+    `SELECT DonGia, DonViTinh FROM KhoanThu WHERE MaKhoanThu = :maKhoanThu`,
+    {
+      replacements: { maKhoanThu },
+      type: sequelize.QueryTypes.SELECT,
+    }
+  );
+
+  if (!khoanThu || khoanThu.length === 0) {
+    throw new Error("Không tìm thấy khoản thu");
+  }
+
+  const donGia = khoanThu[0].DonGia || 0;
+  const donViTinh = khoanThu[0].DonViTinh || "nhan_khau";
 
   const soNhanKhau = await NhanKhau.count({
     where: {
@@ -144,20 +157,22 @@ const calculateFee = async (maHoKhau) => {
     },
   });
 
-  // Có thể thay đổi công thức tính sau
-  const PHI_DIEN_TICH = 10000; // vnd/m^2
-  const PHI_NHAN_KHAU = 20000; // vnd/người
+  let thanhTien = 0;
 
-  const tongTien = dienTich * PHI_DIEN_TICH + soNhanKhau * PHI_NHAN_KHAU;
+  // Tính thành tiền dựa vào đơn vị tính
+  if (donViTinh === "ho_khau") {
+    // Tính theo hộ khẩu: 1 hộ = 1 đơn giá
+    thanhTien = donGia;
+  } else {
+    // Tính theo nhân khẩu: số người * đơn giá
+    thanhTien = soNhanKhau * donGia;
+  }
 
   return {
-    dien_tich: dienTich,
     so_nhan_khau: soNhanKhau,
-    tong_tien: Math.round(tongTien),
-    chi_tiet: {
-      phi_dien_tich: dienTich * PHI_DIEN_TICH,
-      phi_nhan_khau: soNhanKhau * PHI_NHAN_KHAU,
-    },
+    tong_tien: Math.round(thanhTien),
+    don_vi_tinh: donViTinh,
+    don_gia: donGia,
   };
 };
 
@@ -185,7 +200,7 @@ const assignKhoanThuToHoKhau = async (req, res) => {
       });
     }
 
-    const feeInfo = await calculateFee(MaHoKhau);
+    const feeInfo = await calculateFee(MaHoKhau, MaKhoanThu);
 
     const newRecord = await KhoanThuHoKhau.create({
       MaKhoanThu,
