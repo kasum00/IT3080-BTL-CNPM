@@ -137,10 +137,20 @@ async function openDetail(id) {
    ADD
 ================================ */
 async function addNhanKhau() {
+  const maHoKhau = document.getElementById("add-ma").value.trim();
+  const hoTen = document.getElementById("add-hoTen").value.trim();
+  const cccd = document.getElementById("add-cccd").value.trim();
+
+  // ✅ VALIDATE BẮT BUỘC
+  if (!maHoKhau || !hoTen || !cccd) {
+    showNotify("Vui lòng nhập đầy đủ: Mã hộ khẩu, Họ tên và CCCD!");
+    return;
+  }
+
   const payload = {
-    MaHoKhau: document.getElementById("add-ma").value,
-    HoTen: document.getElementById("add-hoTen").value,
-    CanCuocCongDan: document.getElementById("add-cccd").value,
+    MaHoKhau: maHoKhau,
+    HoTen: hoTen,
+    CanCuocCongDan: cccd,
     NgaySinh: document.getElementById("add-ngaySinh").value,
     NoiSinh: document.getElementById("add-noiSinh").value,
     DanToc: document.getElementById("add-danToc").value,
@@ -149,15 +159,25 @@ async function addNhanKhau() {
     GhiChu: document.getElementById("add-ghiChu").value,
   };
 
-  await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  closeAdd();
-  showNotify("Thêm nhân khẩu thành công!");
-  loadNhanKhau();
+    if (!res.ok) {
+      const err = await res.json();
+      showNotify(err.message || "Thêm nhân khẩu thất bại!");
+      return;
+    }
+
+    closeAdd();
+    showNotify("Thêm nhân khẩu thành công!");
+    loadNhanKhau();
+  } catch (error) {
+    showNotify("Không thể kết nối tới server!");
+  }
 }
 
 /* ===============================
@@ -234,4 +254,3 @@ function showNotify(msg) {
   document.getElementById("notify-text").innerText = msg;
   document.getElementById("notifyModal").classList.add("show");
 }
-
