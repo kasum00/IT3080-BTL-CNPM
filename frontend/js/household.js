@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-    let currentRow = null;
-    let currentHoKhauID = null;
+    let currentRow = null
+    let currentHoKhauID = null
+    let currentMaCanHo = null
 
     /* ===============================
        MODALS
@@ -51,19 +52,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    async function loadCanHoTrong() {
+    async function loadCanHoTrong(selectElement, selectedID = null, isEdit = false) {
         try {
-            const res = await fetch("http://localhost:3000/api/can-ho/trong")
+            const url = selectedID
+                ? `http://localhost:3000/api/can-ho/trong?currentMaCanHo=${selectedID}`
+                : `http://localhost:3000/api/can-ho/trong`
+
+            const res = await fetch(url)
             const data = await res.json()
 
-            const select = document.getElementById("add-canHo")
-            select.innerHTML = `<option value="">Chọn căn hộ</option>`
+            selectElement.innerHTML = ""
+
+            if (!isEdit) {
+                const defaultOpt = document.createElement("option")
+                defaultOpt.value = ""
+                defaultOpt.textContent = "Chọn căn hộ"
+                selectElement.appendChild(defaultOpt)
+            }
 
             data.forEach(canho => {
                 const opt = document.createElement("option")
                 opt.value = canho.MaCanHo
                 opt.textContent = canho.TenCanHo
-                select.appendChild(opt)
+
+                if (selectedID && canho.MaCanHo == selectedID) {
+                    opt.selected = true
+                }
+                selectElement.appendChild(opt)
             })
         } catch (err) {
             showNotify("Không tải được danh sách căn hộ!")
@@ -119,7 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 showNotify(hokhau.message || "Không tải được chi tiết hộ khẩu");
                 return;
             }
-
+            currentMaCanHo = hokhau.MaCanHo
             document.getElementById("modal-ma").value = hokhau.MaHoKhau
             document.getElementById("modal-canHo").value = hokhau.TenCanHo || ""
             document.getElementById("modal-chuHo").value = hokhau.ChuHo || "";
@@ -145,23 +160,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     /* ===============================
        DETAIL → EDIT
     =============================== */
-    document.getElementById("btn-open-edit").addEventListener("click", () => {
+    document.getElementById("btn-open-edit").addEventListener("click", async () => {
         detailModal.classList.remove("show");
 
-        currentHoKhauID = document.getElementById("modal-ma").value;
+        const maHoKhau = document.getElementById("modal-ma").value
+        currentHoKhauID = maHoKhau
 
-        document.getElementById("edit-ma").value =
-            document.getElementById("modal-ma").value;
-        document.getElementById("edit-canHo").value =
-            document.getElementById("modal-canHo").value;
-        document.getElementById("edit-chuHo").value =
-            document.getElementById("modal-chuHo").value;
-        document.getElementById("edit-diaChi").value =
-            document.getElementById("modal-diaChi").value;
-        document.getElementById("edit-noiCap").value =
-            document.getElementById("modal-noiCap").value;
-        document.getElementById("edit-ngayCap").value =
-            document.getElementById("modal-ngayCap").value;
+        document.getElementById("edit-ma").value = maHoKhau
+        document.getElementById("edit-chuHo").value = document.getElementById("modal-chuHo").value;
+        document.getElementById("edit-diaChi").value = document.getElementById("modal-diaChi").value;
+        document.getElementById("edit-noiCap").value = document.getElementById("modal-noiCap").value;
+        document.getElementById("edit-ngayCap").value = document.getElementById("modal-ngayCap").value;
+
+        await loadCanHoTrong(document.getElementById("edit-canHo"), currentMaCanHo, true)
 
         editModal.classList.add("show");
     });
@@ -172,10 +183,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("btn-save-edit").addEventListener("click", async () => {
         try {
             const id = document.getElementById("edit-ma").value.trim()
+            const maCanHo = document.getElementById("edit-canHo").value
+
             const res = await fetch(`http://localhost:3000/api/ho-khau/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    MaCanHo: maCanHo ? Number(maCanHo) : null,
                     DiaChiThuongTru: document.getElementById("edit-diaChi").value,
                     NoiCap: document.getElementById("edit-noiCap").value,
                     NgayCap: document.getElementById("edit-ngayCap").value
@@ -187,6 +201,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 showNotify(data.message || "Cập nhật hộ khẩu thất bại!");
                 return;
             }
+            currentMaCanHo = data.MaCanHo
             editModal.classList.remove("show");
             showNotify("Cập nhật hộ khẩu thành công!");
             await loadHoKhau()
@@ -204,7 +219,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     =============================== */
     document.querySelector(".btn-add").addEventListener("click", async () => {
         document.querySelectorAll("#addModal input").forEach(i => i.value = "")
-        await loadCanHoTrong()
+        await loadCanHoTrong(document.getElementById("add-canHo"))
         addModal.classList.add("show");
     });
 

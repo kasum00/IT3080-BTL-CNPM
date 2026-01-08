@@ -205,12 +205,22 @@ const findOwnerByApartment = async (req, res) => {
 
 const getCanHoTrong = async (req, res) => {
     try {
+        const {currentMaCanHo} = req.query
+
+        const whereCondition = {
+            [Op.or]: [
+                {MaHoKhau: {[Op.is]: null}}
+            ]
+        }
+
+        if(currentMaCanHo) {
+            whereCondition[Op.or].push({
+                MaCanHo: currentMaCanHo
+            })
+        }
+
         const data = await CanHo.findAll({
-            where: {
-                MaHoKhau: {
-                    [Op.is]: null
-                }
-            },
+            where: whereCondition,
             attributes: ["MaCanHo", "TenCanHo"],
             order: [["TenCanHo", "ASC"]]
         })

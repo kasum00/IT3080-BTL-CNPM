@@ -69,6 +69,11 @@ const CanHo = sequelize.define(
     TenCanHo: {
         type: DataTypes.STRING(100),
         allowNull: true
+    },
+    TrangThai: {
+        type: DataTypes.ENUM("trong", "chu_o", "cho_thue"),
+        allowNull: false,
+        defaultValue: "trong"
     }
 },
     {
@@ -94,6 +99,15 @@ const validateHoKhauInput = (data, isCreate = true) => {
 
     if (missInput.length > 0) {
         return `Thiếu thông tin: ${missInput.join(", ")}`
+    }
+
+    if(isCreate && data.MaHoKhau) {
+        const maHoKhau = data.MaHoKhau.trim()
+        const regex = /^HK\d{4}$/
+
+        if(!regex.test(maHoKhau)) {
+            return "Mã hộ khẩu không hợp lệ!"
+        }
     }
 
     if (data.DiaChiThuongTru) {
@@ -230,8 +244,12 @@ const getHoKhauByID = async (req, res) => {
         })
 
         res.json({
-            ...data.toJSON(),
+            MaHoKhau: data.MaHoKhau,
+            MaCanHo: data.MaCanHo,
             TenCanHo: data.CanHo ? data.CanHo.TenCanHo : null,
+            DiaChiThuongTru: data.DiaChiThuongTru,
+            NoiCap: data.NoiCap,
+            NgayCap: data.NgayCap,
             ChuHo: chuHo?.HoTen || null
         })
     } catch (err) {
@@ -241,9 +259,11 @@ const getHoKhauByID = async (req, res) => {
 
 // UPDATE
 const updateHoKhau = async (req, res) => {
+    const trans = await sequelize.transaction()
     try {
-        const hoKhau = await HoKhau.findByPk(req.params.id)
+        const hoKhau = await HoKhau.findByPk(req.params.id, { transaction: trans })
         if (!hoKhau) {
+            await trans.rollback()
             return res.status(404).json({
                 message: "Không tìm thấy hộ khẩu!"
             })
@@ -251,29 +271,71 @@ const updateHoKhau = async (req, res) => {
 
         const errMsg = validateHoKhauInput(req.body, false)
         if (errMsg) {
+            await trans.rollback()
             return res.status(400).json({ message: errMsg })
         }
 
-        const { DiaChiThuongTru, NoiCap, NgayCap } = req.body
+        let { MaCanHo, DiaChiThuongTru, NoiCap, NgayCap } = req.body
+
+        if (MaCanHo === "" || MaCanHo === undefined) {
+            MaCanHo = null
+        }
+
+        if (MaCanHo !== hoKhau.MaCanHo) {
+            if (hoKhau.MaCanHo) {
+                const canHoCu = await CanHo.findByPk(hoKhau.MaCanHo, { transaction: trans })
+                if (canHoCu) {
+                    if (canHoCu.TrangThai === "cho_thue") {
+                        await trans.rollback()
+                        return res.status(400).json({
+                            message: "Không thể chuyển hộ khẩu khỏi căn hộ đang cho thuê!"
+                        })
+                    }
+                }
+
+                await CanHo.update(
+                    { MaHoKhau: null, TrangThai: "trong" },
+                    { where: { MaCanHo: hoKhau.MaCanHo }, transaction: trans }
+                )
+            }
+            if (MaCanHo) {
+                const canHoMoi = await CanHo.findByPk(MaCanHo, { transaction: trans })
+                if (!canHoMoi) {
+                    await trans.rollback()
+                    return res.status(400).json({
+                        message: "Căn hộ không tồn tại!"
+                    })
+                }
+                await canHoMoi.update(
+                    { MaHoKhau: hoKhau.MaHoKhau, TrangThai: "chu_o" },
+                    { transaction: trans }
+                )
+            }
+
+            await hoKhau.update({ MaCanHo }, { transaction: trans })
+        }
 
         await hoKhau.update({
             DiaChiThuongTru: DiaChiThuongTru?.trim() || null,
             NoiCap: NoiCap?.trim() || null,
             NgayCap: NgayCap || null
-        })
+        }, { transaction: trans })
 
         const chuHo = await NhanKhau.findOne({
             where: {
                 MaHoKhau: hoKhau.MaHoKhau,
                 QuanHe: "chu ho"
-            }
+            },
+            transaction: trans
         })
+        await trans.commit()
 
         res.json({
             ...hoKhau.toJSON(),
-            ChuHo: chuHo ? chuHo.HoTen : null
+            ChuHo: chuHo?.HoTen || null
         })
     } catch (err) {
+        await trans.rollback()
         res.status(500).json({ error: err.message })
     }
 }
