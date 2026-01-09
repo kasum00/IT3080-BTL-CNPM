@@ -56,13 +56,12 @@ create table NhanKhau(
 -- TẠM TRÚ
 create table TamTru(
 	MaTamTru INT auto_increment primary key,
-    MaNhanKhau int,
     DiaChiThuongTru nvarchar(200),
     DiaChiTamTru nvarchar(200),
     CanCuocCongDan varchar(20),
     ngayBatDau DATE, 
 	ngayKetThuc DATE,
-    FOREIGN KEY (MaNhanKhau) REFERENCES NhanKhau(MaNhanKhau)
+    FOREIGN KEY (CanCuocCongDan) REFERENCES NhanKhau(CanCuocCongDan)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
