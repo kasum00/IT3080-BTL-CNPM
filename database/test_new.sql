@@ -40,23 +40,23 @@ ALTER TABLE TaiKhoan AUTO_INCREMENT = 1;
 -- Password mặc định cho tất cả: "123456" (đã hash bằng bcrypt)
 -- Hash: $2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK
 
--- INSERT INTO TaiKhoan (Username, Password, VaiTro, TrangThai) VALUES
--- -- Admin
--- ('admin', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'admin', 1),
+INSERT INTO TaiKhoan (Username, Password, VaiTro, TrangThai) VALUES
+-- Admin
+('admin', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'admin', 1),
 
--- -- Ban quản lý
--- ('quanly01', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'ban_quan_ly', 1),
--- ('quanly02', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'ban_quan_ly', 1),
+-- Ban quản lý
+('quanly01', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'ban_quan_ly', 1),
+('quanly02', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'ban_quan_ly', 1),
 
--- -- Cư dân (mỗi hộ khẩu có 1 tài khoản)
--- ('cudan_hk001', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
--- ('cudan_hk002', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
--- ('cudan_hk003', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
--- ('cudan_hk004', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
--- ('cudan_hk005', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
--- ('cudan_hk006', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
--- ('cudan_hk007', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
--- ('cudan_hk008', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1);
+-- Cư dân (mỗi hộ khẩu có 1 tài khoản)
+('cudan_hk001', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
+('cudan_hk002', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
+('cudan_hk003', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
+('cudan_hk004', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
+('cudan_hk005', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
+('cudan_hk006', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
+('cudan_hk007', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1),
+('cudan_hk008', '$2b$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK', 'cu_dan', 1);
 
 -- ============================================
 -- 2. THÊM CĂN HỘ
@@ -165,11 +165,11 @@ INSERT INTO NhanKhau (MaHoKhau, HoTen, CanCuocCongDan, NgaySinh, NoiSinh, DanToc
 ('HK008', 'Võ Minh Đức', '001009002239', '2009-04-30', 'TP.HCM', 'Kinh', 'Học sinh', 'con', NULL, 1);
 
 -- Liên kết tài khoản cho chủ hộ
-UPDATE NhanKhau nk
-JOIN HoKhau hk ON nk.MaHoKhau = hk.MaHoKhau
-JOIN TaiKhoan tk ON tk.Username = CONCAT('cudan_', LOWER(hk.MaHoKhau))
-SET nk.MaTaiKhoan = tk.MaTaiKhoan
-WHERE nk.QuanHe = 'chu ho' AND tk.VaiTro = 'cu_dan';
+-- UPDATE NhanKhau nk
+-- JOIN HoKhau hk ON nk.MaHoKhau = hk.MaHoKhau
+-- JOIN TaiKhoan tk ON tk.Username = CONCAT('cudan_', LOWER(hk.MaHoKhau))
+-- SET nk.MaTaiKhoan = tk.MaTaiKhoan
+-- WHERE nk.QuanHe = 'chu ho' AND tk.VaiTro = 'cu_dan';
 
 -- ============================================
 -- 5. THÊM KHOẢN THU
@@ -282,6 +282,51 @@ INSERT INTO KhoanThuTheoHo (MaKhoanThu, MaHoKhau, SoLuong, ThanhTien, TrangThai)
 (10, 'HK007', 1, 200000, 'ĐÃ ĐÓNG'),
 (10, 'HK008', 1, 200000, 'ĐÃ ĐÓNG');
 
+INSERT INTO TamTru
+(MaNhanKhau, DiaChiThuongTru, DiaChiTamTru, CanCuocCongDan, ngayBatDau, ngayKetThuc)
+VALUES
+(1, 'Nam Định', 'Căn hộ A101, Chung cư Bluemoon', '001200000101', '2023-01-01', '2023-12-31'),
+(2, 'Thái Bình', 'Căn hộ A101, Chung cư Bluemoon', '001200000102', '2023-02-01', '2023-11-30'),
+(3, 'Hà Nội', 'Căn hộ A101, Chung cư Bluemoon', '001200000103', '2023-03-01', '2023-09-30'),
+(4, 'Hải Phòng', 'Căn hộ A101, Chung cư Sunrise', '001200000104', '2023-04-01', '2023-10-31'),
+(5, 'Thanh Hóa', 'Căn hộ A102, Chung cư Sunrise', '001200000105', '2023-01-15', '2023-12-15'),
+(6, 'Nghệ An', 'Căn hộ A102, Chung cư Bluemoon', '001200000106', '2023-02-10', '2023-08-10'),
+(7, 'Hà Tĩnh', 'Căn hộ A102, Chung cư Sunrise', '001200000107', '2023-03-05', '2023-09-05'),
+(8, 'Quảng Bình', 'Căn hộ A201, Chung cư Sunrise', '001200000108', '2023-01-01', '2023-06-30'),
+(9, 'Huế', 'Căn hộ A201, Chung cư Sunrise', '001200000109', '2023-02-01', '2023-07-31'),
+(10, 'Đà Nẵng', 'Căn hộ A201, Chung cư Sunrise', '001200000110', '2023-03-01', '2023-12-31'),
+(11, 'Quảng Nam', 'Căn hộ A202, Chung cư Sunrise', '001200000111', '2023-01-20', '2023-10-20'),
+(12, 'Quảng Ngãi', 'Căn hộ A202, Chung cư Sunrise', '001200000112', '2023-02-15', '2023-08-15'),
+(13, 'Bình Định', 'Căn hộ B101, Chung cư Sunrise', '001200000113', '2023-01-01', '2023-12-31'),
+(14, 'Phú Yên', 'Căn hộ B101, Chung cư Sunrise', '001200000114', '2023-03-01', '2023-09-01'),
+(15, 'Khánh Hòa', 'Căn hộ B101, Chung cư Sunrise', '001200000115', '2023-04-01', '2023-10-01'),
+(16, 'Ninh Thuận', 'Căn hộ B102, Chung cư Sunrise', '001200000116', '2023-01-10', '2023-07-10'),
+(17, 'Bình Thuận', 'Căn hộ B102, Chung cư Sunrise', '001200000117', '2023-02-10', '2023-08-10'),
+(18, 'Đồng Nai', 'Căn hộ C101, Chung cư Sunrise', '001200000118', '2023-01-01', '2023-12-31'),
+(19, 'Bình Dương', 'Căn hộ C101, Chung cư Sunrise', '001200000119', '2023-03-01', '2023-09-30'),
+(20, 'Tây Ninh', 'Căn hộ C201, Chung cư Sunrise', '001200000120', '2023-02-01', '2023-08-31');
+
+INSERT INTO TamVang (MaNhanKhau, NgayBatDau, NgayKetThuc, LyDo) VALUES
+(1, '2025-01-02', '2025-04-03', 'Đi công tác dài ngày'),
+(2, '2025-03-15', '2025-04-10', 'Chăm sóc người thân'),
+(3, '2025-06-01', '2025-06-15', 'Về quê nghỉ hè'),
+(4, '2025-06-05', '2025-06-20', 'Nghỉ hè cùng gia đình'),
+(5, '2025-04-01', '2025-05-05', 'Đi công tác tỉnh khác'),
+(6, '2025-04-05', '2025-04-18', 'Dự đám cưới người thân'),
+(7, '2025-06-10', '2025-06-30', 'Nghỉ hè'),
+(8, '2025-03-10', '2025-03-25', 'Khám chữa bệnh'),
+(9, '2025-03-20', '2025-04-02', 'Đi công tác ngắn hạn'),
+(10, '2025-05-01', '2025-05-20', 'Thực tập công ty'),
+(11, '2025-06-01', '2025-06-10', 'Về quê nghỉ hè'),
+(13, '2025-04-01', '2025-04-30', 'Đi công tác nước ngoài'),
+(14, '2025-04-20', '2025-05-12', 'Chăm sóc cha mẹ'),
+(15, '2025-03-10', '2025-03-28', 'Giải quyết công việc cá nhân'),
+(16, '2025-03-25', '2025-04-15', 'Về quê thăm gia đình'),
+(18, '2025-03-15', '2025-04-01', 'Chuyển nơi thuê mới'),
+(19, '2025-04-01', '2025-05-10', 'Hội họp công tác dài ngày'),
+(21, '2025-04-05', '2025-04-25', 'Du lịch nước ngoài'),
+(23, '2025-06-01', '2025-06-05', 'Nghỉ hè'),
+(27, '2025-03-20', '2025-04-08', 'Về quê giải quyết việc cá nhân');
 
 -- Bật lại safe update mode
 SET SQL_SAFE_UPDATES = 1;
