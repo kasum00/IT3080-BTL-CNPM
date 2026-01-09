@@ -113,6 +113,7 @@ UPDATE CanHo c
 JOIN HoKhau h ON c.MaCanHo = h.MaCanHo 
 SET c.MaHoKhau = h.MaHoKhau;
 
+
 -- ============================================
 -- 4. THÊM NHÂN KHẨU
 -- ============================================
@@ -163,6 +164,58 @@ INSERT INTO NhanKhau (MaHoKhau, HoTen, CanCuocCongDan, NgaySinh, NoiSinh, DanToc
 ('HK008', 'Trương Thị Ánh', '001083000012', '1983-02-14', 'TP.HCM', 'Kinh', 'Dược sĩ', 'vo', NULL, 1),
 ('HK008', 'Võ Minh Anh', '001006001123', '2006-10-20', 'TP.HCM', 'Kinh', 'Học sinh', 'con', NULL, 1),
 ('HK008', 'Võ Minh Đức', '001009002239', '2009-04-30', 'TP.HCM', 'Kinh', 'Học sinh', 'con', NULL, 1);
+
+-- tạm trú
+INSERT INTO TamTru
+(DiaChiThuongTru, DiaChiTamTru, CanCuocCongDan, NgayBatDau, NgayKetThuc)
+VALUES
+('Nam Định',   'Căn hộ A101, Chung cư Bluemoon', '001088001234', '2023-01-01', '2023-12-31'),
+('Thái Bình',  'Căn hộ A101, Chung cư Bluemoon', '001090002345', '2023-02-01', '2023-11-30'),
+('Hà Nội',     'Căn hộ A101, Chung cư Bluemoon', '001012003456', '2023-03-01', '2023-09-30'),
+('Hải Phòng',  'Căn hộ A101, Chung cư Bluemoon', '001015004567', '2023-04-01', '2023-10-31'),
+
+('Thanh Hóa',  'Căn hộ A102, Chung cư Bluemoon', '001085005678', '2023-01-15', '2023-12-15'),
+('Nghệ An',    'Căn hộ A102, Chung cư Bluemoon', '001087006789', '2023-02-10', '2023-08-10'),
+('Hà Tĩnh',    'Căn hộ A102, Chung cư Bluemoon', '001010007890', '2023-03-05', '2023-09-05'),
+
+('Quảng Bình', 'Căn hộ A201, Chung cư Bluemoon', '001082008901', '2023-01-01', '2023-06-30'),
+('Huế',        'Căn hộ A201, Chung cư Bluemoon', '001084009012', '2023-02-01', '2023-07-31'),
+('Đà Nẵng',    'Căn hộ A201, Chung cư Bluemoon', '001008001123', '2023-03-01', '2023-12-31'),
+
+('Quảng Nam',  'Căn hộ A202, Chung cư Bluemoon', '001011002234', '2023-01-20', '2023-10-20'),
+('Quảng Ngãi', 'Căn hộ A202, Chung cư Bluemoon', '001014003345', '2023-02-15', '2023-08-15'),
+
+('Bình Định',  'Căn hộ B101, Chung cư Bluemoon', '001078004456', '2023-01-01', '2023-12-31'),
+('Phú Yên',    'Căn hộ B101, Chung cư Bluemoon', '001080005567', '2023-03-01', '2023-09-01'),
+('Khánh Hòa',  'Căn hộ B101, Chung cư Bluemoon', '001092006678', '2023-04-01', '2023-10-01'),
+
+('Ninh Thuận', 'Căn hộ B102, Chung cư Bluemoon', '001093007789', '2023-01-10', '2023-07-10'),
+('Bình Thuận', 'Căn hộ B102, Chung cư Bluemoon', '001018008890', '2023-02-10', '2023-08-10'),
+
+('Đồng Nai',   'Căn hộ C101, Chung cư Bluemoon', '001095009901', '2023-01-01', '2023-12-31'),
+('Bình Dương', 'Căn hộ C101, Chung cư Bluemoon', '001086000012', '2023-03-01', '2023-09-30'),
+('Tây Ninh',   'Căn hộ C201, Chung cư Bluemoon', '001088001123', '2023-02-01', '2023-08-31');
+
+INSERT INTO TamVang (CanCuocCongDan, NgayBatDau, NgayKetThuc, LyDo) VALUES
+('001088001234', '2025-01-02', '2025-04-03', 'Đi công tác dài ngày'),
+('001090002345', '2025-03-15', '2025-04-10', 'Chăm sóc người thân'),
+('001012003456', '2025-06-01', '2025-06-15', 'Về quê nghỉ hè'),
+('001015004567', '2025-06-05', '2025-06-20', 'Nghỉ hè cùng gia đình'),
+('001085005678', '2025-04-01', '2025-05-05', 'Đi công tác tỉnh khác'),
+('001087006789', '2025-04-05', '2025-04-18', 'Dự đám cưới người thân'),
+('001010007890', '2025-06-10', '2025-06-30', 'Nghỉ hè'),
+('001082008901', '2025-03-10', '2025-03-25', 'Khám chữa bệnh'),
+('001084009012', '2025-03-20', '2025-04-02', 'Đi công tác ngắn hạn'),
+('001008001123', '2025-05-01', '2025-05-20', 'Thực tập công ty'),
+('001011002234', '2025-06-01', '2025-06-10', 'Về quê nghỉ hè'),
+('001014003345', '2025-04-01', '2025-04-30', 'Đi công tác nước ngoài'),
+('001078004456', '2025-04-20', '2025-05-12', 'Chăm sóc cha mẹ'),
+('001080005567', '2025-03-10', '2025-03-28', 'Giải quyết công việc cá nhân'),
+('001092006678', '2025-03-25', '2025-04-15', 'Về quê thăm gia đình'),
+('001095009901', '2025-03-15', '2025-04-01', 'Chuyển nơi thuê mới'),
+('001086000012', '2025-04-01', '2025-05-10', 'Hội họp công tác dài ngày'),
+('001088001123', '2025-04-05', '2025-04-25', 'Du lịch nước ngoài');
+
 
 -- Liên kết tài khoản cho chủ hộ
 -- UPDATE NhanKhau nk
