@@ -133,7 +133,6 @@ async function openDetail(id) {
   document.getElementById("resident-modal").classList.add("show");
 }
 
-
 /* ===============================
    ADD
 ================================ */
@@ -195,11 +194,22 @@ async function addNhanKhau() {
 /* ===============================
    UPDATE
 ================================ */
+
 async function updateNhanKhau() {
+  const maHoKhau = document.getElementById("edit-ma").value.trim();
+  const hoTen = document.getElementById("edit-hoTen").value.trim();
+  const cccd = document.getElementById("edit-cccd").value.trim();
+
+  // VALIDATE BẮT BUỘC
+  if (!maHoKhau || !hoTen || !cccd) {
+    alert("Dữ liệu không hợp lệ, vui lòng nhập lại!");
+    return;
+  }
+
   const payload = {
-    MaHoKhau: document.getElementById("edit-ma").value,
-    HoTen: document.getElementById("edit-hoTen").value,
-    CanCuocCongDan: document.getElementById("edit-cccd").value,
+    MaHoKhau: maHoKhau,
+    HoTen: hoTen,
+    CanCuocCongDan: cccd,
     NgaySinh: document.getElementById("edit-ngaySinh").value,
     NoiSinh: document.getElementById("edit-noiSinh").value,
     DanToc: document.getElementById("edit-danToc").value,
@@ -208,25 +218,51 @@ async function updateNhanKhau() {
     GhiChu: document.getElementById("edit-ghiChu").value,
   };
 
-  await fetch(`${API_URL}/${currentNhanKhauId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`${API_URL}/${currentNhanKhauId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  document.getElementById("editModal").classList.remove("show");
-  showNotify("Cập nhật nhân khẩu thành công!");
-  loadNhanKhau();
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.message || "Cập nhật thất bại!");
+      return;
+    }
+
+    document.getElementById("editModal").classList.remove("show");
+    showNotify("Cập nhật nhân khẩu thành công!");
+    loadNhanKhau();
+  } catch (e) {
+    alert("Không thể kết nối server!");
+  }
 }
 
 /* ===============================
    DELETE
 ================================ */
 async function deleteNhanKhau() {
-  await fetch(`${API_URL}/${currentNhanKhauId}`, { method: "DELETE" });
-  closeDelete();
-  showNotify("Xóa nhân khẩu thành công!");
-  loadNhanKhau();
+  try {
+    const res = await fetch(`${API_URL}/${currentNhanKhauId}`, {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+
+    //Backend báo lỗi (ví dụ: xóa chủ hộ)
+    if (!res.ok) {
+      alert(data.message || "Không thể xóa nhân khẩu!");
+      closeDelete();
+      return;
+    }
+    // Chỉ khi xóa thành công
+    closeDelete();
+    showNotify("Xóa nhân khẩu thành công!");
+    loadNhanKhau();
+  } catch (error) {
+    alert("Không thể kết nối tới server!");
+  }
 }
 
 /* ===============================
