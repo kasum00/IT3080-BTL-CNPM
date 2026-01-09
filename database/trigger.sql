@@ -279,3 +279,121 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_insert_phuongtien
+AFTER INSERT ON PhuongTien
+FOR EACH ROW
+BEGIN
+    INSERT INTO ThongKePhuongTien (MaHoKhau)
+    VALUES (NEW.MaHoKhau)
+    ON DUPLICATE KEY UPDATE MaHoKhau = MaHoKhau;
+
+    IF NEW.MaLoaiPT = 1 THEN
+        UPDATE ThongKePhuongTien SET SoXeDap = SoXeDap + 1
+        WHERE MaHoKhau = NEW.MaHoKhau;
+    ELSEIF NEW.MaLoaiPT = 2 THEN
+        UPDATE ThongKePhuongTien SET SoXeMay = SoXeMay + 1
+        WHERE MaHoKhau = NEW.MaHoKhau;
+    ELSEIF NEW.MaLoaiPT = 3 THEN
+        UPDATE ThongKePhuongTien SET SoOTo = SoOTo + 1
+        WHERE MaHoKhau = NEW.MaHoKhau;
+    END IF;
+
+    UPDATE ThongKePhuongTien
+    SET TongPhuongTien = SoXeDap + SoXeMay + SoOTo
+    WHERE MaHoKhau = NEW.MaHoKhau;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_delete_phuongtien
+AFTER DELETE ON PhuongTien
+FOR EACH ROW
+BEGIN
+    IF OLD.MaLoaiPT = 1 THEN
+        UPDATE ThongKePhuongTien SET SoXeDap = SoXeDap - 1
+        WHERE MaHoKhau = OLD.MaHoKhau;
+    ELSEIF OLD.MaLoaiPT = 2 THEN
+        UPDATE ThongKePhuongTien SET SoXeMay = SoXeMay - 1
+        WHERE MaHoKhau = OLD.MaHoKhau;
+    ELSEIF OLD.MaLoaiPT = 3 THEN
+        UPDATE ThongKePhuongTien SET SoOTo = SoOTo - 1
+        WHERE MaHoKhau = OLD.MaHoKhau;
+    END IF;
+
+    UPDATE ThongKePhuongTien
+    SET TongPhuongTien = SoXeDap + SoXeMay + SoOTo
+    WHERE MaHoKhau = OLD.MaHoKhau;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_tinh_tien_xe_after_insert
+AFTER INSERT ON PhuongTien
+FOR EACH ROW
+BEGIN
+    DECLARE phiXeDap INT;
+    DECLARE phiXeMay INT;
+    DECLARE phiOTo INT;
+
+    SELECT PhiGuiXe INTO phiXeDap FROM LoaiPhuongTien WHERE MaLoaiPT = 1;
+    SELECT PhiGuiXe INTO phiXeMay FROM LoaiPhuongTien WHERE MaLoaiPT = 2;
+    SELECT PhiGuiXe INTO phiOTo FROM LoaiPhuongTien WHERE MaLoaiPT = 3;
+
+    INSERT INTO TienGuiXeTheoHoKhau (MaHoKhau)
+    VALUES (NEW.MaHoKhau)
+    ON DUPLICATE KEY UPDATE MaHoKhau = MaHoKhau;
+
+    UPDATE TienGuiXeTheoHoKhau tg
+    JOIN ThongKePhuongTien tk ON tg.MaHoKhau = tk.MaHoKhau
+    SET
+        tg.TienXeDap = tk.SoXeDap * phiXeDap,
+        tg.TienXeMay = tk.SoXeMay * phiXeMay,
+        tg.TienOTo = tk.SoOTo * phiOTo,
+        tg.TongTienGuiXe =
+            tk.SoXeDap * phiXeDap
+          + tk.SoXeMay * phiXeMay
+          + tk.SoOTo * phiOTo,
+        tg.CapNhatLuc = CURRENT_TIMESTAMP
+    WHERE tg.MaHoKhau = NEW.MaHoKhau;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_tinh_tien_xe_after_delete
+AFTER DELETE ON PhuongTien
+FOR EACH ROW
+BEGIN
+    DECLARE phiXeDap INT;
+    DECLARE phiXeMay INT;
+    DECLARE phiOTo INT;
+
+    SELECT PhiGuiXe INTO phiXeDap FROM LoaiPhuongTien WHERE MaLoaiPT = 1;
+    SELECT PhiGuiXe INTO phiXeMay FROM LoaiPhuongTien WHERE MaLoaiPT = 2;
+    SELECT PhiGuiXe INTO phiOTo FROM LoaiPhuongTien WHERE MaLoaiPT = 3;
+
+    UPDATE TienGuiXeTheoHoKhau tg
+    JOIN ThongKePhuongTien tk ON tg.MaHoKhau = tk.MaHoKhau
+    SET
+        tg.TienXeDap = tk.SoXeDap * phiXeDap,
+        tg.TienXeMay = tk.SoXeMay * phiXeMay,
+        tg.TienOTo = tk.SoOTo * phiOTo,
+        tg.TongTienGuiXe =
+            tk.SoXeDap * phiXeDap
+          + tk.SoXeMay * phiXeMay
+          + tk.SoOTo * phiOTo,
+        tg.CapNhatLuc = CURRENT_TIMESTAMP
+    WHERE tg.MaHoKhau = OLD.MaHoKhau;
+END$$
+
+DELIMITER ;
