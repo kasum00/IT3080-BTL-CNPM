@@ -1,5 +1,8 @@
+drop database bluemoon;
+
+
 -- tạo database
-CREATE DATABASE IF NOT EXISTS bluemoon2
+CREATE DATABASE IF NOT EXISTS bluemoon
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
@@ -67,11 +70,14 @@ create table TamTru(
 create table TamVang(
 	MaTamVang int auto_increment primary key,
     MaNhanKhau int,
-    ThoiHan Date,
+    NgayBatDau DATE, 
+	NgayKetThuc DATE,
     LyDo nvarchar(200),
     FOREIGN KEY (MaNhanKhau) REFERENCES NhanKhau(MaNhanKhau)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
 
 -- Khoản thu
 create table KhoanThu(
