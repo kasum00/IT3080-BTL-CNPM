@@ -1,0 +1,3 @@
+ALTER USER 'bluemoon_user'@'localhost' IDENTIFIED BY 'Huyen452005@';
+GRANT ALL PRIVILEGES ON bluemoon.* TO 'bluemoon_user'@'localhost';
+FLUSH PRIVILEGES;
