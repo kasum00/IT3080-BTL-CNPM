@@ -47,6 +47,12 @@ const createNhanKhau = async (req, res) => {
     const data = await NhanKhau.create(req.body);
     res.json(data);
   } catch (err) {
+    if (err.name === "SequelizeUniqueConstraintError") {
+      return res.status(400).json({
+        message: "CCCD đã tồn tại, vui lòng nhập CCCD khác!",
+      });
+    }
+
     res.status(500).json({ err: err.message });
   }
 };
