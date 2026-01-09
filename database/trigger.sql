@@ -1,5 +1,99 @@
 DELIMITER $$
 
+-- ================================================================
+-- TRIGGER TÍNH THÀNH TIỀN KHI THÊM KHOẢN THU THEO HỘ
+-- Nếu DonViTinh = 'nhan_khau' thì ThanhTien = SoNhanKhau * DonGia
+-- Nếu DonViTinh = 'ho_khau' thì ThanhTien = 1 * DonGia
+-- Nếu DonViTinh = 'dien_tich' thì ThanhTien = DienTich * DonGia
+-- ================================================================
+CREATE TRIGGER trg_tinh_thanh_tien_insert
+BEFORE INSERT ON KhoanThuTheoHo
+FOR EACH ROW
+BEGIN
+    DECLARE v_so_nhan_khau INT DEFAULT 0;
+    DECLARE v_don_gia INT DEFAULT 0;
+    DECLARE v_don_vi_tinh NVARCHAR(50);
+    DECLARE v_dien_tich FLOAT DEFAULT 0;
+    
+    -- Đếm số nhân khẩu đang hoạt động trong hộ
+    SELECT COUNT(*) INTO v_so_nhan_khau
+    FROM NhanKhau
+    WHERE MaHoKhau = NEW.MaHoKhau AND TrangThai = 1;
+    
+    -- Lấy đơn giá và đơn vị tính từ khoản thu
+    SELECT IFNULL(DonGia, 0), IFNULL(DonViTinh, 'nhan_khau') 
+    INTO v_don_gia, v_don_vi_tinh
+    FROM KhoanThu
+    WHERE MaKhoanThu = NEW.MaKhoanThu;
+    
+    -- Lấy diện tích căn hộ nếu cần
+    IF v_don_vi_tinh = 'dien_tich' THEN
+        SELECT IFNULL(DienTich, 0) INTO v_dien_tich
+        FROM CanHo
+        WHERE MaHoKhau = NEW.MaHoKhau;
+        SET NEW.SoLuong = v_dien_tich;
+    ELSE
+        SET NEW.SoLuong = v_so_nhan_khau;
+    END IF;
+    
+    -- Tính thành tiền dựa vào đơn vị tính
+    IF v_don_vi_tinh = 'ho_khau' THEN
+        SET NEW.ThanhTien = v_don_gia;
+    ELSEIF v_don_vi_tinh = 'dien_tich' THEN
+        SET NEW.ThanhTien = v_dien_tich * v_don_gia;
+    ELSE
+        SET NEW.ThanhTien = v_so_nhan_khau * v_don_gia;
+    END IF;
+END$$
+
+-- ================================================================
+-- TRIGGER CẬP NHẬT TỔNG TIỀN HỘ KHẨU KHI THÊM KHOẢN THU THEO HỘ
+-- ================================================================
+CREATE TRIGGER trg_cap_nhat_tong_tien_insert
+AFTER INSERT ON KhoanThuTheoHo
+FOR EACH ROW
+BEGIN
+    -- Kiểm tra nếu chưa có record thì tạo mới
+    INSERT INTO TongTienHoKhau (MaHoKhau, TongTien, TongDaNop, TongConThieu)
+    VALUES (NEW.MaHoKhau, NEW.ThanhTien, 0, NEW.ThanhTien)
+    ON DUPLICATE KEY UPDATE
+        TongTien = TongTien + NEW.ThanhTien,
+        TongConThieu = TongConThieu + NEW.ThanhTien;
+END$$
+
+-- ================================================================
+-- TRIGGER CẬP NHẬT TỔNG TIỀN KHI XÓA KHOẢN THU THEO HỘ
+-- ================================================================
+CREATE TRIGGER trg_cap_nhat_tong_tien_delete
+AFTER DELETE ON KhoanThuTheoHo
+FOR EACH ROW
+BEGIN
+    UPDATE TongTienHoKhau
+    SET TongTien = TongTien - OLD.ThanhTien,
+        TongConThieu = TongConThieu - OLD.ThanhTien
+    WHERE MaHoKhau = OLD.MaHoKhau;
+END$$
+
+-- ================================================================
+-- TRIGGER CẬP NHẬT TỔNG TIỀN KHI SỬA KHOẢN THU THEO HỘ
+-- ================================================================
+CREATE TRIGGER trg_cap_nhat_tong_tien_update
+AFTER UPDATE ON KhoanThuTheoHo
+FOR EACH ROW
+BEGIN
+    DECLARE v_chenh_lech INT;
+    SET v_chenh_lech = NEW.ThanhTien - OLD.ThanhTien;
+    
+    UPDATE TongTienHoKhau
+    SET TongTien = TongTien + v_chenh_lech,
+        TongConThieu = TongConThieu + v_chenh_lech
+    WHERE MaHoKhau = NEW.MaHoKhau;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
 -- Thêm CHỦ HỘ
 CREATE TRIGGER trg_add_chu_ho
 AFTER INSERT ON NhanKhau
@@ -68,5 +162,120 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_thoigian
+BEFORE INSERT ON KhoanThu
+FOR EACH ROW
+BEGIN
+    IF NEW.ThoiGianKetThuc <= NEW.ThoiGianBatDau THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'ThoiGianKetThuc phải lớn hơn ThoiGianBatDau';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+-- ================================================================
+-- TRIGGER TỰ ĐỘNG CẬP NHẬT THÀNH TIỀN KHI CẬP NHẬT KHOẢN THU
+-- Khi DonGia hoặc DonViTinh thay đổi, tự động tính lại ThanhTien
+-- ================================================================
 DELIMITER $$
 
+CREATE TRIGGER trg_update_thanh_tien_when_khoan_thu_updated
+AFTER UPDATE ON KhoanThu
+FOR EACH ROW
+BEGIN
+    DECLARE v_so_nhan_khau INT DEFAULT 0;
+    DECLARE v_dien_tich FLOAT DEFAULT 0;
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_ma_ho_khau VARCHAR(10);
+    DECLARE v_old_thanh_tien INT DEFAULT 0;
+    DECLARE v_new_thanh_tien INT DEFAULT 0;
+    DECLARE v_so_luong FLOAT DEFAULT 0;
+    
+    -- Cursor để duyệt qua tất cả hộ khẩu có khoản thu này
+    DECLARE cur CURSOR FOR 
+        SELECT MaHoKhau FROM KhoanThuTheoHo WHERE MaKhoanThu = NEW.MaKhoanThu;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    -- Chỉ cập nhật nếu DonGia hoặc DonViTinh thay đổi (xử lý cả NULL)
+    IF (IFNULL(OLD.DonGia, 0) != IFNULL(NEW.DonGia, 0)) OR 
+       (IFNULL(OLD.DonViTinh, '') != IFNULL(NEW.DonViTinh, '')) THEN
+        OPEN cur;
+        
+        read_loop: LOOP
+            FETCH cur INTO v_ma_ho_khau;
+            IF done THEN
+                LEAVE read_loop;
+            END IF;
+            
+            -- Lấy giá trị ThanhTien cũ
+            SELECT ThanhTien INTO v_old_thanh_tien
+            FROM KhoanThuTheoHo
+            WHERE MaKhoanThu = NEW.MaKhoanThu AND MaHoKhau = v_ma_ho_khau;
+            
+            -- Đếm số nhân khẩu đang hoạt động
+            SELECT COUNT(*) INTO v_so_nhan_khau
+            FROM NhanKhau
+            WHERE MaHoKhau = v_ma_ho_khau AND TrangThai = 1;
+            
+            -- Lấy diện tích căn hộ
+            SELECT IFNULL(DienTich, 0) INTO v_dien_tich
+            FROM CanHo
+            WHERE MaHoKhau = v_ma_ho_khau;
+            
+            -- Tính ThanhTien mới dựa trên DonViTinh
+            IF NEW.DonViTinh = 'ho_khau' THEN
+                SET v_new_thanh_tien = IFNULL(NEW.DonGia, 0);
+                SET v_so_luong = 1;
+            ELSEIF NEW.DonViTinh = 'dien_tich' THEN
+                SET v_new_thanh_tien = v_dien_tich * IFNULL(NEW.DonGia, 0);
+                SET v_so_luong = v_dien_tich;
+            ELSE
+                SET v_new_thanh_tien = v_so_nhan_khau * IFNULL(NEW.DonGia, 0);
+                SET v_so_luong = v_so_nhan_khau;
+            END IF;
+            
+            -- Cập nhật KhoanThuTheoHo
+            UPDATE KhoanThuTheoHo
+            SET ThanhTien = v_new_thanh_tien,
+                SoLuong = v_so_luong
+            WHERE MaKhoanThu = NEW.MaKhoanThu AND MaHoKhau = v_ma_ho_khau;
+            
+            -- Cập nhật TongTienHoKhau
+            UPDATE TongTienHoKhau
+            SET TongTien = TongTien - v_old_thanh_tien + v_new_thanh_tien,
+                TongConThieu = TongConThieu - v_old_thanh_tien + v_new_thanh_tien
+            WHERE MaHoKhau = v_ma_ho_khau;
+            
+        END LOOP;
+        
+        CLOSE cur;
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_update_chu_ho
+AFTER UPDATE ON NhanKhau
+FOR EACH ROW
+BEGIN
+    -- Chỉ chạy khi trạng thái QUAN HỆ đổi sang chủ hộ
+    IF LOWER(OLD.QuanHe) <> 'chu ho'
+       AND LOWER(NEW.QuanHe) = 'chu ho' THEN
+
+        UPDATE CanHo
+        SET TrangThai = 'chu_o'
+        WHERE MaHoKhau = NEW.MaHoKhau;
+
+    END IF;
+END$$
+
+DELIMITER ;
