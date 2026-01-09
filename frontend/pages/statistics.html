@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+ 
+<head>
+    <meta charset="UTF-8">
+    <title>Thống kê khoản thu</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/statistics.css">
+</head>
+ 
+<body>
+    <div class="dashboard">
+ 
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2>QUẢN LÝ CHUNG CƯ</h2>
+            <div class="role">Ban quản lý</div>
+ 
+            <div class="profile">
+                <img src="../assets/logo.png">
+                <div class="admin-name">Phú Trần</div>
+            </div>
+ 
+            <nav>
+                <a class="nav-home" href="dashboard.html">Trang chủ</a>
+ 
+                <a href="#" class="nav-family has-arrow">Quản lý hộ gia đình</a>
+                <div class="submenu">
+                    <a href="apartment.html">Căn hộ</a>
+                    <a href="household.html">Hộ khẩu</a>
+                </div>
+ 
+                <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
+                <div class="submenu">
+                    <a href="resident.html">Quản lý nhân khẩu</a>
+                    <a href="temporary.html">Quản lý tạm trú</a>
+                    <a href="absence.html">Quản lý tạm vắng</a>
+                </div>
+ 
+                <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
+                <div class="submenu">
+                    <a href="fee-list.html">Danh sách khoản thu</a>
+                    <a href="fee-manage.html">Khoản thu theo hộ</a>
+                </div>
+ 
+                <a class="nav-chart active" href="statistics.html">Thống kê</a>
+            </nav>
+ 
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="logout-btn">Đăng xuất</button>
+                <div class="version">phiên bản 1.0.0</div>
+            </div>
+        </aside>
+ 
+        <!-- CONTENT -->
+        <main class="content">
+            <div class="statistics-header">
+                <h1>Thống kê khoản thu</h1>
+                <button class="btn-refresh" id="btn-refresh"> Làm mới</button>
+            </div>
+ 
+            <!-- THỐNG KÊ TỔNG QUAN -->
+            <section class="overview-section">
+                <h2>Tổng quan</h2>
+                <div class="stats-cards">
+                    <div class="stat-card card-total-fee">
+                        <div class="stat-icon"></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Số khoản thu</span>
+                            <span class="stat-value" id="stat-so-khoan-thu">0</span>
+                        </div>
+                    </div>
+ 
+                    <div class="stat-card card-total-money">
+                        <div class="stat-icon"></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Tổng tiền</span>
+                            <span class="stat-value" id="stat-tong-tien">0 đ</span>
+                        </div>
+                    </div>
+ 
+                    <div class="stat-card card-collected">
+                        <div class="stat-icon"></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Đã thu</span>
+                            <span class="stat-value" id="stat-da-thu">0 đ</span>
+                        </div>
+                    </div>
+ 
+                    <div class="stat-card card-pending">
+                        <div class="stat-icon"></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Cần thu</span>
+                            <span class="stat-value" id="stat-can-thu">0 đ</span>
+                        </div>
+                    </div>
+ 
+                    <div class="stat-card card-ratio">
+                        <div class="stat-icon"></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Tỷ lệ thu</span>
+                            <span class="stat-value" id="stat-ty-le">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                    </div>
+ 
+                    <div class="stat-card card-household">
+                        <div class="stat-icon"></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Hộ đã đóng đủ</span>
+                            <span class="stat-value">
+                                <span id="stat-ho-da-dong">0</span> /
+                                <span id="stat-tong-ho">0</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+ 
+            <!-- THỐNG KÊ THEO LOẠI -->
+            <section class="type-section">
+                <h2>Theo đơn vị tính</h2>
+                <div class="type-cards" id="type-cards">
+                    <!-- Render động -->
+                </div>
+            </section>
+ 
+            <!-- BẢNG CHI TIẾT TỪNG KHOẢN THU -->
+            <section class="detail-section">
+                <h2>Chi tiết từng khoản thu</h2>
+                <div class="table-wrapper">
+                    <table class="statistics-table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên khoản thu</th>
+                                <th>Loại</th>
+                                <th>Số hộ áp dụng</th>
+                                <th>Tổng tiền</th>
+                                <th>Đã thu</th>
+                                <th>Cần thu</th>
+                                <th>Tỷ lệ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detail-tbody">
+                            <!-- Render động -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+ 
+            <!-- BẢNG THỐNG KÊ THEO HỘ -->
+            <section class="household-section">
+                <h2>Thống kê theo hộ khẩu</h2>
+                <div class="filter-row">
+                    <input type="text" id="search-household" placeholder="Tìm theo mã hộ khẩu hoặc tên căn hộ...">
+                    <select id="filter-status">
+                        <option value="">Tất cả</option>
+                        <option value="paid">Đã đóng đủ</option>
+                        <option value="partial">Đóng một phần</option>
+                        <option value="unpaid">Chưa đóng</option>
+                    </select>
+                </div>
+                <div class="table-wrapper">
+                    <table class="statistics-table">
+                        <thead>
+                            <tr>
+                                <th>Mã hộ khẩu</th>
+                                <th>Căn hộ</th>
+                                <th>Chủ hộ</th>
+                                <th>Số khoản thu</th>
+                                <th>Tổng tiền</th>
+                                <th>Đã thu</th>
+                                <th>Cần thu</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="household-tbody">
+                            <!-- Render động -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+ 
+        </main>
+ 
+    </div>
+ 
+    <!-- MODAL THÔNG BÁO -->
+    <div id="notifyModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="notify-close" id="close-notify">x</button>
+            </div>
+            <div class="modal-body notify-body">
+                <h2 id="notify-text"></h2>
+            </div>
+            <div class="modal-footer">
+                <button id="notify-ok" class="btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+ 
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/statistics.js"></script>
+</body>
+ 
+</html>

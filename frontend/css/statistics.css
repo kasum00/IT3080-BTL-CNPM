@@ -1,0 +1,257 @@
+/* ===============================
+   STATISTICS PAGE STYLES – BLUEMOON
+   =============================== */
+
+.statistics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.statistics-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #000;
+}
+
+.btn-refresh {
+  padding: 10px 22px;
+  background: #3f5fa9;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-refresh:hover {
+  opacity: 0.9;
+}
+
+/* ===============================
+   OVERVIEW / TYPE / DETAIL SECTION
+   =============================== */
+.overview-section,
+.type-section,
+.detail-section,
+.household-section {
+  background: #ffffff;
+  padding: 32px 36px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.overview-section h2,
+.type-section h2,
+.detail-section h2,
+.household-section h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #ddd;
+}
+
+/* ===============================
+   STATS CARDS → CARD BLUEMOON
+   =============================== */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 50px 60px;
+}
+
+.stat-card {
+  background: #dbe9ff;
+  border-radius: 18px;
+  height: 220px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  color: #000;
+  box-shadow: none;
+  transition: transform 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+/* LABEL */
+.stat-card .stat-label {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+/* VALUE */
+.stat-card .stat-value {
+  font-size: 34px;
+  font-weight: 700;
+  color: #2f55a4;
+}
+
+/* TỶ LỆ THU – THẺ RỘNG */
+.stat-card.rate-card {
+  grid-column: span 2;
+}
+
+/* PROGRESS */
+.progress-bar {
+  width: 80%;
+  height: 10px;
+  background: #c6d6f5;
+  border-radius: 10px;
+  margin-top: 18px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4caf50;
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+/* ===============================
+   TYPE CARDS – ĐỒNG BỘ BLUEMOON
+   =============================== */
+.type-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.type-card {
+  background: #dbe9ff;
+  padding: 24px 26px;
+  border-radius: 18px;
+  border-left: none;
+}
+
+.type-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.type-card .type-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.type-card .type-stat-label {
+  font-size: 13px;
+  color: #333;
+}
+
+.type-card .type-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2f55a4;
+}
+
+/* ===============================
+   TABLE – BLUEMOON STYLE
+   =============================== */
+.table-wrapper {
+  background: #bcd6ff;
+  border-radius: 18px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.statistics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.statistics-table th,
+.statistics-table td {
+  padding: 14px;
+  text-align: left;
+}
+
+.statistics-table thead {
+  border-bottom: 1px solid #666;
+}
+
+.statistics-table tbody tr {
+  border-bottom: 1px solid #888;
+}
+
+.statistics-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* STATUS */
+.status-paid {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.status-partial {
+  color: #ff9800;
+  font-weight: 600;
+}
+
+.status-unpaid {
+  color: #f44336;
+  font-weight: 600;
+}
+
+/* ===============================
+   FILTER ROW
+   =============================== */
+.filter-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.filter-row input,
+.filter-row select {
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: none;
+  background: #eef4ff;
+  font-size: 14px;
+}
+
+/* ===============================
+   RESPONSIVE
+   =============================== */
+@media (max-width: 1200px) {
+  .stats-cards,
+  .type-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-card.rate-card {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-cards,
+  .type-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card.rate-card {
+    grid-column: span 1;
+  }
+
+  .filter-row {
+    flex-direction: column;
+  }
+}
