@@ -282,6 +282,8 @@ INSERT INTO KhoanThuTheoHo (MaKhoanThu, MaHoKhau, SoLuong, ThanhTien, TrangThai)
 (10, 'HK007', 1, 200000, 'ĐÃ ĐÓNG'),
 (10, 'HK008', 1, 200000, 'ĐÃ ĐÓNG');
 
+
+--tam trú
 INSERT INTO TamTru
 (MaNhanKhau, DiaChiThuongTru, DiaChiTamTru, CanCuocCongDan, ngayBatDau, ngayKetThuc)
 VALUES
