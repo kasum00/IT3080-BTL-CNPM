@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý phương tiện</title>
+
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/vehicle.css">
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2>QUẢN LÝ CHUNG CƯ</h2>
+            <div class="role">Ban quản lý</div>
+
+            <div class="profile">
+                <img src="../assets/logo.png">
+                <div class="admin-name">Phú Trần</div>
+            </div>
+
+            <nav>
+                <a class="nav-home" href="dashboard.html">Trang chủ</a>
+
+                <a href="#" class="nav-family has-arrow open">Quản lý hộ gia đình</a>
+                <div class="submenu show">
+                    <a href="apartment.html">Căn hộ</a>
+                    <a href="household.html">Hộ khẩu</a>
+                    <a class="active" href="vehicle.html">Phương tiện</a>
+                </div>
+
+                <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
+                <div class="submenu">
+                    <a href="resident.html">Quản lý nhân khẩu</a>
+                    <a href="temporary.html">Quản lý tạm trú</a>
+                    <a href="absence.html">Quản lý tạm vắng</a>
+                </div>
+
+                <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
+                <div class="submenu">
+                    <a href="fee-list.html">Danh sách khoản thu</a>
+                    <a href="fee-manage.html">Khoản thu theo hộ</a>
+                    <a href="statistics.html">Thống kê</a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="logout-btn">Đăng xuất</button>
+                <div class="version">phiên bản 1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content">
+
+            <!-- HEADER -->
+            <div class="apartment-header">
+                <h1>Danh sách phương tiện</h1>
+
+                <div class="actions">
+                    <button class="btn-add" id="btn-add-vehicle">Thêm phương tiện</button>
+                    <input id="search-input" placeholder="Tìm theo biển số / hộ khẩu">
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-wrapper">
+                <div class="table-scroll">
+                    <table class="apartment-table">
+                        <thead>
+                            <tr>
+                                <th>Mã hộ khẩu</th>
+                                <th>Tên phương tiện</th>
+                                <th>Biển số</th>
+                                <th>Mã loại PT</th>
+                                <th>Chủ sở hữu</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <!-- ROW DEMO -->
+                            <tr>
+                                <td>HK001</td>
+                                <td>Xe máy</td>
+                                <td>59A1-12345</td>
+                                <td>2</td>
+                                <td>Nguyễn Văn An</td>
+                                <td class="action">
+                                    <span class="btn-detail"
+                                          data-hokhau="HK001"
+                                          data-name="Xe máy"
+                                          data-bien="59A1-12345"
+                                          data-loai="2"
+                                          data-owner="Nguyễn Văn An">
+                                    </span>
+                                    <span class="btn-remove" title="Xóa"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===============================
+        MODAL CHI TIẾT PHƯƠNG TIỆN
+    ================================ -->
+    <div id="vehicle-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Chi tiết phương tiện</h3>
+                <button class="modal-close" id="close-vehicle-modal">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mã hộ khẩu</label>
+                        <input id="modal-hokhau" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tên phương tiện</label>
+                        <input id="modal-name" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Biển số</label>
+                        <input id="modal-bien" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mã loại phương tiện</label>
+                        <input id="modal-loai" readonly>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Chủ sở hữu</label>
+                        <input id="modal-owner" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="close-vehicle-detail">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+        MODAL THÊM PHƯƠNG TIỆN
+    ================================ -->
+    <div id="addVehicleModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thêm phương tiện</h3>
+                <button class="modal-close" id="close-add-vehicle">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mã hộ khẩu</label>
+                        <input id="add-hokhau">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tên phương tiện</label>
+                        <input id="add-name" placeholder="Xe máy / Ô tô / Xe đạp">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Biển số</label>
+                        <input id="add-bien">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mã loại phương tiện</label>
+                        <input id="add-loai" placeholder="1 / 2 / 3">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Chủ sở hữu</label>
+                        <input id="add-owner">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="cancel-add-vehicle">Đóng</button>
+                <button class="btn-primary" id="save-add-vehicle">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/vehicle.js"></script>
+</body>
+
+</html>
