@@ -4,6 +4,7 @@ DELIMITER $$
 -- TRIGGER TÍNH THÀNH TIỀN KHI THÊM KHOẢN THU THEO HỘ
 -- Nếu DonViTinh = 'nhan_khau' thì ThanhTien = SoNhanKhau * DonGia
 -- Nếu DonViTinh = 'ho_khau' thì ThanhTien = 1 * DonGia
+-- Nếu DonViTinh = 'dien_tich' thì ThanhTien = DienTich * DonGia
 -- ================================================================
 CREATE TRIGGER trg_tinh_thanh_tien_insert
 BEFORE INSERT ON KhoanThuTheoHo
@@ -12,6 +13,7 @@ BEGIN
     DECLARE v_so_nhan_khau INT DEFAULT 0;
     DECLARE v_don_gia INT DEFAULT 0;
     DECLARE v_don_vi_tinh NVARCHAR(50);
+    DECLARE v_dien_tich FLOAT DEFAULT 0;
     
     -- Đếm số nhân khẩu đang hoạt động trong hộ
     SELECT COUNT(*) INTO v_so_nhan_khau
@@ -24,12 +26,21 @@ BEGIN
     FROM KhoanThu
     WHERE MaKhoanThu = NEW.MaKhoanThu;
     
-    -- Gán giá trị số lượng
-    SET NEW.SoLuong = v_so_nhan_khau;
+    -- Lấy diện tích căn hộ nếu cần
+    IF v_don_vi_tinh = 'dien_tich' THEN
+        SELECT IFNULL(DienTich, 0) INTO v_dien_tich
+        FROM CanHo
+        WHERE MaHoKhau = NEW.MaHoKhau;
+        SET NEW.SoLuong = v_dien_tich;
+    ELSE
+        SET NEW.SoLuong = v_so_nhan_khau;
+    END IF;
     
     -- Tính thành tiền dựa vào đơn vị tính
     IF v_don_vi_tinh = 'ho_khau' THEN
         SET NEW.ThanhTien = v_don_gia;
+    ELSEIF v_don_vi_tinh = 'dien_tich' THEN
+        SET NEW.ThanhTien = v_dien_tich * v_don_gia;
     ELSE
         SET NEW.ThanhTien = v_so_nhan_khau * v_don_gia;
     END IF;
@@ -179,10 +190,12 @@ AFTER UPDATE ON KhoanThu
 FOR EACH ROW
 BEGIN
     DECLARE v_so_nhan_khau INT DEFAULT 0;
+    DECLARE v_dien_tich FLOAT DEFAULT 0;
     DECLARE done INT DEFAULT FALSE;
     DECLARE v_ma_ho_khau VARCHAR(10);
     DECLARE v_old_thanh_tien INT DEFAULT 0;
     DECLARE v_new_thanh_tien INT DEFAULT 0;
+    DECLARE v_so_luong FLOAT DEFAULT 0;
     
     -- Cursor để duyệt qua tất cả hộ khẩu có khoản thu này
     DECLARE cur CURSOR FOR 
@@ -210,17 +223,27 @@ BEGIN
             FROM NhanKhau
             WHERE MaHoKhau = v_ma_ho_khau AND TrangThai = 1;
             
+            -- Lấy diện tích căn hộ
+            SELECT IFNULL(DienTich, 0) INTO v_dien_tich
+            FROM CanHo
+            WHERE MaHoKhau = v_ma_ho_khau;
+            
             -- Tính ThanhTien mới dựa trên DonViTinh
             IF NEW.DonViTinh = 'ho_khau' THEN
                 SET v_new_thanh_tien = IFNULL(NEW.DonGia, 0);
+                SET v_so_luong = 1;
+            ELSEIF NEW.DonViTinh = 'dien_tich' THEN
+                SET v_new_thanh_tien = v_dien_tich * IFNULL(NEW.DonGia, 0);
+                SET v_so_luong = v_dien_tich;
             ELSE
                 SET v_new_thanh_tien = v_so_nhan_khau * IFNULL(NEW.DonGia, 0);
+                SET v_so_luong = v_so_nhan_khau;
             END IF;
             
             -- Cập nhật KhoanThuTheoHo
             UPDATE KhoanThuTheoHo
             SET ThanhTien = v_new_thanh_tien,
-                SoLuong = v_so_nhan_khau
+                SoLuong = v_so_luong
             WHERE MaKhoanThu = NEW.MaKhoanThu AND MaHoKhau = v_ma_ho_khau;
             
             -- Cập nhật TongTienHoKhau

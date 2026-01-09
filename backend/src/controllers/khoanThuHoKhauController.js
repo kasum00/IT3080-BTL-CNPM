@@ -158,18 +158,33 @@ const calculateFee = async (maHoKhau, maKhoanThu) => {
   });
 
   let thanhTien = 0;
+  let soLuong = 0;
 
   // Tính thành tiền dựa vào đơn vị tính
   if (donViTinh === "ho_khau") {
     // Tính theo hộ khẩu: 1 hộ = 1 đơn giá
     thanhTien = donGia;
+    soLuong = 1;
+  } else if (donViTinh === "dien_tich") {
+    // Tính theo diện tích: diện tích * đơn giá
+    const canHo = await CanHo.findOne({
+      where: { MaHoKhau: maHoKhau },
+    });
+    if (canHo && canHo.DienTich) {
+      thanhTien = canHo.DienTich * donGia;
+      soLuong = canHo.DienTich;
+    } else {
+      thanhTien = 0;
+      soLuong = 0;
+    }
   } else {
     // Tính theo nhân khẩu: số người * đơn giá
     thanhTien = soNhanKhau * donGia;
+    soLuong = soNhanKhau;
   }
 
   return {
-    so_nhan_khau: soNhanKhau,
+    so_nhan_khau: soLuong, // Đổi tên biến này thành số lượng chung
     tong_tien: Math.round(thanhTien),
     don_vi_tinh: donViTinh,
     don_gia: donGia,

@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Op } = require("sequelize");
 const sequelize = require("../config/db");
 
 const CanHo = sequelize.define(
@@ -15,20 +15,24 @@ const CanHo = sequelize.define(
     },
     TenCanHo: {
       type: DataTypes.STRING(100),
-      allowNull: true,
     },
     Tang: {
       type: DataTypes.STRING(50),
-      allowNull: true,
     },
     DienTich: {
       type: DataTypes.FLOAT,
-      allowNull: true,
     },
     TrangThai: {
       type: DataTypes.STRING(20),
-      allowNull: false,
       defaultValue: "trong",
+    },
+    ngay_bat_dau_thue: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    ngay_ket_thuc_thue: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
     },
     MoTa: {
       type: DataTypes.STRING(500),
@@ -40,6 +44,7 @@ const CanHo = sequelize.define(
     timestamps: false,
   }
 );
+
 const HoKhau = sequelize.define(
   "HoKhau",
   {
@@ -199,10 +204,87 @@ const findOwnerByApartment = async (req, res) => {
   }
 };
 
+const getCanHoTrong = async (req, res) => {
+  try {
+    const { currentMaCanHo } = req.query;
+
+    const whereCondition = {
+      [Op.or]: [{ MaHoKhau: { [Op.is]: null } }],
+    };
+
+    if (currentMaCanHo) {
+      whereCondition[Op.or].push({
+        MaCanHo: currentMaCanHo,
+      });
+    }
+
+    const data = await CanHo.findAll({
+      where: whereCondition,
+      attributes: ["MaCanHo", "TenCanHo"],
+      order: [["TenCanHo", "ASC"]],
+    });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+      message: "Lỗi server!",
+    });
+  }
+};
+
+// VALIDATE
+const validateCanHoInput = (data) => {
+  const missInput = [];
+
+  if (!data.TenCanHo?.trim()) {
+    missInput.push("Tên căn hộ");
+  }
+  if (!data.Tang?.trim()) {
+    missInput.push("Tầng");
+  }
+  if (data.DienTich === undefined || data.DienTich === "") {
+    missInput.push("Diện tích");
+  } else if (isNaN(Number(data.DienTich)) || Number(data.DienTich) <= 0) {
+    return "Diện tích không hợp lệ!";
+  }
+  if (missInput.length > 0) {
+    return `Thiếu thông tin: ${missInput.join(", ")}`;
+  }
+  const hasStart = !!data.ngay_bat_dau_thue;
+  const hasEnd = !!data.ngay_ket_thuc_thue;
+
+  if (hasStart || hasEnd) {
+    if (!hasStart || !hasEnd) {
+      return "Phải nhập đầy đủ ngày bắt đầu và kết thúc cho thuê!";
+    }
+    const start = new Date(data.ngay_bat_dau_thue);
+    const end = new Date(data.ngay_ket_thuc_thue);
+
+    if (end <= start) {
+      return "Ngày kết thúc cho thuê không hợp lệ!";
+    }
+  }
+
+  return null;
+};
+
 // CREATE
 const createCanHo = async (req, res) => {
   try {
-    const data = await CanHo.create(req.body);
+    const errMsg = validateCanHoInput(req.body);
+    if (errMsg) {
+      return res.status(400).json({
+        message: errMsg,
+      });
+    }
+    const data = await CanHo.create({
+      TenCanHo: req.body.TenCanHo,
+      Tang: req.body.Tang,
+      DienTich: req.body.DienTich,
+      MoTa: req.body.MoTa || null,
+      ngay_bat_dau_thue: req.body.ngay_bat_dau_thue || null,
+      ngay_ket_thuc_thue: req.body.ngay_ket_thuc_thue || null,
+    });
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -239,18 +321,74 @@ const getCanHoByID = async (req, res) => {
 // UPDATE
 const updateCanHo = async (req, res) => {
   try {
-    const data = await CanHo.findByPk(req.params.id);
-    if (!data) {
+    const canHo = await CanHo.findByPk(req.params.id);
+    if (!canHo) {
       return res.status(404).json({
         message: "Không tìm thấy căn hộ!",
       });
     }
 
-    await data.update(req.body);
+    const errMsg = validateCanHoInput(req.body);
+    if (errMsg) {
+      return res.status(400).json({
+        message: errMsg,
+      });
+    }
+
+    await canHo.update({
+      TenCanHo: req.body.TenCanHo,
+      Tang: req.body.Tang,
+      DienTich: req.body.DienTich,
+      MoTa: req.body.MoTa,
+      ngay_bat_dau_thue: req.body.ngay_bat_dau_thue || null,
+      ngay_ket_thuc_thue: req.body.ngay_ket_thuc_thue || null,
+    });
+
+    res.json(canHo);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// GAN CHU HO
+const ganChuHo = async (req, res) => {
+  const { ma_ho_khau, ma_nhan_khau } = req.body;
+
+  const trans = await sequelize.transaction();
+
+  try {
+    const nhanKhau = await NhanKhau.findByPk(ma_nhan_khau, {
+      transaction: trans,
+    });
+    if (!nhanKhau || nhanKhau.MaHoKhau !== ma_ho_khau) {
+      await trans.rollback();
+      return res.status(400).json({
+        message: "Nhân khẩu không thuộc hộ khẩu này!",
+      });
+    }
+
+    const chuHo = await NhanKhau.findOne({
+      where: {
+        MaHoKhau: ma_ho_khau,
+        QuanHe: "chu ho",
+      },
+      transaction: trans,
+    });
+
+    if (chuHo) {
+      await trans.rollback();
+      return res.status(400).json({
+        message: "Hộ khẩu này đã có chủ hộ rồi!",
+      });
+    }
+
+    await nhanKhau.update({ QuanHe: "chu ho" }, { transaction: trans });
+    await trans.commit();
     res.json({
-      message: "Cập nhật căn hộ thành công!",
+      message: "Gán chủ hộ thành công!",
     });
   } catch (err) {
+    await trans.rollback();
     res.status(500).json({ error: err.message });
   }
 };
@@ -263,4 +401,6 @@ module.exports = {
   updateCanHo,
   findHouseholdInAparment,
   findOwnerByApartment,
+  ganChuHo,
+  getCanHoTrong,
 };
