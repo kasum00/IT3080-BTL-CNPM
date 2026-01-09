@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   /* ===============================
        BIẾN DÙNG CHUNG
@@ -265,43 +264,43 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   saveAddBtn.addEventListener("click", async () => {
-  try {
-    const maNhanKhau = document.getElementById("add-maNhanKhau").value.trim();
-    const ngayBatDau = document.getElementById("add-ngayBatDau").value;
-    const ngayKetThuc = document.getElementById("add-ngayKetThuc").value;
-    const lyDo = document.getElementById("add-lyDo").value.trim();
+    try {
+      const CanCuocCongDan = document.getElementById("add-cccd").value.trim();
+      const ngayBatDau = document.getElementById("add-ngayBatDau").value;
+      const ngayKetThuc = document.getElementById("add-ngayKetThuc").value;
+      const lyDo = document.getElementById("add-lyDo").value.trim();
 
-    if (!maNhanKhau || !ngayBatDau || !ngayKetThuc) {
-      showNotify("Vui lòng nhập đầy đủ thông tin!");
-      return;
+      if (!CanCuocCongDan || !ngayBatDau || !ngayKetThuc) {
+        showNotify("Vui lòng nhập đầy đủ thông tin!");
+        return;
+      }
+
+      const res = await fetch("http://localhost:3000/api/tam-vang", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          CanCuocCongDan: CanCuocCongDan,
+          NgayBatDau: ngayBatDau,
+          NgayKetThuc: ngayKetThuc,
+          LyDo: lyDo,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showNotify(data.message || "Đăng ký thất bại!");
+        return;
+      }
+
+      addModal.classList.remove("show");
+      showNotify("Đăng ký tạm vắng thành công!");
+      loadTamVang();
+    } catch (err) {
+      console.error(err);
+      showNotify("Lỗi kết nối server!");
     }
-
-    const res = await fetch("http://localhost:3000/api/tam-vang", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        MaNhanKhau: maNhanKhau,
-        NgayBatDau: ngayBatDau,
-        NgayKetThuc: ngayKetThuc,
-        LyDo: lyDo,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      showNotify(data.message || "Đăng ký thất bại!");
-      return;
-    }
-
-    addModal.classList.remove("show");
-    showNotify("Đăng ký tạm vắng thành công!");
-    loadTamVang();
-  } catch (err) {
-    console.error(err);
-    showNotify("Lỗi kết nối server!");
-  }
-});
+  });
 
   /* ===============================
        XÓA TẠM VẮNG

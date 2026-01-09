@@ -12,10 +12,6 @@ const TamTru = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    MaNhanKhau: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     DiaChiThuongTru: {
       type: DataTypes.STRING(200),
       allowNull: true,
@@ -46,12 +42,36 @@ const TamTru = sequelize.define(
 /* ===============================
    CREATE
 ================================ */
+
 const createTamTru = async (req, res) => {
   try {
-    const data = await TamTru.create(req.body);
+    const { CanCuocCongDan, DiaChiTamTru, NgayBatDau, NgayKetThuc } = req.body;
+
+    if (!CanCuocCongDan || !DiaChiTamTru || !NgayBatDau) {
+      return res.status(400).json({ message: "Thiếu dữ liệu bắt buộc!" });
+    }
+
+    const [nk] = await sequelize.query(
+      "SELECT CanCuocCongDan FROM NhanKhau WHERE CanCuocCongDan = ?",
+      { replacements: [CanCuocCongDan] }
+    );
+
+    if (nk.length === 0) {
+      return res.status(400).json({
+        message: "CCCD không tồn tại trong danh sách nhân khẩu!",
+      });
+    }
+
+    const data = await TamTru.create({
+      CanCuocCongDan,
+      DiaChiTamTru,
+      NgayBatDau,
+      NgayKetThuc: NgayKetThuc || null,
+    });
+
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -61,9 +81,8 @@ const createTamTru = async (req, res) => {
 const getAllTamTru = async (req, res) => {
   try {
     const [data] = await sequelize.query(`
-      SELECT 
-        tt.MaTamTru,
-        tt.MaNhanKhau,
+      SELECT
+        tt.MaTamTru, 
         nk.HoTen,
         tt.DiaChiThuongTru,
         tt.DiaChiTamTru,
@@ -71,7 +90,7 @@ const getAllTamTru = async (req, res) => {
         tt.NgayBatDau,
         tt.NgayKetThuc
       FROM TamTru tt
-      JOIN NhanKhau nk ON tt.MaNhanKhau = nk.MaNhanKhau
+      JOIN NhanKhau nk ON tt.CanCuocCongDan= nk.CanCuocCongDan
       ORDER BY tt.MaTamTru ASC
     `);
 
@@ -90,9 +109,8 @@ const getTamTruByID = async (req, res) => {
 
     const [data] = await sequelize.query(
       `
-      SELECT 
+      SELECT
         tt.MaTamTru,
-        tt.MaNhanKhau,
         nk.HoTen,
         tt.DiaChiThuongTru,
         tt.DiaChiTamTru,
@@ -100,7 +118,7 @@ const getTamTruByID = async (req, res) => {
         tt.NgayBatDau,
         tt.NgayKetThuc
       FROM TamTru tt
-      JOIN NhanKhau nk ON tt.MaNhanKhau = nk.MaNhanKhau
+     JOIN NhanKhau nk ON tt.CanCuocCongDan= nk.CanCuocCongDan
       WHERE tt.MaTamTru = ?
     `,
       { replacements: [id] }
