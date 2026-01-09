@@ -168,15 +168,15 @@ const getThongKeTheoHo = async (req, res) => {
          ch.TenCanHo,
          nk.HoTen as ChuHo,
          IFNULL(SUM(kthk.ThanhTien), 0) as tongTien,
-         IFNULL(SUM(CASE WHEN kthk.TrangThai = 'Đã đóng' OR kthk.TrangThai = 'da_thu' THEN kthk.ThanhTien ELSE 0 END), 0) as daThu,
+         IFNULL(SUM(CASE WHEN kthk.TrangThai IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu') THEN kthk.ThanhTien ELSE 0 END), 0) as daThu,
          COUNT(kthk.MaKhoanThuTheoHo) as soKhoanThu,
-         SUM(CASE WHEN kthk.TrangThai = 'Đã đóng' OR kthk.TrangThai = 'da_thu' THEN 1 ELSE 0 END) as soDaDong,
-         SUM(CASE WHEN kthk.TrangThai != 'Đã đóng' AND kthk.TrangThai != 'da_thu' THEN 1 ELSE 0 END) as soChuaDong
+         SUM(CASE WHEN kthk.TrangThai IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu') THEN 1 ELSE 0 END) as soDaDong,
+         SUM(CASE WHEN kthk.TrangThai NOT IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu') THEN 1 ELSE 0 END) as soChuaDong
        FROM HoKhau hk
        LEFT JOIN CanHo ch ON hk.MaCanHo = ch.MaCanHo
        LEFT JOIN NhanKhau nk ON hk.MaHoKhau = nk.MaHoKhau AND nk.QuanHe = 'chu ho'
        LEFT JOIN KhoanThuTheoHo kthk ON hk.MaHoKhau = kthk.MaHoKhau
-       GROUP BY hk.MaHoKhau
+       GROUP BY hk.MaHoKhau, ch.TenCanHo, nk.HoTen
        ORDER BY hk.MaHoKhau ASC`
     );
 
