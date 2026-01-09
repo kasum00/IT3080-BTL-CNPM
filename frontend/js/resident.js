@@ -133,6 +133,7 @@ async function openDetail(id) {
   document.getElementById("resident-modal").classList.add("show");
 }
 
+
 /* ===============================
    ADD
 ================================ */
@@ -141,9 +142,10 @@ async function addNhanKhau() {
   const hoTen = document.getElementById("add-hoTen").value.trim();
   const cccd = document.getElementById("add-cccd").value.trim();
 
-  // ✅ VALIDATE BẮT BUỘC
+  // VALIDATE BẮT BUỘC
   if (!maHoKhau || !hoTen || !cccd) {
-    showNotify("Vui lòng nhập đầy đủ: Mã hộ khẩu, Họ tên và CCCD!");
+    //showNotify("Vui lòng nhập đầy đủ: Mã hộ khẩu, Họ tên và CCCD!");
+    alert("Vui lòng nhập đầy đủ Mã hộ khẩu, Họ tên và CCCD!");
     return;
   }
 
@@ -167,8 +169,18 @@ async function addNhanKhau() {
     });
 
     if (!res.ok) {
-      const err = await res.json();
-      showNotify(err.message || "Thêm nhân khẩu thất bại!");
+      let message = "Thêm nhân khẩu thất bại!";
+
+      try {
+        const err = await res.json();
+        message = err.message || message;
+      } catch {}
+
+      if (message.toLowerCase().includes("cccd")) {
+        alert("Căn cước công dân đã tồn tại! Vui lòng nhập lại!");
+      } else {
+        alert(message);
+      }
       return;
     }
 
