@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách hộ khẩu</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/household.css">
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <!-- SIDEBAR (GIỐNG 100%) -->
+        <aside class="sidebar">
+            <h2>QUẢN LÝ CHUNG CƯ</h2>
+            <div class="role">Ban quản lý</div>
+
+            <div class="profile">
+                <img title="." src="../assets/logo.png">
+                <div class="admin-name">Phú Trần</div>
+            </div>
+
+            <nav>
+                <a class="nav-home" href="dashboard.html">Trang chủ</a>
+
+                <a href="#" class="nav-family has-arrow open">Quản lý hộ gia đình</a>
+                <div class="submenu show">
+                    <a href="apartment.html">Căn hộ</a>
+                    <a class="active" href="household.html">Hộ khẩu</a>
+
+                </div>
+
+                <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
+                <div class="submenu">
+                    <a href="resident.html">Quản lý nhân khẩu</a>
+                    <a href="temporary.html">Quản lý tạm trú</a>
+                    <a href="absence.html">Quản lý tạm vắng</a>
+                </div>
+
+                <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
+                <div class="submenu">
+                    <a href="fee-list.html">Danh sách khoản thu</a>
+                    <a href="fee-manage.html">Khoản thu theo hộ</a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="logout-btn">Đăng xuất</button>
+                <div class="version">phiên bản 1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content">
+            <div class="household-header">
+                <h1>Danh sách hộ khẩu</h1>
+                <div class="actions">
+                    <button class="btn-add">Thêm hộ khẩu</button>
+                    <input id="search-input" placeholder="Tìm kiếm">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <div class="table-scroll">
+                    <table class="household-table">
+                        <thead>
+                            <tr>
+                                <th>Mã hộ khẩu</th>
+                                <th>Căn hộ</th>
+                                <th>Chủ hộ</th>
+                                <th>Địa chỉ nơi cấp</th>
+                                <th>Ngày cấp</th>
+                                <th>Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+    </div>
+    <!-- ===============================
+     MODAL CHI TIẾT HỘ KHẨU
+    ================================ -->
+    <div id="household-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Chi tiết hộ khẩu</h3>
+                <button class="modal-close" id="close-modal">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mã hộ khẩu</label>
+                        <input title="." type="text" id="modal-ma" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Căn hộ</label>
+                        <input title="." type="text" id="modal-canHo" readonly>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Chủ hộ</label>
+                        <input title="." type="text" id="modal-chuHo" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Địa chỉ thường trú</label>
+                        <input title="." type="text" id="modal-diaChi" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nơi cấp</label>
+                        <input title="." type="text" id="modal-noiCap" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày cấp</label>
+                        <input title="." type="date" id="modal-ngayCap" readonly>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="btn-close-detail">Đóng</button>
+                <button type="button" class="btn-primary" id="btn-open-edit">
+                    Chỉnh sửa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL CHỈNH SỬA HỘ KHẨU
+    ================================ -->
+    <div id="editModal" class="modal-overlay">
+        <div class="edit-modal">
+            <div class="edit-header">
+                <h3>Chỉnh sửa hộ khẩu</h3>
+                <button class="modal-close" id="close-edit">x</button>
+            </div>
+
+            <div class="edit-body">
+                <div class="edit-grid">
+                    <div class="form-item">
+                        <label>Mã hộ khẩu</label>
+                        <input title="." id="edit-ma">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Căn hộ</label>
+                        <select title="." id="edit-canHo">
+                            <option value="">Chọn căn hộ</option>
+                        </select>
+                    </div>
+
+                    <div class="form-item full">
+                        <label>Chủ hộ</label>
+                        <input title="." id="edit-chuHo">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Địa chỉ thường trú</label>
+                        <input title="." id="edit-diaChi">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Nơi cấp<picture></picture></label>
+                        <input title="." id="edit-noiCap">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Ngày cấp<picture></picture></label>
+                        <input title="." type="date" id="edit-ngayCap">
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="edit-footer">
+                <button class="btn-danger" id="btn-close-edit">Đóng</button>
+                <button class="btn-primary" id="btn-save-edit">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL THÔNG BÁO CHỈNH SỬA CĂN HỘ
+    ================================ -->
+    <div id="notifyModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="notify-close" id="close-notify">x</button>
+            </div>
+
+            <div class="modal-body notify-body">
+                <h2 id="notify-text"></h2>
+            </div>
+
+            <div class="modal-footer">
+                <button id="notify-ok" class="btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL THÊM HỘ KHẨU
+================================ -->
+    <div id="addModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông tin hộ khẩu</h3>
+                <button class="modal-close" id="close-add">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mã hộ khẩu</label>
+                        <input title="." id="add-ma">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Căn hộ</label>
+                        <select title="." id="add-canHo">
+                            <option value="">Chọn căn hộ</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Chủ hộ</label>
+                        <input title="." id="add-chuHo">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Địa chỉ thường trú</label>
+                        <input title="." id="add-diaChi">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nơi cấp</label>
+                        <input title="." id="add-noiCap">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày cấp</label>
+                        <input title="." type="date" id="add-ngayCap">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="cancel-add">Đóng</button>
+                <button class="btn-primary" id="save-add">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL XÁC NHẬN XÓA HỘ KHẨU
+================================ -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="modal-close" id="close-delete">x</button>
+            </div>
+
+            <div class="modal-body notify-body">
+                <h2>Bạn có chắc chắn muốn xóa hộ khẩu không?</h2>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="confirm-delete">OK</button>
+                <button class="btn-primary" id="cancel-delete">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/household.js"></script>
+</body>
+
+</html>

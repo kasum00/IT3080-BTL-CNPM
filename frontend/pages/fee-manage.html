@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Khoản thu theo hộ</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/fee-manage.css">
+    <!-- html2pdf Library - Hỗ trợ tiếng Việt -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <!-- SIDEBAR (GIỐNG 100%) -->
+        <aside class="sidebar">
+            <h2>QUẢN LÝ CHUNG CƯ</h2>
+            <div class="role">Ban quản lý</div>
+
+            <div class="profile">
+                <img src="../assets/logo.png">
+                <div class="admin-name">Phú Trần</div>
+            </div>
+
+            <nav>
+                <a class="nav-home" href="dashboard.html">Trang chủ</a>
+
+                <a href="#" class="nav-family has-arrow open">Quản lý hộ gia đình</a>
+                <div class="submenu">
+                    <a href="apartment.html">Căn hộ</a>
+                    <a href="household.html">Hộ khẩu</a>
+                </div>
+
+                <a href="#" class="nav-resident has-arrow">Quản lý cư dân</a>
+                <div class="submenu">
+                    <a href="resident.html">Quản lý nhân khẩu</a>
+                    <a href="temporary.html">Quản lý tạm trú</a>
+                    <a href="absence.html">Quản lý tạm vắng</a>
+                </div>
+
+                <a href="#" class="nav-money has-arrow">Quản lý khoản thu</a>
+                <div class="submenu show">
+                    <a href="fee-list.html">Danh sách khoản thu</a>
+                    <a class="active" href="fee-manage.html">Quản lý theo hộ</a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="logout-btn">Đăng xuất</button>
+                <div class="version">phiên bản 1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content">
+            <div class="fee-manage-header">
+                <h1>Quản lý khoản thu theo hộ</h1>
+                <div class="actions">
+                    <input id="search-apt-input" placeholder="Tìm theo mã hoặc tên căn hộ...">
+                    <button class="btn-filter" id="btn-open-apt-filter" title="Lọc nâng cao">🔍</button>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <div class="table-scroll">
+                    <table class="fee-manage-table">
+                        <thead>
+                            <tr>
+                                <th>Mã căn hộ</th>
+                                <th>Tên căn hộ</th>
+                                <th>Chủ căn hộ</th>
+                                <th>Tầng</th>
+                                <th>Trạng thái</th>
+                                <th>Tình trạng thanh toán</th>
+                                <th>Chi tiết khoản thu theo hộ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>A1-01</td>
+                                <td>Căn hộ A1-01</td>
+                                <td>Nguyễn Văn A</td>
+                                <td>1</td>
+                                <td>Cho thuê</td>
+                                <td class="action">
+                                    <span class="btn-detail" data-id-apt="A1-01" data-id-fee="KT-01"
+                                        data-name="Phí quản lý - 01" data-money="1000000" data-status="Chưa thanh toán">
+                                    </span>
+                                    <span class="btn-invoice-list" title="Xem danh sách hóa đơn"></span>
+                                </td>
+                            </tr>
+                            </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+    </div>
+    <!-- ===============================
+     MODAL DANH SÁCH HÓA ĐƠN
+================================ -->
+    <div id="invoice-list-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 900px;">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h3>Danh sách khoản thu của hộ</h3>
+                <button type="button" class="modal-close" id="close-invoice-modal">×</button>
+            </div>
+
+            <!-- SUB TITLE -->
+            <div class="modal-sub">
+                Căn hộ: <span id="invoice-modal-name"></span> - Chủ hộ: <span id="invoice-modal-owner"></span>
+            </div>
+            <div class="modal-sub">
+                Mã hộ khẩu: <span id="invoice-modal-hokhau"></span>
+            </div>
+
+            <!-- BẢNG KHOẢN THU -->
+            <div class="modal-body">
+                <div class="modal-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                    <table class="modal-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th>Mã KT</th>
+                                <th>Tên khoản thu</th>
+                                <th>Loại</th>
+                                <th>Thành tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Xuất hóa đơn</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-modal-tbody">
+                            <!-- Dữ liệu sẽ được load động -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="invoice-modal-loading" style="text-align: center; padding: 20px; display: none;">Đang tải...
+                </div>
+                <div id="invoice-modal-empty" style="text-align: center; padding: 20px; display: none;">Không có khoản
+                    thu nào</div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-primary" id="btn-close-invoice">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL CHI TIẾT KHOẢN THU CỦA HỘ
+================================ -->
+    <div id="fee-manage-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 800px;">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h3>Danh sách khoản thu của hộ</h3>
+                <button type="button" id="close-modal" class="modal-close">×</button>
+            </div>
+
+            <!-- SUB TITLE -->
+            <div class="modal-sub">
+                Căn hộ: <span id="modal-name"></span> - Chủ hộ: <span id="modal-owner"></span>
+            </div>
+            <div class="modal-sub">
+                Mã hộ khẩu: <span id="modal-hokhau"></span>
+            </div>
+
+            <!-- BẢNG KHOẢN THU -->
+            <div class="modal-body">
+                <div class="modal-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                    <table class="modal-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th>Mã KT</th>
+                                <th>Tên khoản thu</th>
+                                <th>Loại</th>
+                                <th>Thành tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thanh toán</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-fee-tbody">
+                            <!-- Dữ liệu sẽ được load động -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="modal-loading" style="text-align: center; padding: 20px; display: none;">Đang tải...</div>
+                <div id="modal-empty" style="text-align: center; padding: 20px; display: none;">Không có khoản thu nào
+                </div>
+
+                <!-- TỔNG KẾT KHOẢN THU -->
+                <div id="modal-summary"
+                    style="display: none; margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <div style="display: grid; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                            <span style="color: #666;">Tổng tiền các khoản thu:</span>
+                            <strong style="color: #2196F3; font-size: 16px;" id="modal-tong-tien">0 đ</strong>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 5px 0; border-top: 1px solid #ddd;">
+                            <span style="color: #666;">Đã đóng:</span>
+                            <strong style="color: #4CAF50;" id="modal-da-dong">0 đ</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                            <span style="color: #666;">Còn thiếu:</span>
+                            <strong style="color: #FF5722;" id="modal-con-thieu">0 đ</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-primary" id="btn-close-detail">Đóng</button>
+            </div>
+        </div>
+    </div>
+    <!-- ===============================
+     MODAL THANH TOÁN KHOẢN THU
+================================ -->
+    <div id="receipt-modal" class="modal-overlay">
+        <div class="modal">
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h3>Thanh toán</h3>
+                <button class="modal-close" id="close-edit">x</button>
+            </div>
+
+            <!-- SUB TITLE -->
+            <div class="modal-sub">
+                Tên khoản thu: <span id="modal-name1-bill"></span>
+            </div>
+            <div class="modal-sub">
+                Mã hộ:<span id="modal-id-apt-bill"></span> - Mã khoản thu: <span id="modal-id-fee-bill"></span>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên hóa đơn</label>
+                        <input type="text" id="modal-name2-bill">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số tiền - VND</label>
+                        <input type="text" id="modal-money-bill" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày xuất hóa đơn</label>
+                        <input type="date" id="modal-date-bill">
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-footer">
+                <button class="btn-danger" id="btn-close-edit">Đóng</button>
+                <button class="btn-primary" id="btn-export-pdf">Xuất hóa đơn PDF</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===============================
+     MODAL CHỈNH SỬA KHOẢN THU
+================================ -->
+    <div id="editModal" class="modal-overlay">
+        <div class="edit-modal">
+            <div class="edit-header">
+                <h3>Chỉnh sửa khoản thu</h3>
+                <button class="modal-close" id="close-edit">x</button>
+            </div>
+
+            <div class="edit-body">
+                <div class="edit-grid">
+                    <div class="form-item">
+                        <label>Tên khoản thu</label>
+                        <input id="edit-name">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Loại khoản thu</label>
+                        <input id="edit-type">
+                    </div>
+
+                    <div class="form-item full">
+                        <label>Mô tả</label>
+                        <input id="edit-desc">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Số tiền cần đóng</label>
+                        <input id="edit-budget">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Đơn vị</label>
+                        <input id="edit-unit">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Ngày bắt đầu thuê</label>
+                        <input type="date" id="edit-start">
+                    </div>
+
+                    <div class="form-item">
+                        <label>Ngày kết thúc thuê</label>
+                        <input type="date" id="edit-end">
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-footer">
+                <button class="btn-danger" id="btn-close-edit">Đóng</button>
+                <button class="btn-primary" id="btn-save-edit">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL THỒNG BÁO CHỈNH SỬA KHOẢN THU
+================================ -->
+    <div id="notifyModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <button class="notify-close" id="close-notify">x</button>
+            </div>
+
+            <div class="modal-body notify-body">
+                <h2 id="notify-text"></h2>
+            </div>
+
+            <div class="modal-footer">
+                <button id="notify-ok" class="btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+     MODAL THÊM KHOẢN THU
+================================ -->
+    <div id="addModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Thông tin khoản thu</h3>
+                <button class="modal-close" id="close-add">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên khoản thu</label>
+                        <input id="add-name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loại khoản thu</label>
+                        <input id="add-type">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Chú thích</label>
+                        <input id="add-desc">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số tiền cần đóng</label>
+                        <input id="add-budget">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Đơn vị</label>
+                        <input id="add-unit">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày bắt đầu</label>
+                        <input type="date" id="add-start">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày kết thúc</label>
+                        <input type="date" id="add-end">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="cancel-add">Đóng</button>
+                <button class="btn-primary" id="save-add">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+    MODAL LỌC KHOẢN THU THEO HỘ
+    ================================ -->
+    <div id="apartmentFilterModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Lọc căn hộ</h3>
+                <button class="modal-close" id="close-apt-filter">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tình trạng thanh toán</label>
+                        <select id="filter-payment-status" class="select-styled">
+                            <option value="">Tất cả</option>
+                            <option value="paid">Đã đóng</option>
+                            <option value="partial">Một phần</option>
+                            <option value="unpaid">Chưa đóng</option>
+                            <option value="none">Chưa có khoản thu</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trạng thái căn hộ</label>
+                        <select id="filter-apartment-status" class="select-styled">
+                            <option value="">Tất cả</option>
+                            <option value="chu_o">Chủ ở</option>
+                            <option value="cho_thue">Cho thuê</option>
+                            <option value="trong">Trống</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tổng tiền tối thiểu (VND)</label>
+                        <input type="number" id="filter-apt-min-total" placeholder="Nhập số tiền tối thiểu">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tổng tiền tối đa (VND)</label>
+                        <input type="number" id="filter-apt-max-total" placeholder="Nhập số tiền tối đa">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Sắp xếp theo</label>
+                        <select id="filter-apt-sort" class="select-styled">
+                            <option value="code-asc">Mã căn hộ (A-Z)</option>
+                            <option value="code-desc">Mã căn hộ (Z-A)</option>
+                            <option value="name-asc">Tên căn hộ (A-Z)</option>
+                            <option value="name-desc">Tên căn hộ (Z-A)</option>
+                            <option value="total-asc">Tổng tiền (Tăng dần)</option>
+                            <option value="total-desc">Tổng tiền (Giảm dần)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-danger" id="btn-reset-apt-filter">Đặt lại</button>
+                <button class="btn-primary" id="btn-apply-apt-filter">Tìm kiếm</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/fee-manage.js"></script>
+</body>
+
+</html>
