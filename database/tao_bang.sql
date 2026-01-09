@@ -164,7 +164,6 @@ CREATE TABLE PhuongTien (
     MaLoaiPT INT NOT NULL,
     MaHoKhau VARCHAR(10) NOT NULL,
     ChuSoHuu NVARCHAR(100),
-    NgayDangKy DATE ,
     GhiChu NVARCHAR(200),
 
     FOREIGN KEY (MaLoaiPT) REFERENCES LoaiPhuongTien(MaLoaiPT)
