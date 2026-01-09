@@ -15,11 +15,11 @@ const getThongKeKhoanThu = async (req, res) => {
     );
     const tongTien = tongTienResult[0]?.tongTien || 0;
 
-    // 3. Số tiền đã thu (trạng thái = 'Đã đóng' hoặc 'da_thu')
+    // 3. Số tiền đã thu (trạng thái = 'Đã đóng' hoặc 'ĐÃ ĐÓNG' hoặc 'da_thu')
     const [daThuResult] = await sequelize.query(
       `SELECT IFNULL(SUM(ThanhTien), 0) as daThu 
        FROM KhoanThuTheoHo 
-       WHERE TrangThai = 'Đã đóng' OR TrangThai = 'da_thu'`
+       WHERE TrangThai IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu')`
     );
     const daThu = daThuResult[0]?.daThu || 0;
 
@@ -36,7 +36,7 @@ const getThongKeKhoanThu = async (req, res) => {
        WHERE MaHoKhau NOT IN (
          SELECT DISTINCT MaHoKhau 
          FROM KhoanThuTheoHo 
-         WHERE TrangThai != 'Đã đóng' AND TrangThai != 'da_thu'
+         WHERE TrangThai NOT IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu')
        )`
     );
     const soHoDaDongDu = hoDaDongDuResult[0]?.soHo || 0;
@@ -45,7 +45,7 @@ const getThongKeKhoanThu = async (req, res) => {
     const [hoChuaDongDuResult] = await sequelize.query(
       `SELECT COUNT(DISTINCT MaHoKhau) as soHo
        FROM KhoanThuTheoHo
-       WHERE TrangThai != 'Đã đóng' AND TrangThai != 'da_thu'`
+       WHERE TrangThai NOT IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu')`
     );
     const soHoChuaDongDu = hoChuaDongDuResult[0]?.soHo || 0;
 
@@ -55,7 +55,7 @@ const getThongKeKhoanThu = async (req, res) => {
          kt.DonViTinh,
          COUNT(DISTINCT kt.MaKhoanThu) as soKhoanThu,
          IFNULL(SUM(kthk.ThanhTien), 0) as tongTien,
-         IFNULL(SUM(CASE WHEN kthk.TrangThai = 'Đã đóng' OR kthk.TrangThai = 'da_thu' THEN kthk.ThanhTien ELSE 0 END), 0) as daThu
+         IFNULL(SUM(CASE WHEN kthk.TrangThai IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu') THEN kthk.ThanhTien ELSE 0 END), 0) as daThu
        FROM KhoanThu kt
        LEFT JOIN KhoanThuTheoHo kthk ON kt.MaKhoanThu = kthk.MaKhoanThu
        GROUP BY kt.DonViTinh`
@@ -116,9 +116,9 @@ const getThongKeChiTiet = async (req, res) => {
          kt.DonViTinh,
          COUNT(kthk.MaKhoanThuTheoHo) as soHoApDung,
          IFNULL(SUM(kthk.ThanhTien), 0) as tongTien,
-         IFNULL(SUM(CASE WHEN kthk.TrangThai = 'Đã đóng' OR kthk.TrangThai = 'da_thu' THEN kthk.ThanhTien ELSE 0 END), 0) as daThu,
-         SUM(CASE WHEN kthk.TrangThai = 'Đã đóng' OR kthk.TrangThai = 'da_thu' THEN 1 ELSE 0 END) as soHoDaDong,
-         SUM(CASE WHEN kthk.TrangThai != 'Đã đóng' AND kthk.TrangThai != 'da_thu' THEN 1 ELSE 0 END) as soHoChuaDong
+         IFNULL(SUM(CASE WHEN kthk.TrangThai IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu') THEN kthk.ThanhTien ELSE 0 END), 0) as daThu,
+         SUM(CASE WHEN kthk.TrangThai IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu') THEN 1 ELSE 0 END) as soHoDaDong,
+         SUM(CASE WHEN kthk.TrangThai NOT IN ('Đã đóng', 'ĐÃ ĐÓNG', 'da_thu') THEN 1 ELSE 0 END) as soHoChuaDong
        FROM KhoanThu kt
        LEFT JOIN KhoanThuTheoHo kthk ON kt.MaKhoanThu = kthk.MaKhoanThu
        GROUP BY kt.MaKhoanThu
@@ -127,15 +127,28 @@ const getThongKeChiTiet = async (req, res) => {
 
     res.json({
       success: true,
-      data: result.map((item) => ({
-        ...item,
-        loaiKhoanThu: item.LoaiKhoanThu === 1 ? "Định kỳ" : "Một lần",
-        canThu: item.tongTien - item.daThu,
-        tyLeThu:
-          item.tongTien > 0
-            ? ((item.daThu / item.tongTien) * 100).toFixed(2)
-            : 0,
-      })),
+      data: result.map((item) => {
+        // Xử lý loại khoản thu - có thể là số hoặc string từ database
+        let loaiKhoanThuLabel = "Một lần";
+        if (
+          item.LoaiKhoanThu === 1 ||
+          item.LoaiKhoanThu === "1" ||
+          item.LoaiKhoanThu === "Định kỳ"
+        ) {
+          loaiKhoanThuLabel = "Định kỳ";
+        }
+
+        return {
+          ...item,
+          loaiKhoanThu: loaiKhoanThuLabel,
+          canThu: item.tongTien - item.daThu,
+          // Tỷ lệ thanh toán = số hộ đã đóng / tổng số hộ áp dụng
+          tyLeThu:
+            item.soHoApDung > 0
+              ? ((item.soHoDaDong / item.soHoApDung) * 100).toFixed(2)
+              : 0,
+        };
+      }),
     });
   } catch (error) {
     console.error("Error getting thong ke chi tiet:", error);
