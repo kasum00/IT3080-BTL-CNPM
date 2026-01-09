@@ -1,0 +1,391 @@
+/* ===============================
+   STATISTICS PAGE STYLES
+   =============================== */
+
+.statistics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.statistics-header h1 {
+  font-size: 24px;
+  color: #333;
+}
+
+.btn-refresh {
+  padding: 10px 20px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.btn-refresh:hover {
+  background: #1976d2;
+}
+
+/* ===============================
+   OVERVIEW SECTION
+   =============================== */
+.overview-section,
+.type-section,
+.detail-section,
+.household-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.overview-section h2,
+.type-section h2,
+.detail-section h2,
+.household-section h2 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+/* ===============================
+   STATS CARDS
+   =============================== */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card .stat-icon {
+  font-size: 32px;
+}
+
+.stat-card .stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-card .stat-label {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.stat-card .stat-value {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4caf50;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* ===============================
+   TYPE CARDS
+   =============================== */
+.type-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.type-card {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 4px solid #2196f3;
+}
+
+.type-card h3 {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.type-card .type-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.type-card .type-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.type-card .type-stat-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.type-card .type-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.type-card.type-dinh-ky {
+  border-left-color: #4caf50;
+}
+
+.type-card.type-mot-lan {
+  border-left-color: #ff9800;
+}
+
+.type-card.type-nhan-khau {
+  border-left-color: #4caf50;
+}
+
+.type-card.type-ho-khau {
+  border-left-color: #2196f3;
+}
+
+.type-card.type-dien-tich {
+  border-left-color: #ff9800;
+}
+
+.type-card.type-khac {
+  border-left-color: #9e9e9e;
+}
+
+/* ===============================
+   TABLES
+   =============================== */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.statistics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.statistics-table th,
+.statistics-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.statistics-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+}
+
+.statistics-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.statistics-table .status-paid {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.statistics-table .status-partial {
+  color: #ff9800;
+  font-weight: 600;
+}
+
+.statistics-table .status-unpaid {
+  color: #f44336;
+  font-weight: 600;
+}
+
+/* Progress in table */
+.table-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-progress-bar {
+  width: 60px;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.table-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.table-progress-fill.high {
+  background: #4caf50;
+}
+
+.table-progress-fill.medium {
+  background: #ff9800;
+}
+
+.table-progress-fill.low {
+  background: #f44336;
+}
+
+/* ===============================
+   FILTER ROW
+   =============================== */
+.filter-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filter-row input,
+.filter-row select {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.filter-row input {
+  flex: 1;
+  max-width: 300px;
+}
+
+.filter-row select {
+  min-width: 150px;
+}
+
+/* ===============================
+   MODAL
+   =============================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal {
+  background: white;
+  padding: 0;
+  border-radius: 12px;
+  min-width: 400px;
+  max-width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.notify-body {
+  text-align: center;
+}
+
+.notify-body h2 {
+  font-size: 16px;
+  color: #333;
+  font-weight: normal;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #1976d2;
+}
+
+.notify-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+}
+
+/* ===============================
+   RESPONSIVE
+   =============================== */
+@media (max-width: 768px) {
+  .stats-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-row {
+    flex-direction: column;
+  }
+
+  .filter-row input {
+    max-width: 100%;
+  }
+}
