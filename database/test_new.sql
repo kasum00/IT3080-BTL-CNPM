@@ -283,53 +283,16 @@ INSERT INTO KhoanThuTheoHo (MaKhoanThu, MaHoKhau, SoLuong, ThanhTien, TrangThai)
 (10, 'HK008', 1, 200000, 'ĐÃ ĐÓNG');
 
 
---tam trú
-INSERT INTO TamTru
-(MaNhanKhau, DiaChiThuongTru, DiaChiTamTru, CanCuocCongDan, ngayBatDau, ngayKetThuc)
-VALUES
-(1, 'Nam Định', 'Căn hộ A101, Chung cư Bluemoon', '001200000101', '2023-01-01', '2023-12-31'),
-(2, 'Thái Bình', 'Căn hộ A101, Chung cư Bluemoon', '001200000102', '2023-02-01', '2023-11-30'),
-(3, 'Hà Nội', 'Căn hộ A101, Chung cư Bluemoon', '001200000103', '2023-03-01', '2023-09-30'),
-(4, 'Hải Phòng', 'Căn hộ A101, Chung cư Sunrise', '001200000104', '2023-04-01', '2023-10-31'),
-(5, 'Thanh Hóa', 'Căn hộ A102, Chung cư Sunrise', '001200000105', '2023-01-15', '2023-12-15'),
-(6, 'Nghệ An', 'Căn hộ A102, Chung cư Bluemoon', '001200000106', '2023-02-10', '2023-08-10'),
-(7, 'Hà Tĩnh', 'Căn hộ A102, Chung cư Sunrise', '001200000107', '2023-03-05', '2023-09-05'),
-(8, 'Quảng Bình', 'Căn hộ A201, Chung cư Sunrise', '001200000108', '2023-01-01', '2023-06-30'),
-(9, 'Huế', 'Căn hộ A201, Chung cư Sunrise', '001200000109', '2023-02-01', '2023-07-31'),
-(10, 'Đà Nẵng', 'Căn hộ A201, Chung cư Sunrise', '001200000110', '2023-03-01', '2023-12-31'),
-(11, 'Quảng Nam', 'Căn hộ A202, Chung cư Sunrise', '001200000111', '2023-01-20', '2023-10-20'),
-(12, 'Quảng Ngãi', 'Căn hộ A202, Chung cư Sunrise', '001200000112', '2023-02-15', '2023-08-15'),
-(13, 'Bình Định', 'Căn hộ B101, Chung cư Sunrise', '001200000113', '2023-01-01', '2023-12-31'),
-(14, 'Phú Yên', 'Căn hộ B101, Chung cư Sunrise', '001200000114', '2023-03-01', '2023-09-01'),
-(15, 'Khánh Hòa', 'Căn hộ B101, Chung cư Sunrise', '001200000115', '2023-04-01', '2023-10-01'),
-(16, 'Ninh Thuận', 'Căn hộ B102, Chung cư Sunrise', '001200000116', '2023-01-10', '2023-07-10'),
-(17, 'Bình Thuận', 'Căn hộ B102, Chung cư Sunrise', '001200000117', '2023-02-10', '2023-08-10'),
-(18, 'Đồng Nai', 'Căn hộ C101, Chung cư Sunrise', '001200000118', '2023-01-01', '2023-12-31'),
-(19, 'Bình Dương', 'Căn hộ C101, Chung cư Sunrise', '001200000119', '2023-03-01', '2023-09-30'),
-(20, 'Tây Ninh', 'Căn hộ C201, Chung cư Sunrise', '001200000120', '2023-02-01', '2023-08-31');
+INSERT INTO PhuongTien (BienSo, MaLoaiPT, MaHoKhau, ChuSoHuu) VALUES
+('59A1-11111', 2, 'HK001', 'Nguyễn Văn An'),
+('59A1-22222', 2, 'HK001', 'Trần Thị Bích'),
+(NULL, 1, 'HK001', 'Nguyễn Văn Minh');
 
---tạm vắng
-INSERT INTO TamVang (CanCuocCongDan, NgayBatDau, NgayKetThuc, LyDo) VALUES
-('001200000101', '2025-01-02', '2025-04-03', 'Đi công tác dài ngày'),
-('001200000102', '2025-03-15', '2025-04-10', 'Chăm sóc người thân'),
-('001200000103', '2025-06-01', '2025-06-15', 'Về quê nghỉ hè'),
-('001200000104', '2025-06-05', '2025-06-20', 'Nghỉ hè cùng gia đình'),
-('001200000105', '2025-04-01', '2025-05-05', 'Đi công tác tỉnh khác'),
-('001200000106', '2025-04-05', '2025-04-18', 'Dự đám cưới người thân'),
-('001200000107', '2025-06-10', '2025-06-30', 'Nghỉ hè'),
-('001200000108', '2025-03-10', '2025-03-25', 'Khám chữa bệnh'),
-('001200000109', '2025-03-20', '2025-04-02', 'Đi công tác ngắn hạn'),
-('001200000110', '2025-05-01', '2025-05-20', 'Thực tập công ty'),
-('001200000111', '2025-06-01', '2025-06-10', 'Về quê nghỉ hè'),
-('001200000113', '2025-04-01', '2025-04-30', 'Đi công tác nước ngoài'),
-('001200000114', '2025-04-20', '2025-05-12', 'Chăm sóc cha mẹ'),
-('001200000115', '2025-03-10', '2025-03-28', 'Giải quyết công việc cá nhân'),
-('001200000116', '2025-03-25', '2025-04-15', 'Về quê thăm gia đình'),
-('001200000118', '2025-03-15', '2025-04-01', 'Chuyển nơi thuê mới'),
-('001200000119', '2025-04-01', '2025-05-10', 'Hội họp công tác dài ngày'),
-('001200000120', '2025-04-05', '2025-04-25', 'Du lịch nước ngoài'),
-('001200000121', '2025-06-01', '2025-06-05', 'Nghỉ hè'),
-('001200000124', '2025-03-20', '2025-04-08', 'Về quê giải quyết việc cá nhân');
+-- HK002: 2 xe máy + 1 ô tô
+INSERT INTO PhuongTien (BienSo, MaLoaiPT, MaHoKhau, ChuSoHuu) VALUES
+('51B2-33333', 2, 'HK002', 'Phạm Đức Thắng'),
+('51B2-44444', 2, 'HK002', 'Lê Thị Mai'),
+('51A-99999', 3, 'HK002', 'Phạm Đức Thắng');
 
 
 -- Bật lại safe update mode
