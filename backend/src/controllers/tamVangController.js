@@ -9,8 +9,8 @@ const TamVang = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    MaNhanKhau: {
-      type: DataTypes.INTEGER,
+    CanCuocCongDan: {
+      type: DataTypes.STRING(20),
       allowNull: false,
     },
     NgayBatDau: {
@@ -32,14 +32,14 @@ const TamVang = sequelize.define(
 // create
 const createTamVang = async (req, res) => {
   try {
-    const { MaNhanKhau, NgayBatDau, NgayKetThuc, LyDo } = req.body;
+    const{CanCuocCongDan, NgayBatDau, NgayKetThuc, LyDo } = req.body;
 
-    if (!MaNhanKhau || !NgayBatDau || !NgayKetThuc) {
+    if (!CanCuocCongDan|| !NgayBatDau || !NgayKetThuc) {
       return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
     }
 
     const tamVang = await TamVang.create({
-      MaNhanKhau,
+      CanCuocCongDan,
       NgayBatDau,
       NgayKetThuc,
       LyDo,
@@ -64,7 +64,7 @@ const getAllTamVang = async (req, res) => {
         tv.NgayKetThuc,
         tv.LyDo
       FROM TamVang tv
-      JOIN NhanKhau nk ON tv.MaNhanKhau = nk.MaNhanKhau
+      JOIN NhanKhau nk ON tv.CanCuocCongDan = nk.CanCuocCongDan
     `);
 
     res.json(rows);
@@ -81,12 +81,12 @@ const getTamVangByID = async (req, res) => {
       SELECT 
         tv.MaTamVang,
         nk.HoTen,
-        nk.CanCuocCongDan AS CCCD,
+        tv.CanCuocCongDan AS CCCD,
         tv.NgayBatDau,
         tv.NgayKetThuc,
         tv.LyDo
       FROM TamVang tv
-      JOIN NhanKhau nk ON tv.MaNhanKhau = nk.MaNhanKhau
+      JOIN NhanKhau nk ON tv.CanCuocCongDan = nk.CanCuocCongDan
       WHERE tv.MaTamVang = :id
     `,
       {
