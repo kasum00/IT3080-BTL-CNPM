@@ -12,4 +12,8 @@ sequelize
   .then(() => console.log("Database connected successfully"))
   .catch((err) => console.error("Unable to connect to database:", err));
 
+<<<<<<< HEAD
 module.exports = sequelize;
+=======
+module.exports = sequelize;
+>>>>>>> main

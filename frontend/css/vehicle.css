@@ -1,0 +1,252 @@
+/* ===============================
+   HEADER
+=============================== */
+.apartment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+}
+
+.btn-add {
+    background: #3f5fa9;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.actions input {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: none;
+    background: #eef4ff;
+}
+
+/* ===============================
+   WRAPPER BẢNG
+=============================== */
+.table-wrapper {
+    background: #bcd6ff;
+    border-radius: 18px;
+    padding: 20px;
+    width: 100%;
+    max-width: 1100px;
+}
+
+.table-scroll {
+    max-height: 420px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ===============================
+   TABLE
+=============================== */
+.apartment-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.apartment-table thead th {
+    text-align: left;
+    font-weight: 600;
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.4);
+
+    position: sticky;
+    top: 0;
+    background: #bcd6ff;
+    z-index: 2;
+}
+
+.apartment-table tbody td {
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.35);
+}
+
+.apartment-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===============================
+   ACTION ICONS
+=============================== */
+.action {
+    display: flex;
+    gap: 16px;
+}
+
+.action span {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
+.btn-detail {
+    background-image: url("../assets/icons/btn-detail.png");
+}
+
+.btn-remove {
+    background-image: url("../assets/icons/btn-remove.png");
+}
+
+.action span:hover {
+    opacity: 0.7;
+}
+
+
+/* ===============================
+   MODAL OVERLAY
+=============================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+/* ===============================
+   MODAL BOX
+=============================== */
+.modal {
+    background: #fff;
+    width: 720px;
+    max-width: 90%;
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.modal-header {
+    background: #cfe0ff;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* ===============================
+   MODAL BODY
+=============================== */
+.modal-body {
+    padding: 24px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.form-group input, select {
+    background: #e5e5e5;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+/* ===============================
+   MODAL FOOTER
+=============================== */
+.modal-footer {
+    padding: 18px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 22px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #3f5fa9;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 22px;
+    cursor: pointer;
+}
+
+/* ===============================
+   NOTIFY MODAL
+=============================== */
+.notify-close {
+    all: unset;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 400;
+    color: #000;
+}
+
+.notify-close:hover {
+    opacity: 0.6;
+}
+
+.notify-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90px;
+    text-align: center;
+}
+
+#notify-text {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+#notifyModal {
+    z-index: 1000;
+}

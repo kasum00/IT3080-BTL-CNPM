@@ -103,7 +103,11 @@ const validateHoKhauInput = (data, isCreate = true) => {
 
     if(isCreate && data.MaHoKhau) {
         const maHoKhau = data.MaHoKhau.trim()
+<<<<<<< HEAD
         const regex = /^HK\d{4}$/
+=======
+        const regex = /^HK\d{3}$/
+>>>>>>> main
 
         if(!regex.test(maHoKhau)) {
             return "Mã hộ khẩu không hợp lệ!"
