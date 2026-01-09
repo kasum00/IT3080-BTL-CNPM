@@ -164,18 +164,29 @@ async function openDetail(id) {
 //add
 async function addTamTru() {
   const payload = {
-    MaNhanKhau: document.getElementById("add-maNhanKhau").value.trim(),
     CanCuocCongDan: document.getElementById("add-cccd").value.trim(),
     DiaChiTamTru: document.getElementById("add-diaChi").value.trim(),
     NgayBatDau: document.getElementById("add-ngayBatDau").value,
     NgayKetThuc: document.getElementById("add-ngayKetThuc").value,
   };
 
-  await fetch(API_URL, {
+  if (!payload.CanCuocCongDan || !payload.DiaChiTamTru || !payload.NgayBatDau) {
+    showNotify("Vui lòng nhập đầy đủ thông tin!");
+    return;
+  }
+
+  const res = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    showNotify(data.message || "Đăng ký tạm trú thất bại!");
+    return;
+  }
   await loadTamTru();
   document.getElementById("addModal").classList.remove("show");
   showNotify("Đăng ký tạm trú thành công!");
