@@ -143,6 +143,66 @@ CREATE TABLE TaiKhoan (
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE LoaiPhuongTien (
+    MaLoaiPT INT PRIMARY KEY,          -- 1: Xe đạp | 2: Xe máy | 3: Ô tô
+    TenLoai NVARCHAR(50) NOT NULL,
+    PhiGuiXe INT DEFAULT 0,
+    MoTa NVARCHAR(200)
+);
+
+INSERT INTO LoaiPhuongTien (MaLoaiPT, TenLoai, PhiGuiXe)
+VALUES
+(1, N'Xe đạp', 30000),
+(2, N'Xe máy', 100000),
+(3, N'Ô tô', 1500000);
+
+DROP TABLE IF EXISTS PhuongTien;
+
+CREATE TABLE PhuongTien (
+    MaPhuongTien INT AUTO_INCREMENT PRIMARY KEY,
+    BienSo VARCHAR(20) UNIQUE NULL,
+    MaLoaiPT INT NOT NULL,
+    MaHoKhau VARCHAR(10) NOT NULL,
+    ChuSoHuu NVARCHAR(100),
+    NgayDangKy DATE ,
+    GhiChu NVARCHAR(200),
+
+    FOREIGN KEY (MaLoaiPT) REFERENCES LoaiPhuongTien(MaLoaiPT)
+        ON DELETE RESTRICT ON UPDATE RESTRICT,
+
+    FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+DROP TABLE IF EXISTS ThongKePhuongTien;
+
+CREATE TABLE ThongKePhuongTien (
+    MaHoKhau VARCHAR(10) PRIMARY KEY,
+    SoXeDap INT DEFAULT 0,
+    SoXeMay INT DEFAULT 0,
+    SoOTo INT DEFAULT 0,
+    TongPhuongTien INT DEFAULT 0,
+
+    FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+DROP TABLE IF EXISTS TienGuiXeTheoHoKhau;
+
+CREATE TABLE TienGuiXeTheoHoKhau (
+    MaHoKhau VARCHAR(10) PRIMARY KEY,
+    TienXeDap INT DEFAULT 0,
+    TienXeMay INT DEFAULT 0,
+    TienOTo INT DEFAULT 0,
+    TongTienGuiXe INT DEFAULT 0,
+    CapNhatLuc DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (MaHoKhau) REFERENCES HoKhau(MaHoKhau)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
 ALTER TABLE NhanKhau
 ADD MaTaiKhoan INT NULL;
 
@@ -163,4 +223,3 @@ WHERE nk.QuanHe = 'chu ho'
   AND tk.VaiTro = 'cu_dan';
 
 SET SQL_SAFE_UPDATES = 1;
-
