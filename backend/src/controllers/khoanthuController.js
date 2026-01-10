@@ -143,9 +143,18 @@ const getKhoanThu = async (req, res) => {
 const updateKhoanThu = async (req, res) => {
   try {
     //debug
-    console.log("update");
+    console.log("=== UPDATE KHOAN THU ===");
     console.log("ID:", req.params.id);
-    console.log("Request body:", req.body);
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
+
+    // Kiểm tra xem khoản thu có tồn tại không
+    const existingKhoanThu = await KhoanThu.findByPk(req.params.id);
+    if (!existingKhoanThu) {
+      return res.status(404).json({
+        success: false,
+        error: "Không tìm thấy khoản thu với ID: " + req.params.id,
+      });
+    }
 
     // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
     if (req.body.ThoiGianKetThuc && req.body.ThoiGianBatDau) {
@@ -174,10 +183,18 @@ const updateKhoanThu = async (req, res) => {
       rowsUpdated,
     });
   } catch (error) {
-    console.error("Error updating KhoanThu:", error);
+    console.error("=== ERROR updating KhoanThu ===");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    if (error.parent) {
+      console.error("SQL Error:", error.parent.message);
+      console.error("SQL Code:", error.parent.code);
+    }
     res.status(500).json({
       success: false,
       error: error.message,
+      sqlError: error.parent?.message || null,
     });
   }
 };

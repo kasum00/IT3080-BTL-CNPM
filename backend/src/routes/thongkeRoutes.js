@@ -5,6 +5,9 @@ const ThongKeController = require("../controllers/thongkeController");
 
 console.log(" thong ke loaded");
 
+// Debug TrangThai values
+router.get("/debug-trangthai", ThongKeController.debugTrangThai);
+
 // Thống kê tổng quan khoản thu
 router.get("/tong-quan", ThongKeController.getThongKeKhoanThu);
 
