@@ -29,11 +29,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fees.forEach((fee) => {
       const tr = document.createElement("tr");
-      // Xử lý cả trường hợp LoaiKhoanThu là số hoặc string
-      const loaiKhoanThu =
-        fee.LoaiKhoanThu == 1 || fee.LoaiKhoanThu === "1"
-          ? "Định kỳ"
-          : "Một lần";
+      // Xử lý cả trường hợp LoaiKhoanThu là số, string số, hoặc text
+      let loaiKhoanThu;
+      if (
+        fee.LoaiKhoanThu == 1 ||
+        fee.LoaiKhoanThu === "1" ||
+        fee.LoaiKhoanThu === "Định kỳ"
+      ) {
+        loaiKhoanThu = "Định kỳ";
+      } else {
+        loaiKhoanThu = "Một lần";
+      }
 
       // Check if fee is expired
       let isExpired = false;
@@ -252,8 +258,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("modal-name").value = btn.dataset.name || "";
 
-    // Convert type back to text for display
-    const typeValue = btn.dataset.type === "1" ? "Định kỳ" : "Một lần";
+    // Convert type back to text for display - xử lý cả số, string số, và text
+    let typeValue;
+    if (
+      btn.dataset.type == 1 ||
+      btn.dataset.type === "1" ||
+      btn.dataset.type === "Định kỳ"
+    ) {
+      typeValue = "Định kỳ";
+    } else {
+      typeValue = "Một lần";
+    }
     document.getElementById("modal-type").value = typeValue;
     document.getElementById("modal-desc").value = btn.dataset.status || "";
     document.getElementById("modal-budget").value = btn.dataset.budget || "";
@@ -523,13 +538,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // "Định kỳ" → 1, "Một lần" → 2
     let loaiKhoanThu;
     if (addType === "Định kỳ" || addType === "dinh_ky" || addType === "1") {
-      loaiKhoanThu = 1;
+      loaiKhoanThu = "Định kỳ";
     } else if (
       addType === "Một lần" ||
       addType === "mot_lan" ||
       addType === "2"
     ) {
-      loaiKhoanThu = 2;
+      loaiKhoanThu = "Một lần";
     } else {
       loaiKhoanThu = parseInt(addType) || 1; // default là 1
     }
