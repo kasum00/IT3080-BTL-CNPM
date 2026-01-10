@@ -569,10 +569,20 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===============================
        DELETE
     =============================== */
+  const cannotDeleteModal = document.getElementById("cannotDeleteModal");
+
   ["cancel-delete", "close-delete"].forEach((id) =>
     document
       .getElementById(id)
       ?.addEventListener("click", () => deleteModal.classList.remove("show"))
+  );
+
+  ["ok-cannot-delete", "close-cannot-delete"].forEach((id) =>
+    document
+      .getElementById(id)
+      ?.addEventListener("click", () =>
+        cannotDeleteModal.classList.remove("show")
+      )
   );
 
   document.getElementById("confirm-delete").addEventListener("click", () => {
@@ -587,8 +597,20 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((data) => {
         console.log("Delete response:", data); // debug
         deleteModal.classList.remove("show");
-        loadFees();
-        showNotify("Xóa khoản thu thành công!");
+
+        if (data.success) {
+          loadFees();
+          showNotify("Xóa khoản thu thành công!");
+        } else {
+          // Nếu không thể xóa do có hộ đã đóng tiền
+          if (data.info && data.info.soHoDaDongTien) {
+            const infoEl = document.getElementById("cannot-delete-info");
+            infoEl.innerText = `Khoản thu này đã có ${data.info.soHoDaDongTien} hộ thanh toán`;
+            cannotDeleteModal.classList.add("show");
+          } else {
+            showNotify("Lỗi: " + data.error);
+          }
+        }
       })
       .catch((err) => {
         console.error("Error deleting:", err);

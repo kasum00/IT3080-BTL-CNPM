@@ -43,7 +43,7 @@
                     <a href="fee-manage.html">Khoản thu theo hộ</a>
                     <a class="nav-chart" href="statistics.html">Thống kê</a>
                 </div>
-                 
+
             </nav>
 
             <div class="sidebar-footer">
@@ -412,6 +412,26 @@
             <div class="modal-footer">
                 <button class="btn-danger" id="confirm-delete">OK</button>
                 <button class="btn-primary" id="cancel-delete">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+    MODAL CẢNH BÁO KHÔNG THỂ XÓA
+    ================================ -->
+    <div id="cannotDeleteModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-close" id="close-cannot-delete">x</button>
+            </div>
+
+            <div class="modal-body notify-body" style="text-align: center;">
+                <h2 style="margin-bottom: 20px; display: block;">Không thể xóa!</h2>
+                <h2 id="cannot-delete-info" style="margin-top: 10px; line-height: 1.4; display: block;"></h2>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-primary" id="ok-cannot-delete">Đã hiểu</button>
             </div>
         </div>
     </div>

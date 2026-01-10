@@ -199,6 +199,49 @@ const updateKhoanThu = async (req, res) => {
   }
 };
 
+// Check if có hộ đã đóng tiền cho khoản thu này
+const checkKhoanThuHasPaidHouseholds = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const khoanThu = await KhoanThu.findByPk(id);
+    if (!khoanThu) {
+      return res.status(404).json({
+        success: false,
+        error: "Không tìm thấy khoản thu",
+      });
+    }
+
+    // Đếm số hộ đã đóng tiền (TrangThai = 'Đã đóng' hoặc 'da_thu')
+    const [result] = await sequelize.query(
+      `SELECT COUNT(*) as total FROM KhoanThuTheoHo 
+       WHERE MaKhoanThu = :id AND (TrangThai = 'Đã đóng' OR TrangThai = 'da_thu')`,
+      {
+        replacements: { id },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    const totalPaidHouseholds = result.total;
+
+    res.json({
+      success: true,
+      data: {
+        maKhoanThu: id,
+        tenKhoanThu: khoanThu.TenKhoanThu,
+        soHoDaDongTien: totalPaidHouseholds,
+        canDelete: totalPaidHouseholds === 0,
+      },
+    });
+  } catch (error) {
+    console.error("Error checking KhoanThu paid households:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 // Delete
 const deleteKhoanThu = async (req, res) => {
   try {
@@ -213,6 +256,26 @@ const deleteKhoanThu = async (req, res) => {
       return res.status(404).json({
         success: false,
         error: "Không tìm thấy khoản thu",
+      });
+    }
+
+    // Kiểm tra xem có hộ nào đã đóng tiền chưa
+    const [paidResult] = await sequelize.query(
+      `SELECT COUNT(*) as total FROM KhoanThuTheoHo 
+       WHERE MaKhoanThu = :id AND (TrangThai = 'Đã đóng' OR TrangThai = 'da_thu')`,
+      {
+        replacements: { id },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (paidResult.total > 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Không thể xóa khoản thu này vì đã có hộ đóng tiền",
+        info: {
+          soHoDaDongTien: paidResult.total,
+        },
       });
     }
 
@@ -254,5 +317,6 @@ module.exports = {
   getKhoanThu,
   updateKhoanThu,
   deleteKhoanThu,
+  checkKhoanThuHasPaidHouseholds,
   KhoanThu,
 };

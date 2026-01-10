@@ -1,0 +1,24 @@
+[33me475203[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mlongV2[m[33m)[m Merge branch 'main' into longV2
+[33mdf44773[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Create vehicle.css
+[33m4ca8058[m Create vehicle.js
+[33m9a3ef17[m Create vehicle.html
+[33m7904288[m Update tao_bang.sql
+[33m78e3296[m Update trigger.sql
+[33m303d745[m Update test_new.sql
+[33mba2a146[m Update tao_bang.sql
+[33mdec02b9[m[33m ([m[1;31morigin/longV2[m[33m)[m fix nút làm mới dữ liệu và tính toán dữ liệu thống kê
+[33m9001a61[m Update absence.html(sửa đăng ký tạm vắng)
+[33md87a6a9[m Update temporary.html(đki tamtru)
+[33m03a2fc1[m Update absence.js(update form đki)
+[33mcbb2cda[m Update temporary.js(update form đki)
+[33mf9fe3c8[m Update tamVangController.js(update form đki)
+[33m0789bbb[m Update tamTruController.js (sửa form đki)
+[33m1e8e861[m Update test tamvang
+[33md91af6d[m Update tamtru+tamvang
+[33meb52946[m update tam tru
+[33m4e5a980[m Update tao_bang.sql
+[33m7d23d80[m Create cap_quyen
+[33mfd6b5b6[m Update trigger.sql
+[33m69785aa[m Update test_new.sql
+[33me2c7e60[m Update tao_bang.sql
+[33m68bf6eb[m fix bug

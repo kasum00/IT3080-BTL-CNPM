@@ -5,7 +5,11 @@ const khoanThuController = require("../controllers/khoanthuController");
 router.get("/khoan-thu", khoanThuController.getAllKhoanThu);
 router.post("/khoan-thu", khoanThuController.createKhoanThu);
 router.get("/khoan-thu/:id", khoanThuController.getKhoanThu);
+router.get(
+  "/khoan-thu/:id/check-paid",
+  khoanThuController.checkKhoanThuHasPaidHouseholds
+);
 router.put("/khoan-thu/:id", khoanThuController.updateKhoanThu);
 router.delete("/khoan-thu/:id", khoanThuController.deleteKhoanThu);
- 
+
 module.exports = router;
