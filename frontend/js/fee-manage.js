@@ -54,13 +54,23 @@ document.addEventListener("DOMContentLoaded", () => {
                   daDong += thanhTien;
                 }
 
+                // Chuyển đổi loại khoản thu - xử lý cả số và text
+                let loaiKhoanThu = fee.LoaiKhoanThu;
+                if (loaiKhoanThu === 1) loaiKhoanThu = "Định kỳ";
+                else if (loaiKhoanThu === 2) loaiKhoanThu = "Một lần";
+                else if (
+                  loaiKhoanThu !== "Định kỳ" &&
+                  loaiKhoanThu !== "Một lần"
+                )
+                  loaiKhoanThu = loaiKhoanThu || "";
+
                 const tr = document.createElement("tr");
                 tr.dataset.maKhoanThu = fee.MaKhoanThu;
                 tr.dataset.thanhTien = thanhTien;
                 tr.innerHTML = `
                   <td>${fee.MaKhoanThu}</td>
                   <td>${fee.TenKhoanThu || ""}</td>
-                  <td>${fee.LoaiKhoanThu || ""}</td>
+                  <td>${loaiKhoanThu}</td>
                   <td>${
                     fee.ThanhTien
                       ? fee.ThanhTien.toLocaleString("vi-VN") + " đ"
@@ -209,6 +219,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const isPaid =
                   fee.TrangThai === "Đã đóng" || fee.TrangThai === "da_thu";
 
+                // Chuyển đổi loại khoản thu - xử lý cả số và text
+                let loaiKhoanThu = fee.LoaiKhoanThu;
+                if (loaiKhoanThu === 1) loaiKhoanThu = "Định kỳ";
+                else if (loaiKhoanThu === 2) loaiKhoanThu = "Một lần";
+                else if (
+                  loaiKhoanThu !== "Định kỳ" &&
+                  loaiKhoanThu !== "Một lần"
+                )
+                  loaiKhoanThu = loaiKhoanThu || "";
+
                 const tr = document.createElement("tr");
                 tr.dataset.maKhoanThu = fee.MaKhoanThu;
                 tr.dataset.maHoKhau = maHoKhau;
@@ -216,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 tr.innerHTML = `
                   <td>${fee.MaKhoanThu}</td>
                   <td>${fee.TenKhoanThu || ""}</td>
-                  <td>${fee.LoaiKhoanThu || ""}</td>
+                  <td>${loaiKhoanThu}</td>
                   <td>${
                     fee.ThanhTien
                       ? fee.ThanhTien.toLocaleString("vi-VN") + " đ"

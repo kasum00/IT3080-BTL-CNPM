@@ -29,7 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fees.forEach((fee) => {
       const tr = document.createElement("tr");
-      const loaiKhoanThu = fee.LoaiKhoanThu === 1 ? "Định kỳ" : "Một lần";
+      // Xử lý cả trường hợp LoaiKhoanThu là số hoặc string
+      const loaiKhoanThu =
+        fee.LoaiKhoanThu == 1 || fee.LoaiKhoanThu === "1"
+          ? "Định kỳ"
+          : "Một lần";
 
       // Check if fee is expired
       let isExpired = false;
