@@ -92,6 +92,14 @@ const sequelize = require("../src/config/db");
     );
     console.log("\n7. Da thu MOI (chi tinh da_thu):", daThuMoi);
 
+    // 8. Tính tổng với TrangThai = 'ĐÃ ĐÓNG' (từ file SQL test)
+    const [daDongSQL] = await sequelize.query(
+      `SELECT IFNULL(SUM(ThanhTien), 0) as total 
+       FROM KhoanThuTheoHo 
+       WHERE TrangThai = 'ĐÃ ĐÓNG'`
+    );
+    console.log("8. Tong tien TrangThai = 'ĐÃ ĐÓNG' (tu file SQL):", daDongSQL);
+
     process.exit(0);
   } catch (e) {
     console.error("Error:", e.message);
